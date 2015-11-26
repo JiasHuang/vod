@@ -4,6 +4,7 @@ import os
 import subprocess
 import page
 import json
+import conf
 
 from mod_python import util
 
@@ -27,10 +28,10 @@ def listDIR(req, d):
   req.write('</ul>')
   req.write('</div>')
 
-def loadURL_(req, url):
+def loadFILE(req, url):
     loadHTML(req, '/var/www/html/action.html')
     req.write('<br>playURL <a target="_blank" href="%s">%s</a>' %(url, url))
-    subprocess.Popen(['/usr/bin/xterm', '-display', ':0', '-e', '/home/revo/bin/.vod.py %s' %(url)])
+    subprocess.Popen(['/usr/bin/xterm', '-display', ':0', '-e', '%s %s' %(conf.vod, url)])
     req.write("<br>Sent")
 
 def loadURL(req, url):
@@ -38,9 +39,9 @@ def loadURL(req, url):
     loadHTML(req, '/var/www/html/action.html')
     req.write('<br>[URL] <a target="_blank" href="%s">%s</a>' %(url, url))
 
-    cmd = '/home/revo/bin/.src.py -u \'%s\' | tee -a /tmp/view.log' %(url)
+    cmd = '%s -j %s -u \'%s\' | tee -a %s' %(conf.src, conf.json, url, conf.log)
     subprocess.Popen(['/usr/bin/xterm', '-display', ':0', '-e', cmd]).communicate()
-    with open('/tmp/temp.json', 'r') as fd:
+    with open(conf.json, 'r') as fd:
         data = json.load(fd)
         src = data['src']
         ref = data['ref']
@@ -50,14 +51,14 @@ def loadURL(req, url):
         return
 
     if src != url:
-        cmd = '/home/revo/bin/.run.py -s \'%s\' -r \'%s\' | tee -a /tmp/view.log' %(src, ref)
+        cmd = '%s -s \'%s\' -r \'%s\' | tee -a %s' %(conf.run, src, ref, conf.log)
         subprocess.Popen(['/usr/bin/xterm', '-display', ':0', '-e', cmd])
         req.write('<br>[SRC] <a target="_blank" href="%s">%s</a>' %(src, src))
         req.write('<br>Sent')
         return
 
     if url != '':
-        cmd = '/home/revo/bin/.vod.py \'%s\' | tee -a /tmp/view.log' %(url)
+        cmd = '%s \'%s\' | tee -a %s' %(conf.vod, url, conf.log)
         subprocess.Popen(['/usr/bin/xterm', '-display', ':0', '-e', cmd])
         req.write('<br>Sent')
 
@@ -69,8 +70,6 @@ def index(req):
 
   #env = os.environ.copy()
   #env['DISPLAY'] = ':0'
-
-  def_fifo = '/home/revo/.config/mpv/fifo'
 
   arg  = util.FieldStorage(req)
   url  = arg.get('url', None)
@@ -85,7 +84,7 @@ def index(req):
         loadURL(req, src)
 
   elif q:
-    view.search(req, q)
+    page.search(req, q)
 
   elif url:
     if url[0:4] == 'http':
@@ -93,33 +92,33 @@ def index(req):
     elif url[0] == '/' and os.path.isdir(url):
         listDIR(req, url)
     elif url[0] == '/' and os.path.exists(url):
-        loadURL(req, url)
+        loadFILE(req, url)
     else:
-        view.search(req, url)
+        page.search(req, url)
 
   elif act:
     if act == 'osd':
-    	os.system('echo osd > %s' %(def_fifo))
+    	os.system('echo osd > %s' %(conf.fifo))
     elif act == 'forward' and val:
-    	os.system('echo seek %s > %s' %(val, def_fifo))
+    	os.system('echo seek %s > %s' %(val, conf.fifo))
     elif act == 'backward' and val:
-    	os.system('echo seek -%s > %s' %(val, def_fifo))
+    	os.system('echo seek -%s > %s' %(val, conf.fifo))
     elif act == 'percent' and val:
-    	os.system('echo seek %s absolute-percent > %s' %(val, def_fifo))
+    	os.system('echo seek %s absolute-percent > %s' %(val, conf.fifo))
     elif act == 'pause':
-    	os.system('echo pause > %s' %(def_fifo))
+    	os.system('echo pause > %s' %(conf.fifo))
     elif act == 'stop':
-    	os.system('echo stop > %s' %(def_fifo))
+    	os.system('echo stop > %s' %(conf.fifo))
     elif act == 'mute':
-    	os.system('echo mute > %s' %(def_fifo))
+    	os.system('echo mute > %s' %(conf.fifo))
     elif act == 'volL':
-        os.system('echo volume -5 > %s' %(def_fifo))
+        os.system('echo volume -5 > %s' %(conf.fifo))
     elif act == 'volH':
-        os.system('echo volume +5 > %s' %(def_fifo))
+        os.system('echo volume +5 > %s' %(conf.fifo))
     elif act == 'next':
-        os.system('echo playlist_next > %s' %(def_fifo))
+        os.system('echo playlist_next > %s' %(conf.fifo))
     elif act == 'prev':
-        os.system('echo playlist_prev > %s' %(def_fifo))
+        os.system('echo playlist_prev > %s' %(conf.fifo))
 
     loadHTML(req, '/var/www/html/action.html')
 

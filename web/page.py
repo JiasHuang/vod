@@ -236,7 +236,7 @@ def listURL_nbahd(req, url):
             req.write('<li class="li"><a href=%s%s>%s</a>' %('view.py?url=', url, url))
         req.write('</ul>')
 
-def listURL(req, url, key):
+def listURL(req, url):
 
     if url == 'nbahd':
         listURL_nbahd(req, 'http://nbahd.com/watch/nba-full-game/page/1/')
@@ -263,7 +263,7 @@ def listURL(req, url, key):
         return listURL_youtube(req, url)
 
     if re.search(r'xuite.net', url):
-        return listURL_xuite(req, url, key)
+        return listURL_xuite(req, url)
 
     if re.search(r'dramaq.com', url):
         return listURL_dramaq(req, url)

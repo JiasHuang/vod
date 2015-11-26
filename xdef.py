@@ -2,10 +2,10 @@
 # -*- coding: utf-8 -*-
 
 player   = 'none'
-workdir  = '/home/jias_huang/temp/'
+workdir  = '/tmp/'
 cookies  = workdir+'__cookies__'
 json     = workdir+'__json__'
-ytdl     = '/home/jias_huang/opensource/youtube-dl/youtube-dl'
+ytdl     = '/usr/local/bin/youtube-dl'
 
 wget     = 'wget -w 10 -T 10 -q -c '
 ua       = 'Mozilla/5.0 (X11; Linux x86_64; rv:10.0) Gecko/20150101 Firefox/20.0 (Chrome)'
