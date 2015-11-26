@@ -44,9 +44,9 @@ def runMPV(url, ref):
         return 0
     if not checkProcessRunning('mpv'):
         os.system('%s \'%s\' --user-agent=\'%s\' --referrer=\'%s\' --input-file=%s %s'
-            %(xdef.mpv, url, xdef.ua, ref, xdef.mpv_fifo, xargs))
+            %(xdef.mpv, url, xdef.ua, ref, xdef.fifo, xargs))
     else:
-        os.system('echo loadfile \"%s\" > %s' %(url, xdef.mpv_fifo))
+        os.system('echo loadfile \"%s\" > %s' %(url, xdef.fifo))
     return 0
 
 def runPIPE(url, ref):

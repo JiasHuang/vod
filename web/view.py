@@ -62,6 +62,10 @@ def loadURL(req, url):
         subprocess.Popen(['/usr/bin/xterm', '-display', ':0', '-e', cmd])
         req.write('<br>Sent')
 
+def sendAct(act):
+    cmd = '%s \'%s\'' %(conf.act, act)
+    subprocess.Popen(['/usr/bin/xterm', '-display', ':0', '-e', cmd]).communicate()
+
 def index(req):
 
   req.content_type = 'text/html; charset=utf-8'
@@ -97,28 +101,14 @@ def index(req):
         page.search(req, url)
 
   elif act:
-    if act == 'osd':
-    	os.system('echo osd > %s' %(conf.fifo))
-    elif act == 'forward' and val:
-    	os.system('echo seek %s > %s' %(val, conf.fifo))
+    if act == 'forward' and val:
+        sendAct('seek %s' %val)
     elif act == 'backward' and val:
-    	os.system('echo seek -%s > %s' %(val, conf.fifo))
+        sendAct('seek -%s' %val)
     elif act == 'percent' and val:
-    	os.system('echo seek %s absolute-percent > %s' %(val, conf.fifo))
-    elif act == 'pause':
-    	os.system('echo pause > %s' %(conf.fifo))
-    elif act == 'stop':
-    	os.system('echo stop > %s' %(conf.fifo))
-    elif act == 'mute':
-    	os.system('echo mute > %s' %(conf.fifo))
-    elif act == 'volL':
-        os.system('echo volume -5 > %s' %(conf.fifo))
-    elif act == 'volH':
-        os.system('echo volume +5 > %s' %(conf.fifo))
-    elif act == 'next':
-        os.system('echo playlist_next > %s' %(conf.fifo))
-    elif act == 'prev':
-        os.system('echo playlist_prev > %s' %(conf.fifo))
+        sendAct('seek %s absolute-percent' %val)
+    elif act in ['osd', 'mute', 'pause', 'stop']:
+        sendAct(act)
 
     loadHTML(req, '/var/www/html/action.html')
 
