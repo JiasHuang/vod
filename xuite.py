@@ -17,7 +17,8 @@ def getSource(url):
         txt = xurl.load(url, {'pwInput': key})
     else:
         txt = xurl.load(url)
-    with re.search(r'data-original="([^"]*)"', txt) as m:
+    m = re.search(r'data-original="([^"]*)"', txt)
+    if m:
         print '\n[xuite][src]\n\n\t%s' %(m.group(1))
         return re.sub('q=360', 'q=720', m.group(1))
     return ''

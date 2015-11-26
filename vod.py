@@ -50,16 +50,20 @@ def processURL2(url):
  
     txt = xurl.load(url)
 
-    with re.search(r'http://videomega.tv/[^"]*', txt) as m:
+    m = re.search(r'http://videomega.tv/[^"]*', txt)
+    if m:
         return processURL1(m.group())
 
-    with re.search(r'www.dailymotion.com/[^"]*', txt) as m:
+    m = re.search(r'www.dailymotion.com/[^"]*', txt)
+    if m:
         return processURL1(m.group())
 
-    with re.search(r'https://.*?.googleusercontent.com/([^"]*)', txt) as m:
+    m = re.search(r'https://.*?.googleusercontent.com/([^"]*)', txt)
+    if m:
         return processURL1(m.group())
 
-    with re.search(r'https://redirector.googlevideo.com/([^"]*)', txt) as m:
+    m = re.search(r'https://redirector.googlevideo.com/([^"]*)', txt)
+    if m:
         return processURL1(m.group())
 
     print '\n[vod] Not Found'
@@ -71,8 +75,13 @@ def playURL(url, ref):
         xplay.playURL(url, ref)
         return
 
+    url = url.strip()
+
     if url[0] == '/':
         xplay.playURL(url, '')
+        return
+
+    if url[0:4] != 'http':
         return
 
     if processURL1(url) != -1:

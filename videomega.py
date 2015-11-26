@@ -5,7 +5,8 @@ import re
 
 def getSource(txt):
 
-    with re.search(r'http://videomega.tv/([^"]*)', txt) as m:
+    m = re.search(r'http://videomega.tv/([^"]*)', txt)
+    if m:
         print '\n[videomega]\n\n\t%s' %(m.group())
         return m.group()
 

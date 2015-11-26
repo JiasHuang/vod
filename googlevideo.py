@@ -5,10 +5,12 @@ import re
 
 def getSource(txt):
 
-    with re.search(r'https://.*?.googleusercontent.com/([^"]*)', txt) as m:
+    m = re.search(r'https://.*?.googleusercontent.com/([^"]*)', txt)
+    if m:
         return m.group()
 
-    with re.search(r'https://redirector.googlevideo.com/([^"]*)', txt) as m:
+    m = re.search(r'https://redirector.googlevideo.com/([^"]*)', txt)
+    if m:
         return m.group()
 
     return ''
