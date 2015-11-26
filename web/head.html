@@ -1,0 +1,91 @@
+<head>
+
+<script type="text/javascript">
+
+function addCode(key) {
+	var val = document.forms[0].val;
+	val.value = val.value + key;
+}
+
+function resetAll() {
+	document.forms[0].val.value = "";
+	document.forms[0].act.value = "";
+}
+
+function addSign() {
+	var val = document.forms[0].val;
+	val.value = '-' + val.value;
+}
+
+function setAct(key) {
+	var act = document.forms[0].act;
+	var val = document.forms[0].val;
+
+    act.value = key;
+
+    if (key == "pause" && val.value != "") {
+        act.value = "percent"
+    }
+    else if (key == "forward" && val.value == "") {
+        val.value = "150";
+    }
+    else if (key == "backward" && val.value == "") {
+        val.value = "150";
+    }
+    else if (key == "forward" && val.value == "*") {
+        act.value = "next";
+        val.value = "";
+    }
+    else if (key == "backward" && val.value == "*") {
+        act.value = "prev";
+        val.value = "";
+    }
+}
+
+</script>
+
+<style type="text/css">
+
+.input {
+	font-size:32px;
+    width:480px;
+    height:48px;
+}
+
+.display {
+	font-size:32px;
+	border:0px; 
+}
+
+.img {
+    max-width:480px;
+    max-height:320px;
+}
+
+.li{
+    margin: 16px 0;
+}
+
+#keypad {margin:auto; margin-top:8px;}
+
+#keypad tr td {
+	vertical-align:middle; 
+	text-align:center; 
+	border:1px solid #000000; 
+	font-size:64px; 
+	font-weight:bold; 
+	width:160px; 
+	height:80px; 
+	cursor:pointer; 
+	background-color:#666666; 
+	color:#ffffff;
+}
+
+#keypad tr td:hover {
+    background-color:#999999;
+    color:#FFFF00;
+}
+
+</style>
+
+</head>
