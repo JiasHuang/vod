@@ -100,6 +100,9 @@ def index(req):
     else:
         page.search(req, url)
 
+  elif act == 'load':
+    loadHTML(req, '/var/www/html/'+val+'.html')
+
   elif act:
     if act == 'forward' and val:
         sendAct('seek %s' %val)

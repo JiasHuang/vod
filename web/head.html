@@ -23,7 +23,12 @@ function setAct(key) {
 
     act.value = key;
 
-    if (key == "pause" && val.value != "") {
+    if (val.value == "*0413") {
+        act.value = "load";
+        val.value = "jav";
+    }
+
+    else if (key == "pause" && val.value != "") {
         act.value = "percent"
     }
     else if (key == "forward" && val.value == "") {

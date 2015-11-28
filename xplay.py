@@ -35,10 +35,9 @@ def runSMP(url, ref):
     return 0
 
 def runMPV(url, ref):
-    xargs = ''
+    xargs = xdef.mpv_ytdl
     if youtubedl.checkURL(url):
         url = youtubedl.extractURL(url)
-        xargs = xdef.mpv_ytdl
     if url == '':
         print '[xplay] invalid url'
         return 0
@@ -78,4 +77,9 @@ def playURL(url, ref):
         return runPIPE(url, ref)
 
     return runDBG(url, ref)
+
+def setAct(act):
+    if checkProcessRunning('mpv'):
+        os.system('echo %s > %s' %(act, xdef.fifo))
+    return 0
 

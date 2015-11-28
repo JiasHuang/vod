@@ -1,12 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import os, sys
-import xplay
+import videomega
 
 def main():
-    if len(sys.argv) >= 2:
-        xplay.setAct(sys.argv[1])
+    videomega.getMedia('http://videomega.tv/cdn.php?ref=83yVRkJym44myJkRVy38')
 
 if __name__ == '__main__':
     main()

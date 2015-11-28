@@ -3,7 +3,7 @@
 
 import os, re, sys, time
 import xdef, xurl, xplay
-import videowood, openload, xuite, jav, nbahd
+import videomega, videowood, openload, xuite, jav, nbahd
 import youtubedl
 
 def getSource(url): 
@@ -20,6 +20,11 @@ def processURL1(url):
 
     if re.search('http://m.xuite.net/vlog/', url):
         src = xuite.getSource(url)
+        xplay.playURL(src, url)
+        return 0
+
+    if re.search('videomega.tv', url):
+        src = videomega.getSource(url)
         xplay.playURL(src, url)
         return 0
 
