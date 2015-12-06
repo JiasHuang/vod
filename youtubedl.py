@@ -13,9 +13,10 @@ def findSite(url):
 
 def checkURL(url):
     site = findSite(url)
-    return re.compile('(youtube|videomega|dailymotion|xuite|facebook|google)').search(site)
+    return re.compile('(youtube|dailymotion|facebook|google)').search(site)
 
 def extractURL(url):
+    print '\n[ytdl][url]\n\n\t%s' %(url)
     cmd = '%s -g --cookies %s \'%s\'' %(xdef.ytdl, xdef.cookies, url)
     try:
         src = subprocess.check_output(cmd, shell=True).rstrip('\n')

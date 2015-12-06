@@ -102,7 +102,7 @@ def listURL_def(req, url):
     link = ''
     title = ''
 
-    match = re.finditer(r'http://(www.dailymotion.com|videomega.tv)/([^"]*)', txt)
+    match = re.finditer(r'http://(www.dailymotion.com|videomega.tv|videowood.tv)/([^"]*)', txt)
     for m in match:
         if m.group() != vid:
             if cnt == 1:
@@ -155,7 +155,7 @@ def listURL_DramaQIndex(req, zone):
     if zone == '':
         state = 100
 
-    for line in txt:
+    for line in txt.splitlines():
 
         if state != 100:
             m = re.search(r'<h3>《([^》]*)》</h3>', line)
@@ -175,8 +175,6 @@ def listURL_DramaQIndex(req, zone):
                 title = m.group(1)
                 image = 'http://www.dramaq.com.tw'+m.group(3)
                 addPage(req, link, title)
-
-    txt.close()
 
 
 def listURL_dramaq(req, url):
@@ -236,6 +234,18 @@ def listURL_nbahd(req, url):
             req.write('<li class="li"><a href=%s%s>%s</a>' %('view.py?url=', url, url))
         req.write('</ul>')
 
+def listURL_letv(req, url):
+    txt = load(url)
+    fd = open('/tmp/letv.txt', 'w')
+    fd.write(txt)
+    fd.close
+    match = re.finditer(r'<dt class="hd_pic">.*?</dt>', txt, re.DOTALL)
+    for m in match:
+        link = re.search(r'href="([^"]*)"', m.group()).group(1)
+        image = re.search(r'src="([^"]*)"', m.group()).group(1)
+        title = re.search(r'alt="([^"]*)"', m.group()).group(1)
+        addEntry(req, link, image, title)
+
 def listURL(req, url):
 
     if url == 'nbahd':
@@ -278,5 +288,8 @@ def listURL(req, url):
  
     if re.search('jav(68|pub|cuteonline)',url):
         return listURL_jav(req, url)
+
+    if re.search('letv.com', url):
+        return listURL_letv(req, url)
 
     return listURL_def(req, url)

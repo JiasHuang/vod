@@ -5,7 +5,7 @@ import re
 import requests
 import jsunpack
 
-def getMedia(url):
+def getSource(url):
 
     media_id = re.search(r'ref=([0-9a-zA-Z]+)', url).group(1)
     ref = 'http://videomega.tv/cdn.php?ref=%s' %(media_id)
@@ -41,11 +41,11 @@ def getMedia(url):
 
     return ''
 
-def getSource(txt):
+def search(txt):
 
     m = re.search(r'http://videomega.tv/([^"]*)', txt)
     if m:
-        return getMedia(m.group())
+        return m.group()
 
-    return ''
+    return
 

@@ -3,20 +3,10 @@
 
 import os, re, sys, time
 import xdef, xurl, xplay
-import videomega, videowood, openload, xuite, jav, nbahd
+import videomega, videowood, openload, xuite, jav, nbahd, letv
 import youtubedl
 
-def getSource(url): 
-    if re.search(r'jav(68|pub|cuteonline)', url):
-        return jav.getSource(url)
-    return url
-
 def processURL1(url): 
-
-    if re.search(r'jav(68|pub|cuteonline)', url):
-        src = jav.getSource(url)
-        xplay.playURL(src, src)
-        return 0
 
     if re.search('http://m.xuite.net/vlog/', url):
         src = xuite.getSource(url)
@@ -43,7 +33,12 @@ def processURL1(url):
         xplay.playURL(src, '')
         return 0
 
-    if re.search(r'(youtube|videomega|dailymotion|xuite|facebook|google)', url):
+    if re.search('letv.com', url):
+        src = letv.getSource(url)
+        xplay.playURL(src, '')
+        return 0
+
+    if re.search(r'(youtube|dailymotion|facebook|google)', url):
         xplay.playURL(url, url)
         return 0
 
@@ -55,7 +50,11 @@ def processURL2(url):
  
     txt = xurl.load(url)
 
-    m = re.search(r'http://videomega.tv/[^"]*', txt)
+    m = re.search(r'http://(videomega|videowood).tv/[^"]*', txt)
+    if m:
+        return processURL1(m.group())
+
+    m = re.search(r'https:/openload.co/[^"]*', txt)
     if m:
         return processURL1(m.group())
 
@@ -88,6 +87,10 @@ def playURL(url, ref):
 
     if url[0:4] != 'http':
         return
+
+    if re.search(r'jav(68|pub|cuteonline)', url):
+        url = jav.getSource(url)
+        print '\n[vod][jav]\n\n\t%s\n' %(url)
 
     if processURL1(url) != -1:
         return

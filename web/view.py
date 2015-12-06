@@ -28,39 +28,12 @@ def listDIR(req, d):
   req.write('</ul>')
   req.write('</div>')
 
-def loadFILE(req, url):
+def loadURL(req, url):
     loadHTML(req, '/var/www/html/action.html')
     req.write('<br>playURL <a target="_blank" href="%s">%s</a>' %(url, url))
-    subprocess.Popen(['/usr/bin/xterm', '-display', ':0', '-e', '%s %s' %(conf.vod, url)])
+    cmd = '%s \'%s\' | tee -a %s' %(conf.vod, url, conf.log)
+    subprocess.Popen(['/usr/bin/xterm', '-display', ':0', '-e', cmd])
     req.write("<br>Sent")
-
-def loadURL(req, url):
-
-    loadHTML(req, '/var/www/html/action.html')
-    req.write('<br>[URL] <a target="_blank" href="%s">%s</a>' %(url, url))
-
-    cmd = '%s -j %s -u \'%s\' | tee -a %s' %(conf.src, conf.json, url, conf.log)
-    subprocess.Popen(['/usr/bin/xterm', '-display', ':0', '-e', cmd]).communicate()
-    with open(conf.json, 'r') as fd:
-        data = json.load(fd)
-        src = data['src']
-        ref = data['ref']
-
-    if src == '':
-        req.write('<br>Fail')
-        return
-
-    if src != url:
-        cmd = '%s -s \'%s\' -r \'%s\' | tee -a %s' %(conf.run, src, ref, conf.log)
-        subprocess.Popen(['/usr/bin/xterm', '-display', ':0', '-e', cmd])
-        req.write('<br>[SRC] <a target="_blank" href="%s">%s</a>' %(src, src))
-        req.write('<br>Sent')
-        return
-
-    if url != '':
-        cmd = '%s \'%s\' | tee -a %s' %(conf.vod, url, conf.log)
-        subprocess.Popen(['/usr/bin/xterm', '-display', ':0', '-e', cmd])
-        req.write('<br>Sent')
 
 def sendAct(act):
     cmd = '%s \'%s\'' %(conf.act, act)
@@ -96,7 +69,7 @@ def index(req):
     elif url[0] == '/' and os.path.isdir(url):
         listDIR(req, url)
     elif url[0] == '/' and os.path.exists(url):
-        loadFILE(req, url)
+        loadURL(req, url)
     else:
         page.search(req, url)
 
@@ -110,7 +83,7 @@ def index(req):
         sendAct('seek -%s' %val)
     elif act == 'percent' and val:
         sendAct('seek %s absolute-percent' %val)
-    elif act in ['osd', 'mute', 'pause', 'stop']:
+    elif act in ['osd', 'mute', 'pause', 'stop', 'playlist_next', 'playlist_prev']:
         sendAct(act)
 
     loadHTML(req, '/var/www/html/action.html')

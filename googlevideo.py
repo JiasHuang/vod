@@ -3,16 +3,23 @@
 
 import re
 
-def getSource(txt):
+def search(txt):
 
-    m = re.search(r'https://.*?.googleusercontent.com/([^"]*)', txt)
-    if m:
-        return m.group()
+    src = None
 
-    m = re.search(r'https://redirector.googlevideo.com/([^"]*)', txt)
-    if m:
-        return m.group()
+    match = re.finditer(r'https://.*?.googleusercontent.com/([^"]*)', txt)
+    for m in match:
+        src = m.group()
 
-    return ''
+    if src:
+        return src
 
+    match = re.finditer(r'https://redirector.googlevideo.com/([^"]*)', txt)
+    for m in match:
+        src = m.group()
+
+    if src:
+        return src
+
+    return
 

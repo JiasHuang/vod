@@ -55,11 +55,12 @@ def runPIPE(url, ref):
 def runDBG(url, ref):
     if youtubedl.checkURL(url):
         url = youtubedl.extractURL(url)
-    print '\n[xplay][dbg][url]\n\n\t%s' %(url)
-    print '\n[xplay][dbg][ref]\n\n\t%s' %(ref)
     return 0
 
 def playURL(url, ref):
+
+    print '\n[xplay][%s][url]\n\n\t%s' %(xdef.player, url)
+    print '\n[xplay][%s][ref]\n\n\t%s' %(xdef.player, ref)
 
     if url == None or url == '':
         return 0

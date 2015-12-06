@@ -3,9 +3,7 @@
 
 import re
 import requests
-import googlevideo
-import videowood
-import videomega
+import googlevideo, videomega, videowood
 
 def getTxt(url):
     headers={'User-Agent': 'Mozilla/5.0 (X11; Linux i686; rv:10.0) Gecko/20100101 Firefox/33.0'}
@@ -33,31 +31,32 @@ def getSource(url):
 
         txt = getTxt(url)
 
-        m = re.search(r'Server Free:.*?<a href="([^"]*)', txt)
+        m = re.search(r'<strong>VIP</strong>.*?<a href="([^"]*)', txt)
         if m:
             txt = getTxt(m.group(1))
-            return googlevideo.getSource(txt)
-
-        '''
-        m = re.search(r'<strong>Open</strong>.*?<a href="([^"]*)', txt)
-        if m:
-            txt = getIFrame(m.group(1))
-            return googlevideo.getSource(txt)
-        '''
+            ref = googlevideo.search(txt)
+            if ref:
+                return ref
 
         m = re.search(r'<strong>Wood</strong>.*?<a href="([^"]*)', txt)
         if m:
             txt = getIFrame(m.group(1))
-            return videowood.getSource(txt)
+            ref = videowood.search(txt)
+            if ref:
+                return ref
 
         m = re.search(r'<strong>Mega</strong>.*?<a href="([^"]*)', txt)
         if m:
             txt = getIFrame(m.group(1))
-            return videomega.getSource(txt)
+            ref = videomega.search(txt)
+            if ref:
+                return ref
 
     elif re.search('javcuteonline', url):
         txt = getTxt(url)
-        return videomega.getSource(txt)
+        ref = videomega.search(txt)
+        if ref:
+            return ref
 
     return ''
 

@@ -14,14 +14,13 @@ def main():
     parser.add_option('-u', '--url', action='store', default='')
     (options, args) = parser.parse_args(sys.argv[1:])
 
-    res = {}
-    ref = ''
+    url = options.url
 
-    res['src'] = vod.getSource(options.url)
-    res['ref'] = ''
+    if url == '':
+        url = sys.argv[1]
 
-    with open(options.json, 'w') as fd:
-        json.dump(res, fd)
+    xdef.player = 'extractor'
+    vod.playURL(url, '')
 
 if __name__ == '__main__':
     main()

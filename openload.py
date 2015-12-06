@@ -8,8 +8,9 @@ import xurl
 
 # https://openload.co/embed/M0_oxCn3xAU/NBA.2015.11.19.Warriors.vs.Clippers.720p.NBAHD.com_%281%29-001.mkv.mp4
 
+def getSource(url):
 
-def getMediaURL(media_id):
+    media_id = re.search(r'https://openload.co/embed/([0-9a-zA-Z-_]*)', url).group(1)
     print 'media_id: %s' %(media_id)
     ticket_url = 'https://api.openload.io/1/file/dlticket?file=%s' % (media_id)
     print 'ticket: %s' %(ticket_url)
@@ -20,13 +21,15 @@ def getMediaURL(media_id):
         return ''
 
     video_url = 'https://api.openload.io/1/file/dl?file=%s&ticket=%s' % (media_id, js_result['result']['ticket'])
-    print 'video:# %s' %(video_url)
+    print 'video: %s' %(video_url)
 
     return ''
 
-def getSource(txt):
+def search(txt):
+
     m = re.search(r'https://openload.co/embed/([0-9a-zA-Z-_]*)', txt)
     if m:
-        getMediaURL(m.group(1))
-    return ''
+        return m.group()
+
+    return
 
