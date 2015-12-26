@@ -25,13 +25,12 @@ def getImage(req, link):
     return 'cat-walk-icon.png'
 
 def addEntry(req, link, image, title):
+    req.write('\n\n<!-- ENTRY: %s -->\n' %(title))
     if title != '':
-        req.write('<h2>')
-        req.write('<a href=view.py?url=%s>%s</a>' %(link, title))
-        req.write('</h2>')
+        req.write('<h2><a href=view.py?url=%s>%s</a></h2>\n' %(link, title))
     if image == 'auto':
         image = getImage(req, link)
-    req.write('<a href=view.py?url=%s><img src=%s class="img"/></a>' %(link, image))
+    req.write('<a href=view.py?url=%s><img src=%s class="img"/></a>\n' %(link, image))
 
 def addPage(req, link, title):
     if title != '':

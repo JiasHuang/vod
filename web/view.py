@@ -43,8 +43,6 @@ def index(req):
 
   req.content_type = 'text/html; charset=utf-8'
 
-  loadHTML(req, '/var/www/html/head.html')
-
   #env = os.environ.copy()
   #env['DISPLAY'] = ':0'
 
@@ -54,6 +52,12 @@ def index(req):
   val  = arg.get('val', None)
   p    = arg.get('p', None)
   q    = arg.get('q', None)
+
+  if act == 'load':
+    loadHTML(req, '/var/www/html/'+val+'.html')
+    return
+
+  loadHTML(req, '/var/www/html/head.html')
 
   if p:
     src = page.listURL(req, p)
@@ -73,9 +77,6 @@ def index(req):
     else:
         page.search(req, url)
 
-  elif act == 'load':
-    loadHTML(req, '/var/www/html/'+val+'.html')
-
   elif act:
     if act == 'forward' and val:
         sendAct('seek %s' %val)
@@ -85,10 +86,12 @@ def index(req):
         sendAct('seek %s absolute-percent' %val)
     elif act in ['osd', 'mute', 'pause', 'stop', 'playlist_next', 'playlist_prev']:
         sendAct(act)
-
     loadHTML(req, '/var/www/html/action.html')
 
   else:
     loadHTML(req, '/var/www/html/action.html')
+
+  loadHTML(req, '/var/www/html/tail.html')
+
   return
 
