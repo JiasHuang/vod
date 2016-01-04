@@ -49,7 +49,11 @@ def runMPV(url, ref):
     return 0
 
 def runPIPE(url, ref):
-    os.system("youtube-dl -o - \'%s\' | %s -" %(url, xdef.mpv))
+    subprocess.Popen(['wget', '-q', '-O', xdef.fifo_bs, url])
+    if not checkProcessRunning('mpv'):
+        os.system('%s \'%s\' --input-file=%s' %(xdef.mpv, xdef.fifo_bs, xdef.fifo))
+    else:
+        os.system('echo loadfile \"%s\" > %s' %(url, xdef.fifo))
     return 0
 
 def runDBG(url, ref):
@@ -64,6 +68,9 @@ def playURL(url, ref):
 
     if url == None or url == '':
         return 0
+
+    if re.search(r'vizplay', url):
+        xdef.player = 'pipe'
 
     if xdef.player == 'smp':
         return runSMP(url, ref)

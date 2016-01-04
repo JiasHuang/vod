@@ -7,6 +7,7 @@ cookies  = workdir+'vod.cookies'
 json     = workdir+'vod.json'
 ytdl     = '/usr/local/bin/youtube-dl'
 fifo     = '/opt/vod/vod.fifo'
+fifo_bs  = '/opt/vod/vod.bs.fifo'
 
 wget     = 'wget -w 10 -T 10 -q -c '
 ua       = 'Mozilla/5.0 (X11; Linux x86_64; rv:10.0) Gecko/20150101 Firefox/20.0 (Chrome)'

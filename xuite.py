@@ -2,7 +2,7 @@
 
 import os, sys, re
 import datetime
-import xurl
+import xurl, xdef
 
 def getKey(url):
     if re.search('m.xuite.net/vlog/amwkx/', url):
@@ -12,6 +12,7 @@ def getKey(url):
     return None
 
 def getSource(url):
+    os.chdir(xdef.workdir)
     key = getKey(url)
     if key:
         txt = xurl.load(url, {'pwInput': key})
@@ -20,7 +21,14 @@ def getSource(url):
     m = re.search(r'data-original="([^"]*)"', txt)
     if m:
         print '\n[xuite][src]\n\n\t%s' %(m.group(1))
-        return re.sub('q=360', 'q=720', m.group(1))
+        src_sd = m.group(1)
+        src_hd = re.sub('q=360', 'q=720', m.group(1))
+        m3u = 'xuite.m3u'
+        fd = open(m3u, 'w')
+        fd.write(src_hd+'\n')
+        fd.write(src_sd+'\n')
+        fd.close()
+        return '%s%s' %(xdef.workdir, m3u)
     return ''
 
 def findKey(url):
