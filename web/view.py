@@ -31,7 +31,7 @@ def listDIR(req, d):
 def loadURL(req, url):
     loadHTML(req, '/var/www/html/action.html')
     req.write('<br>playURL <a target="_blank" href="%s">%s</a>' %(url, url))
-    cmd = '%s \'%s\' | tee -a %s' %(conf.vod, url, conf.log)
+    cmd = 'python -u %s \'%s\' | tee -a %s' %(conf.vod, url, conf.log)
     subprocess.Popen(['/usr/bin/xterm', '-display', ':0', '-e', cmd])
     req.write("<br>Sent")
 
