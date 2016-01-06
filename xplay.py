@@ -1,12 +1,16 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import os
+import os, sys
 import re
 import time
 import subprocess
 import xdef
 import youtubedl
+
+def flushOutput():
+    print '\n\n'
+    sys.stdout.flush()
 
 def checkProcessRunning(process):
     cmd = 'pidof %s' %(process)
@@ -41,6 +45,7 @@ def runMPV(url, ref):
     if url == '':
         print '[xplay] invalid url'
         return 0
+    flushOutput()
     if not checkProcessRunning('mpv'):
         os.system('%s \'%s\' --user-agent=\'%s\' --referrer=\'%s\' --input-file=%s %s'
             %(xdef.mpv, url, xdef.ua, ref, xdef.fifo, xargs))
@@ -49,6 +54,7 @@ def runMPV(url, ref):
     return 0
 
 def runPIPE(url, ref):
+    flushOutput()
     subprocess.Popen(['wget', '-q', '-O', xdef.fifo_bs, url])
     setAct('stop')
     os.system('%s \'%s\' --input-file=%s' %(xdef.mpv, xdef.fifo_bs, xdef.fifo))
