@@ -50,10 +50,8 @@ def runMPV(url, ref):
 
 def runPIPE(url, ref):
     subprocess.Popen(['wget', '-q', '-O', xdef.fifo_bs, url])
-    if not checkProcessRunning('mpv'):
-        os.system('%s \'%s\' --input-file=%s' %(xdef.mpv, xdef.fifo_bs, xdef.fifo))
-    else:
-        os.system('echo loadfile \"%s\" > %s' %(url, xdef.fifo))
+    setAct('stop')
+    os.system('%s \'%s\' --input-file=%s' %(xdef.mpv, xdef.fifo_bs, xdef.fifo))
     return 0
 
 def runDBG(url, ref):
