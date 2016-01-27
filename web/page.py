@@ -46,8 +46,8 @@ def search_bing(req, q):
     for m in match:
         p = re.search(r'p:([^,]*)', m.group())
         t = re.search(r't:([^,]*)', m.group())
-        addEntry(req, p.group(1), 'auto', 'Bing: '+t.group(1))
-
+        if p and t:
+            addEntry(req, p.group(1), 'auto', 'Bing: '+t.group(1))
 
 def search_yandex(req, q):
     url = 'http://www.yandex.com/video/search?&text=%s&duration=long' %(q)
@@ -141,9 +141,10 @@ def listURL_xuite(req, url):
     for m in match:
         vid = m.group(1)
         link = hdr+vid
-        image = 'http://vlog.xuite.net'+re.search(r'src="([^"]*)"', m.group(2)).group(1)
-        title = re.search(r'title="([^"]*)"', m.group(2)).group(1)
-        addEntry(req, link, image, title)
+        image = re.search(r'src="([^"]*)"', m.group(2))
+        title = re.search(r'title="([^"]*)"', m.group(2))
+        if image and title:
+            addEntry(req, link, 'http://vlog.xuite.net'+image.group(1), title.group(1))
 
 def listURL_DramaQIndex(req, zone):
 
@@ -201,9 +202,10 @@ def listURL_jav(req, url):
     match = re.finditer(r'href="([^"]*)"[^<]*<img([^>]*)>', txt)
     for m in match:
         link = m.group(1)
-        image = re.search(r'src="([^"]*)"', m.group(2)).group(1)
-        title = re.search(r'alt="([^"]*)"', m.group(2)).group(1)
-        addEntry(req, link, image, title)
+        image = re.search(r'src="([^"]*)"', m.group(2))
+        title = re.search(r'alt="([^"]*)"', m.group(2))
+        if image and title:
+            addEntry(req, link, image.group(1), title.group(1))
 
 def listURL_youtube(req, url):
     vid = ''
@@ -218,10 +220,10 @@ def listURL_youtube(req, url):
 
     match = re.finditer(r'pl-video yt-uix-tile ([^>]*)', txt)
     for m in match:
-        link = 'http://www.youtube.com/watch?v='
-        link += re.search(r'data-video-id="([^"]*)"', m.group()).group(1)
-        title = re.search(r'data-title="([^"]*)"', m.group()).group(1)
-        addEntry(req, link, 'auto', title)
+        link = re.search(r'data-video-id="([^"]*)"', m.group())
+        title = re.search(r'data-title="([^"]*)"', m.group())
+        if link and title:
+            addEntry(req, 'http://www.youtube.com/watch?v='+link.group(1), 'auto', title.group(1))
 
 def listURL_nbahd(req, url):
     txt = load(url)
@@ -240,10 +242,11 @@ def listURL_letv(req, url):
     fd.close
     match = re.finditer(r'<dt class="hd_pic">.*?</dt>', txt, re.DOTALL)
     for m in match:
-        link = re.search(r'href="([^"]*)"', m.group()).group(1)
-        image = re.search(r'src="([^"]*)"', m.group()).group(1)
-        title = re.search(r'alt="([^"]*)"', m.group()).group(1)
-        addEntry(req, link, image, title)
+        link = re.search(r'href="([^"]*)"', m.group())
+        image = re.search(r'src="([^"]*)"', m.group())
+        title = re.search(r'alt="([^"]*)"', m.group())
+        if link and image and title:
+            addEntry(req, link.group(1), image.group(1), title.group(1))
 
 def listURL(req, url):
 
