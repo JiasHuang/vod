@@ -4,6 +4,7 @@
 import re, os, sys, time
 import requests, urllib2
 import subprocess
+import mangareader
 
 def load(url):
     headers={'User-Agent': 'Mozilla/5.0 (X11; Linux i686; rv:10.0) Gecko/20100101 Firefox/33.0'}
@@ -225,6 +226,14 @@ def listURL_youtube(req, url):
         if link and title:
             addEntry(req, 'http://www.youtube.com/watch?v='+link.group(1), 'auto', title.group(1))
 
+def listURL_mangareader(req, url):
+    txt = load(url)
+    match = re.finditer(r'<a href="/one-piece/([^"]*)">([^"]*)</a>([^<]*)<', txt)
+    for m in match:
+        link = 'http://www.mangareader.net/one-piece/'+m.group(1)
+        title = m.group(2)+m.group(3)
+        addPage(req, link, title)
+
 def listURL_nbahd(req, url):
     txt = load(url)
     match = re.finditer(r'<h2 class="entry-title"><a href="([^"]*)"', txt)
@@ -249,6 +258,10 @@ def listURL_letv(req, url):
             addEntry(req, link.group(1), image.group(1), title.group(1))
 
 def listURL(req, url):
+
+    if url == 'mangareader':
+        listURL_mangareader(req, 'http://www.mangareader.net/one-piece')
+        return
 
     if url == 'nbahd':
         listURL_nbahd(req, 'http://nbahd.com/watch/nba-full-game/page/1/')
@@ -279,6 +292,9 @@ def listURL(req, url):
 
     if re.search(r'dramaq.com', url):
         return listURL_dramaq(req, url)
+
+    if re.search(r'mangareader.net', url):
+        return mangareader.loadImage(req, url)
 
     if re.search(r'movie.dodova.com/category/', url):
         listURL_dodova(req, url+'/page/1')
