@@ -8,6 +8,16 @@ import subprocess
 import xdef
 import youtubedl
 
+def checkFileArgs(url):
+    xargs = xdef.mpv_ytdl
+    if re.search(r'.m3u', url):
+        fd = open(url, 'r')
+        txt = fd.read()
+        if re.search(r'dailymotion', txt):
+            xargs = ''
+        fd.close()
+        return xargs
+
 def checkProcessRunning(process):
     cmd = 'pidof %s' %(process)
     try:
@@ -36,7 +46,9 @@ def runSMP(url, ref):
 
 def runMPV(url, ref):
     xargs = xdef.mpv_ytdl
-    if youtubedl.checkURL(url):
+    if url[0] == '/':
+        xargs = checkFileArgs(url)
+    elif youtubedl.checkURL(url):
         url = youtubedl.extractURL(url)
     if url == '':
         print '[xplay] invalid url'

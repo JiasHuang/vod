@@ -22,7 +22,7 @@ def listDIR(req, d):
       if subdir[0] != '.':
         req.write('<li><img src="/icons/folder.gif"> <a href="view.py?url=%s/%s">%s</a>' %(dirName, subdir, subdir))
     for fname in sorted(fileList):
-      if fname.lower().endswith(('.mkv', '.mp4', '.avi', '.flv', '.rmvb', '.rm', 'f4v', '.m3u')):
+      if fname.lower().endswith(('.mkv', '.mp4', '.avi', '.flv', '.rmvb', '.rm', 'f4v', '.m3u', '.m3u8')):
         req.write('<li><img src="/icons/movie.gif"> <a href="view.py?url=%s/%s">%s</a>' %(dirName, fname, fname))
     break
   req.write('</ul>')
