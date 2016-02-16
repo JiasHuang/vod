@@ -3,13 +3,18 @@
 
 import os, re, sys, time
 import xdef, xurl, xplay
-import videomega, videowood, openload, xuite, jav, nbahd, letv
+import videomega, videowood, openload, xuite, jav, nbahd, letv, goodtv
 import youtubedl
 
 def processURL1(url): 
 
     if re.search('http://m.xuite.net/vlog/', url):
         src = xuite.getSource(url)
+        xplay.playURL(src, url)
+        return 0
+
+    if re.search('goodtv.org', url):
+        src = goodtv.getSource(url)
         xplay.playURL(src, url)
         return 0
 
