@@ -264,9 +264,9 @@ def listURL(req, url):
         return
 
     if url == 'nbahd':
-        listURL_nbahd(req, 'http://nbahd.com/watch/nba-full-game/page/1/')
-        listURL_nbahd(req, 'http://nbahd.com/watch/nba-full-game/page/2/')
-        listURL_nbahd(req, 'http://nbahd.com/watch/nba-full-game/page/3/')
+        listURL_nbahd(req, 'http://nbahd.com/page/1/')
+        listURL_nbahd(req, 'http://nbahd.com/page/2/')
+        listURL_nbahd(req, 'http://nbahd.com/page/3/')
         return
 
     if url == 'dramaq-tw':
