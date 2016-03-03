@@ -16,6 +16,10 @@ def getIFrame(url):
     src = re.search(r'src="([^"]*)"', frm).group(1)
     print '\n[jav][iframe][url]\n\n\t%s' %(url)
     print '\n[jav][iframe][src]\n\n\t%s' %(src)
+
+    if re.search(r'(videowood|videomega|googlevideo|googleusercontent)', src):
+        return src
+
     return getTxt(src)
 
 def getSource(url):
