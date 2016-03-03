@@ -56,12 +56,6 @@ def getSource(url):
             if ref:
                 return ref
 
-    elif re.search('javcuteonline', url):
-        txt = getTxt(url)
-        ref = videomega.search(txt)
-        if ref:
-            return ref
-
     return ''
 
 
