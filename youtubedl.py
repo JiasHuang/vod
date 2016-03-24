@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import os
 import re
 import subprocess
 import xdef
@@ -24,3 +25,18 @@ def extractURL(url):
         return src
     except:
         return ''
+
+def extractSUB(url):
+
+    if re.search(r'youtube.com', url):
+        cmd = '%s --all-subs --skip-download \'%s\'' %(xdef.ytdl, url)
+        txt = subprocess.check_output(cmd, shell=True).rstrip('\n')
+        m = re.search(r'Writing video subtitles to: (.*)', txt)
+        if m:
+            print '\n[ytdl][sub]\n\n\t%s' %(m.group(1))
+            sub = '%s%s' %(xdef.workdir, m.group(1))
+            sub2 = re.sub(' ', '_', sub)
+            os.rename(sub, sub2)
+            return sub2
+
+    return None

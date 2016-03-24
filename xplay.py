@@ -45,19 +45,40 @@ def runSMP(url, ref):
     return 0
 
 def runMPV(url, ref):
-    xargs = xdef.mpv_ytdl
+
+    xargs = ''
+
     if url[0] == '/':
         xargs = checkFileArgs(url)
-    elif youtubedl.checkURL(url):
+
+    if youtubedl.checkURL(url):
         url = youtubedl.extractURL(url)
+        xargs = xdef.mpv_ytdl
+
     if url == '':
         print '[xplay] invalid url'
         return 0
+
     if not checkProcessRunning('mpv'):
-        os.system('%s \'%s\' --user-agent=\'%s\' --referrer=\'%s\' --input-file=%s %s'
-            %(xdef.mpv, url, xdef.ua, ref, xdef.fifo, xargs))
+
+        xargs = xargs + ' --user-agent=\'%s\'' %(xdef.ua)
+        xargs = xargs + ' --referrer=\'%s\'' %(ref)
+        xargs = xargs + ' --input-file=\'%s\'' %(xdef.fifo)
+
+        sub = youtubedl.extractSUB(ref)
+        if sub:
+            xargs = '%s --sub-file=\'%s\'' %(xargs, sub)
+
+        os.system('%s %s \'%s\'' %(xdef.mpv, xargs, url))
+
     else:
+        os.system('echo sub-remove > %s' %(xdef.fifo))
         os.system('echo loadfile \"%s\" > %s' %(url, xdef.fifo))
+
+        sub = youtubedl.extractSUB(ref)
+        if sub:
+            os.system('echo sub-add \"%s\" select > %s' %(sub, xdef.fifo))
+
     return 0
 
 def runPIPE(url, ref):
