@@ -190,6 +190,55 @@ def listURL_dramaq(req, url):
             title = m.group(1)
             addPage(req, link, title)
 
+def listURL_moviesunIndex(req, url, zone):
+
+    txt = load2(url)
+    state = 0
+
+    if zone == '':
+        state = 100
+
+    zone = '>%s<' %(zone)
+
+    for line in txt.splitlines():
+
+        if state != 100:
+            m = re.search(r'<h4 class="widget-title">(.*?)</h4>', line)
+            if m:
+                if re.search(zone, m.group()):
+                    state = 1
+                elif state == 1:
+                    break
+                else:
+                    state = 0
+                continue
+
+            m = re.search(r'<h3 class="widget-title section-title">(.*?)</h3>', line)
+            if m:
+                if re.search(zone, m.group()):
+                    state = 1
+                elif state == 1:
+                    break
+                else:
+                    state = 0
+                continue
+
+        if state >= 1:
+            m = re.search(r'<p class="cp-widget-title"><a href="([^"]*)" title="([^"]*)">', line)
+            if m:
+                link = m.group(1)
+                title = m.group(2)
+                addPage(req, link, title)
+
+
+def listURL_moviesun(req, url):
+    txt = load(url)
+    match = re.finditer(r'<li><strong><a href="([^"]*)" rel="bookmark" title="([^"]*)">', txt)
+    for m in match:
+        link = m.group(1)
+        title = m.group(2)
+        addEntry(req, link, 'auto', title)
+
 def listURL_dodova(req, url):
     txt = load(url)
     match = re.finditer(r'<div class="mh-excerpt">([^<]*)<a href="([^"]*)" title="([^"]*)">', txt)
@@ -284,6 +333,12 @@ def listURL(req, url):
     if url == 'dramaq-cn':
         return listURL_DramaQIndex(req, '陸劇')
 
+    if url == 'moviesun-kr':
+        return listURL_moviesunIndex(req, 'http://moviesunkd.com/', '韓劇列表')
+
+    if url == 'moviesun-jp':
+        return listURL_moviesunIndex(req, 'http://moviesuntw.com/', '日劇')
+
     if re.search(r'youtube.com', url):
         return listURL_youtube(req, url)
 
@@ -292,6 +347,9 @@ def listURL(req, url):
 
     if re.search(r'dramaq.com', url):
         return listURL_dramaq(req, url)
+
+    if re.search(r'moviesun', url):
+        return listURL_moviesun(req, url)
 
     if re.search(r'mangareader.net', url):
         return mangareader.loadImage(req, url)
