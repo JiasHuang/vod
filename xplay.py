@@ -17,6 +17,7 @@ def checkFileArgs(url):
             xargs = ''
         fd.close()
         return xargs
+    return xargs
 
 def checkProcessRunning(process):
     cmd = 'pidof %s' %(process)
@@ -100,8 +101,8 @@ def playURL(url, ref):
     if url == None or url == '':
         return 0
 
-    if re.search(r'vizplay', url):
-        xdef.player = 'pipe'
+    #if re.search(r'vizplay', url):
+    #    xdef.player = 'pipe'
 
     if xdef.player == 'smp':
         return runSMP(url, ref)

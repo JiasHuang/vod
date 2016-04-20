@@ -97,6 +97,9 @@ def playURL(url, ref):
         url = jav.getSource(url)
         print '\n[vod][jav]\n\n\t%s\n' %(url)
 
+    if url == '':
+        return
+
     if processURL1(url) != -1:
         return
 

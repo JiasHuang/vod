@@ -5,6 +5,7 @@ import re, os, sys, time
 import requests, urllib2
 import subprocess
 import mangareader
+import eslpod
 
 def load(url):
     headers={'User-Agent': 'Mozilla/5.0 (X11; Linux i686; rv:10.0) Gecko/20100101 Firefox/33.0'}
@@ -353,6 +354,9 @@ def listURL(req, url):
 
     if re.search(r'mangareader.net', url):
         return mangareader.loadImage(req, url)
+
+    if re.search(r'eslpod.com', url):
+        return eslpod.loadWord(req, url)
 
     if re.search(r'movie.dodova.com/category/', url):
         listURL_dodova(req, url+'/page/1')
