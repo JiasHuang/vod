@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import os
+import os, re
 import subprocess
 import page
 import json
@@ -68,7 +68,9 @@ def index(req):
     page.search(req, q)
 
   elif url:
-    if url[0:4] == 'http':
+    if re.search(r'www.eslpod.com', url):
+        page.loadWord(req, url)
+    elif url[0:4] == 'http':
         loadURL(req, url)
     elif url[0] == '/' and os.path.isdir(url):
         listDIR(req, url)

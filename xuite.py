@@ -11,8 +11,10 @@ def getKey(url):
         return '0314'
     if re.search('m.xuite.net/vlog/derriest520/', url):
         return '1688'
-    if re.search('m.xuite.net/vlog/aaa1886bbb/', url):
-        return 'aaa1886bbb'
+    if re.search('m.xuite.net/vlog/polosm0429/', url):
+        return '0912'
+    if re.search('m.xuite.net/vlog/andy23.hsu/', url):
+        return '1216'
     return None
 
 def getSource(url):
@@ -51,8 +53,8 @@ def findKey(url):
             print '%s (OK)' %(mmdd)
             break
 
-def findKey2(url):
-    for num in xrange(0, 10000):
+def findKey2(url, start, end):
+    for num in xrange(start, end):
         mmdd = '{0:04}'.format(num)
         print mmdd
         cmd = 'wget --post-data \'pwInput=%s\' \'%s\' -O /tmp/%s.html -q' %(mmdd, url, mmdd)
@@ -62,8 +64,8 @@ def findKey2(url):
             break
 
 if __name__ == "__main__":
-    if sys.argv[1] == '2':
-        findKey2(sys.argv[2])
+    if len(sys.argv) >= 4:
+        findKey2(sys.argv[1], int(sys.argv[2]), int(sys.argv[3]))
     else:
         findKey(sys.argv[1])
 

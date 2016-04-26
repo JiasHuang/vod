@@ -95,6 +95,9 @@ def search(req, q):
     q = re.sub(' ', '+', q)
     search_youtube(req, q)
 
+def loadWord(req, url):
+    eslpod.loadWord(req, url)
+
 def listURL_def(req, url):
 
     vid = ''
@@ -354,9 +357,6 @@ def listURL(req, url):
 
     if re.search(r'mangareader.net', url):
         return mangareader.loadImage(req, url)
-
-    if re.search(r'eslpod.com', url):
-        return eslpod.loadWord(req, url)
 
     if re.search(r'movie.dodova.com/category/', url):
         listURL_dodova(req, url+'/page/1')

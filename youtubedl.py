@@ -29,7 +29,7 @@ def extractURL(url):
 def extractSUB(url):
 
     if re.search(r'youtube.com', url):
-        cmd = '%s --all-subs --skip-download \'%s\'' %(xdef.ytdl, url)
+        cmd = '%s --sub-lang=en --write-sub --skip-download \'%s\'' %(xdef.ytdl, url)
         txt = subprocess.check_output(cmd, shell=True).rstrip('\n')
         m = re.search(r'Writing video subtitles to: (.*)', txt)
         if m:

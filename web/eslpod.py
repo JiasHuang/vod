@@ -31,7 +31,12 @@ def loadWord(req, url):
         q = q.replace('\n', '')
         q = q.replace('\r', '')
         q = q.replace(' ', '+')
-        req.write('<li>%s <a href=%s>[Cambridge]</a> <a href=%s>[Webster]</a> <a href=%s>[Yahoo]</a>'
-            %(q, dictCambridge+q, dictWebster+q, dictYahoo+q))
+
+        s = '<li>%s' %(q)
+        s = s + '<a target="_blank" href=%s> [Cambridge] </a>' %(dictCambridge+q)
+        s = s + '<a target="_blank" href=%s> [Webster] </a>' %(dictWebster+q)
+        s = s + '<a target="_blank" href=%s> [Yahoo] </a>' %(dictYahoo+q)
+
+        req.write(s)
 
     req.write('</ul>')
