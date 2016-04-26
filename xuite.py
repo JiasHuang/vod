@@ -45,13 +45,25 @@ def findKey(url):
         mmdd = date1.strftime('%m%d')
         date1 = date1 + day
         print mmdd
-        cmd = 'wget --post-data \'pwInput=%s\' \'%s\' -O %s.html -q' %(mmdd, url, mmdd)
+        cmd = 'wget --post-data \'pwInput=%s\' \'%s\' -O /tmp/%s.html -q' %(mmdd, url, mmdd)
         os.system(cmd)
-        if os.system('grep \'data-original\' %s.html -q' %(mmdd)) == 0:
+        if os.system('grep \'data-original\' /tmp/%s.html -q' %(mmdd)) == 0:
+            print '%s (OK)' %(mmdd)
+            break
+
+def findKey2(url):
+    for num in xrange(0, 10000):
+        mmdd = '{0:04}'.format(num)
+        print mmdd
+        cmd = 'wget --post-data \'pwInput=%s\' \'%s\' -O /tmp/%s.html -q' %(mmdd, url, mmdd)
+        os.system(cmd)
+        if os.system('grep \'data-original\' /tmp/%s.html -q' %(mmdd)) == 0:
             print '%s (OK)' %(mmdd)
             break
 
 if __name__ == "__main__":
-  findKey(sys.argv[1])
-
+    if sys.argv[1] == '2':
+        findKey2(sys.argv[2])
+    else:
+        findKey(sys.argv[1])
 
