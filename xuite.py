@@ -9,6 +9,10 @@ def getKey(url):
         return '0409'
     if re.search('m.xuite.net/vlog/isaac.ntnu/', url):
         return '0314'
+    if re.search('m.xuite.net/vlog/derriest520/', url):
+        return '1688'
+    if re.search('m.xuite.net/vlog/aaa1886bbb/', url):
+        return 'aaa1886bbb'
     return None
 
 def getSource(url):

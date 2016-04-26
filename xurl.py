@@ -8,14 +8,6 @@ import urllib
 import threading
 import xdef
 
-from selenium import webdriver
-
-from PyQt4.QtGui import *  
-from PyQt4.QtCore import *  
-from PyQt4.QtWebKit import *  
-
-engine = 'PhantomJS'
-
 class color:
    PURPLE = '\033[95m'
    CYAN = '\033[96m'
@@ -28,18 +20,6 @@ class color:
    UNDERLINE = '\033[4m'
    END = '\033[0m'
 
-class Render(QWebPage):  
-  def __init__(self, url):  
-    self.app = QApplication(sys.argv)  
-    QWebPage.__init__(self)  
-    self.loadFinished.connect(self._loadFinished)  
-    self.mainFrame().load(QUrl(url))  
-    self.app.exec_()  
-  
-  def _loadFinished(self, result):  
-    self.frame = self.mainFrame()  
-    self.app.quit()  
-  
 def dlProgress(count, blockSize, totalSize):
     percent = int(count*blockSize*100/totalSize)
     if (0 <= percent < 100):
@@ -74,26 +54,6 @@ def get(url, local):
     print '[xurl] %s Done' %(local)
     return 0
 
-def webkit(url, local):
-    verbose(url, local, 'webkit')
-    r = Render(url)
-    html = r.frame.toHtml()
-    savetext(html.toUtf8(), local)
-    print '[xurl] %s Done' %(local)
-    return 0
-
-def webdrv(url, local):
-    verbose(url, local, 'webdrv')
-    if engine == 'Firefox':
-        driver = webdriver.Firefox()
-    if engine == 'PhantomJS':
-        driver = webdriver.PhantomJS()
-    driver.get(url)
-    savetext(driver.page_source.encode('utf8'), local)
-    driver.close()
-    print '[xurl] %s Done' %(local)
-    return 0
-
 def urlretrieve(url, local):
     verbose(url, local, 'urlretrieve')
     try:
@@ -116,7 +76,7 @@ def load(*arg):
 
     headers={'User-Agent': 'Mozilla/5.0 (X11; Linux i686; rv:10.0) Gecko/20100101 Firefox/33.0'}
 
-    if payload: 
+    if payload:
         r = requests.post(url, data=payload)
     else:
         r = requests.get(url, headers=headers)
