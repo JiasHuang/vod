@@ -153,34 +153,16 @@ def listURL_xuite(req, url):
 
 def listURL_DramaQIndex(req, zone):
 
-    url = 'http://www.dramaq.com.tw'
+    home = 'http://www.dramaq.biz/'
+    url = home + zone + '/'
     txt = load2(url)
-    state = 0
 
-    if zone == '':
-        state = 100
-
-    for line in txt.splitlines():
-
-        if state != 100:
-            m = re.search(r'<h3>《([^》]*)》</h3>', line)
-            if m:
-                if m.group(1) == zone:
-                    state = 1
-                elif state == 1:
-                    break
-                else:
-                    state = 0
-                continue
-
-        if state >= 1:
-            m = re.search(r'<a title="([^"]*)" href="([^"]*)"><img src="([^"]*)"', line)
-            if m:
-                link = 'http://www.dramaq.com.tw'+m.group(2)
-                title = m.group(1)
-                image = 'http://www.dramaq.com.tw'+m.group(3)
-                addPage(req, link, title)
-
+    match = re.finditer(r'<a title="([^"]*)" href="([^"]*)"><img src="([^"]*)"', txt)
+    for m in match:
+        link = home + m.group(2)
+        title = m.group(1)
+        image = home + m.group(3)
+        addPage(req, link, title)
 
 def listURL_dramaq(req, url):
     if re.search(r'php', url):
@@ -323,19 +305,19 @@ def listURL(req, url):
         return
 
     if url == 'dramaq-tw':
-        return listURL_DramaQIndex(req, '台劇')
+        return listURL_DramaQIndex(req, 'tw')
 
     if url == 'dramaq-kr':
-        return listURL_DramaQIndex(req, '韓劇')
+        return listURL_DramaQIndex(req, '')
 
     if url == 'dramaq-jp':
-        return listURL_DramaQIndex(req, '日劇')
+        return listURL_DramaQIndex(req, 'jp')
 
     if url == 'dramaq-us':
-        return listURL_DramaQIndex(req, '美劇')
+        return listURL_DramaQIndex(req, 'us')
 
     if url == 'dramaq-cn':
-        return listURL_DramaQIndex(req, '陸劇')
+        return listURL_DramaQIndex(req, 'cn')
 
     if url == 'moviesun-kr':
         return listURL_moviesunIndex(req, 'http://moviesunkd.com/', '韓劇列表')
@@ -349,7 +331,7 @@ def listURL(req, url):
     if re.search(r'xuite.net', url):
         return listURL_xuite(req, url)
 
-    if re.search(r'dramaq.com', url):
+    if re.search(r'dramaq', url):
         return listURL_dramaq(req, url)
 
     if re.search(r'moviesun', url):
