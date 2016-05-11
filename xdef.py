@@ -3,6 +3,7 @@
 
 player   = 'mpv'
 workdir  = '/tmp/'
+codedir  = '/opt/vod/'
 cookies  = workdir+'vod.cookies'
 json     = workdir+'vod.json'
 ytdl     = '/usr/local/bin/youtube-dl'

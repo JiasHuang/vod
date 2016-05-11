@@ -2,10 +2,12 @@
 # -*- coding: utf-8 -*-
 
 import re
+import subprocess
 import jsunpack
 import xurl
+import xdef
 
-def getSource(url):
+def getSource_X(url):
 
     txt = xurl.load(url)
 
@@ -29,6 +31,13 @@ def getSource(url):
         return stream_url
 
     return ''
+
+def getSource(url):
+    txt = '/tmp/videowoodtv.txt'
+    xurl.get(url, txt)
+    cmd = 'js %svideowoodtv.site.js %s' %(xdef.codedir, txt)
+    src = subprocess.check_output(cmd, shell=True).rstrip('\n')
+    return src
 
 def search(txt):
 

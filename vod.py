@@ -86,6 +86,10 @@ def playURL(url, ref):
 
     url = url.strip()
 
+    m = re.search(r'view.py\?url=(.*)', url)
+    if m:
+        url = m.group(1)
+
     if url[0] == '/':
         xplay.playURL(url, '')
         return
