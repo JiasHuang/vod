@@ -6,6 +6,7 @@ import sys
 import re
 import urllib2
 import xdef
+import jwplayer
 
 def load(url):
     opener = urllib2.build_opener()
@@ -13,16 +14,14 @@ def load(url):
     return opener.open(url).read()
 
 def listSource(txt):
-    match = re.finditer(r'<source ([^>]*)>', txt)
-    if match:
-        for m in match:
-            src = re.search(r'src="([^"]*)"', m.group(1)).group(1) 
-            res = re.search(r'res="([^"]*)"', m.group(1)).group(1) 
-            res = re.sub('p', '', res)
-            print '\n[nbahd][src]\n\n\t%s (%s)' %(src, res)
-            fd = open('temp_%s.m3u' %(res), 'a')
-            fd.write(src+'\n')
-            fd.close()
+    match = re.finditer(r'data-link="([^"]*)"', txt)
+    for m in match:
+        src = jwplayer.getSource(m.group(1))
+        res = 'auto'
+        print '\n[nbahd][src]\n\n\t%s (%s)' %(src, res)
+        fd = open('temp_%s.m3u' %res, 'a')
+        fd.write(src+'\n')
+        fd.close()
         return 0
     return -1
 
@@ -45,7 +44,7 @@ def listURL(url):
     title = re.sub('http://', '', title)
     title = re.sub('/', '_', title)
     title = re.sub('\.', '_', title)
-    for res in ['720', '480', '360']:
+    for res in ['auto', '720', '480', '360']:
         if os.path.exists('temp_%s.m3u' %(res)):
             os.system('mv temp_%s.m3u %s_%s.m3u' %(res, title, res))
             print '\n[nbahd][m3u]\n\n\t%s_%s.m3u' %(title, res)
