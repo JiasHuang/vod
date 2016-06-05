@@ -35,7 +35,7 @@ def getSource_X(url):
 def getSource(url):
     txt = '/tmp/videowoodtv.txt'
     xurl.get(url, txt)
-    cmd = 'js %svideowoodtv.site.js %s' %(xdef.codedir, txt)
+    cmd = 'LANG=zh_TW.UTF-8 js %svideowoodtv.site.js %s' %(xdef.codedir, txt)
     src = subprocess.check_output(cmd, shell=True).rstrip('\n')
     return src
 
