@@ -1,0 +1,36 @@
+
+-----------------------------------------------------------
+[python]
+
+1. sudo easy_install requests
+
+-----------------------------------------------------------
+[apache2]
+
+1. sudo apt-get install apache2
+
+2. sudo apt-get install libapache2-mod-python
+
+3. vi /etc/apache2/sites-available/default
+
+        <Directory /var/www/>
+                Options Indexes FollowSymLinks MultiViews
+                AllowOverride None
+                Order allow,deny
+                allow from all
+                AddHandler mod_python .py
+                PythonHandler mod_python.publisher
+                PythonDebug On
+        </Directory>
+
+4. sudo service apache2 restart
+
+-----------------------------------------------------------
+[vod]
+
+1. cd /opt/vod/
+
+2. sudo ./install.sh
+
+-----------------------------------------------------------
+

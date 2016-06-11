@@ -1,6 +1,7 @@
 #!/bin/sh
 
-sudo cp -vu web/* /var/www/html/
+sudo mkdir -p /var/www/vod/
+sudo cp -vu web/* /var/www/vod/
 
 if [ ! -e vod.fifo ]; then
     mkfifo vod.fifo

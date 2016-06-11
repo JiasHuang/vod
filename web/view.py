@@ -29,7 +29,7 @@ def listDIR(req, d):
   req.write('</div>')
 
 def loadURL(req, url):
-    loadHTML(req, '/var/www/html/action.html')
+    loadHTML(req, conf.webpath + 'action.html')
     req.write('<br>playURL <a target="_blank" href="%s">%s</a>' %(url, url))
     cmd = 'python -u %s \'%s\' | tee -a %s' %(conf.vod, url, conf.log)
     subprocess.Popen(['/usr/bin/xterm', '-display', ':0', '-e', cmd])
@@ -54,10 +54,10 @@ def index(req):
   q    = arg.get('q', None)
 
   if act == 'load':
-    loadHTML(req, '/var/www/html/'+val+'.html')
+    loadHTML(req, conf.webpath+val+'.html')
     return
 
-  loadHTML(req, '/var/www/html/head.html')
+  loadHTML(req, conf.webpath+'head.html')
 
   if p:
     src = page.listURL(req, p)
@@ -88,12 +88,12 @@ def index(req):
         sendAct('seek %s absolute-percent' %val)
     elif act in ['osd', 'mute', 'pause', 'stop', 'playlist_next', 'playlist_prev']:
         sendAct(act)
-    loadHTML(req, '/var/www/html/action.html')
+    loadHTML(req, conf.webpath+'action.html')
 
   else:
-    loadHTML(req, '/var/www/html/action.html')
+    loadHTML(req, conf.webpath+'action.html')
 
-  loadHTML(req, '/var/www/html/tail.html')
+  loadHTML(req, conf.webpath+'tail.html')
 
   return
 
