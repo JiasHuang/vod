@@ -33,4 +33,17 @@
 2. sudo ./install.sh
 
 -----------------------------------------------------------
+[omxplayer]
 
+1. failed to open vchiq instance 
+
+sudo chmod a+rw /dev/vchiq
+
+or
+
+su -
+echo 'SUBSYSTEM=="vchiq",GROUP="video",MODE="0660"' > /etc/udev/rules.d/10-vchiq-permissions.rules
+usermod -aGvideo USERNAME
+reboot
+
+-----------------------------------------------------------

@@ -32,12 +32,16 @@ def loadURL(req, url):
     loadHTML(req, conf.webpath + 'action.html')
     req.write('<br>playURL <a target="_blank" href="%s">%s</a>' %(url, url))
     cmd = 'python -u %s \'%s\' | tee -a %s' %(conf.vod, url, conf.log)
-    subprocess.Popen(['/usr/bin/xterm', '-display', ':0', '-e', cmd])
+    if os.path.exists('/usr/bin/xterm'):
+        subprocess.Popen(['/usr/bin/xterm', '-display', ':0', '-e', cmd])
+    else:
+        subprocess.Popen(cmd, shell=True)
     req.write("<br>Sent")
 
 def sendAct(act):
     cmd = '%s \'%s\'' %(conf.act, act)
-    subprocess.Popen(['/usr/bin/xterm', '-display', ':0', '-e', cmd]).communicate()
+    if os.path.exists('/usr/bin/xterm'):
+        subprocess.Popen(['/usr/bin/xterm', '-display', ':0', '-e', cmd]).communicate()
 
 def index(req):
 

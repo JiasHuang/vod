@@ -8,6 +8,16 @@ import subprocess
 import xdef
 import youtubedl
 
+def getPlayer():
+
+    if xdef.player != 'def':
+        return xdef.player
+
+    if os.path.exists('/usr/bin/omxplayer'):
+        return 'omx'
+        
+    return 'mpv'
+
 def checkFileArgs(url):
     xargs = xdef.mpv_ytdl
     if re.search(r'.m3u', url):
@@ -88,6 +98,12 @@ def runPIPE(url, ref):
     os.system('%s \'%s\' --input-file=%s' %(xdef.mpv, xdef.fifo_bs, xdef.fifo))
     return 0
 
+def runOMX(url, ref):
+    if youtubedl.checkURL(url):
+        url = youtubedl.extractURL(url)
+    os.system('%s \'%s\'' %(xdef.omx, url))
+    return 0
+
 def runDBG(url, ref):
     if youtubedl.checkURL(url):
         url = youtubedl.extractURL(url)
@@ -95,31 +111,39 @@ def runDBG(url, ref):
 
 def playURL(url, ref):
 
-    print '\n[xplay][%s][url]\n\n\t%s' %(xdef.player, url)
-    print '\n[xplay][%s][ref]\n\n\t%s' %(xdef.player, ref)
+    player = getPlayer()
+
+    print '\n[xplay][%s][url]\n\n\t%s' %(player, url)
+    print '\n[xplay][%s][ref]\n\n\t%s' %(player, ref)
 
     if url == None or url == '':
         return 0
 
     #if re.search(r'vizplay', url):
-    #    xdef.player = 'pipe'
+    #    player = 'pipe'
 
-    if xdef.player == 'smp':
+    if player == 'smp':
         return runSMP(url, ref)
 
-    if xdef.player == 'mpv':
+    if player == 'mpv':
         return runMPV(url, ref)
 
-    if xdef.player == 'xbmc':
+    if player == 'xbmc':
         return runXBMC(url, ref)
 
-    if xdef.player == 'pipe':
+    if player == 'pipe':
         return runPIPE(url, ref)
+
+    if player == 'omx':
+        return runOMX(url, ref)
 
     return runDBG(url, ref)
 
 def setAct(act):
-    if checkProcessRunning('mpv'):
+
+    player = getPlayer()
+
+    if player == 'mpv' and checkProcessRunning('mpv'):
         os.system('echo %s > %s' %(act, xdef.fifo))
     return 0
 
