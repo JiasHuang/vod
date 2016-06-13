@@ -31,17 +31,21 @@ def listDIR(req, d):
 def loadURL(req, url):
     loadHTML(req, conf.webpath + 'action.html')
     req.write('<br>playURL <a target="_blank" href="%s">%s</a>' %(url, url))
-    cmd = 'python -u %s \'%s\' | tee -a %s' %(conf.vod, url, conf.log)
+    cmd = 'python -u %s \'%s\'' %(conf.vod, url)
+    log = open(conf.log, 'a')
     if os.path.exists('/usr/bin/xterm'):
-        subprocess.Popen(['/usr/bin/xterm', '-display', ':0', '-e', cmd])
+        subprocess.Popen(['/usr/bin/xterm', '-display :0', '-e', cmd], stdout=log)
     else:
-        subprocess.Popen(cmd, shell=True)
+        subprocess.Popen(cmd, shell=True, stdout=log)
     req.write("<br>Sent")
 
-def sendAct(act):
-    cmd = '%s \'%s\'' %(conf.act, act)
+def sendAct(act, val):
+    cmd = 'python -u %s %s %s' %(conf.act, act, val)
+    log = open(conf.log, 'a')
     if os.path.exists('/usr/bin/xterm'):
-        subprocess.Popen(['/usr/bin/xterm', '-display', ':0', '-e', cmd]).communicate()
+        subprocess.Popen(['/usr/bin/xterm', '-display :0', '-e', cmd], stdout=log).communicate()
+    else:
+        subprocess.Popen(cmd, shell=True, stdout=log).communicate()
 
 def index(req):
 
@@ -84,14 +88,7 @@ def index(req):
         page.search(req, url)
 
   elif act:
-    if act == 'forward' and val:
-        sendAct('seek %s' %val)
-    elif act == 'backward' and val:
-        sendAct('seek -%s' %val)
-    elif act == 'percent' and val:
-        sendAct('seek %s absolute-percent' %val)
-    elif act in ['osd', 'mute', 'pause', 'stop', 'playlist_next', 'playlist_prev']:
-        sendAct(act)
+    sendAct(act, val)
     loadHTML(req, conf.webpath+'action.html')
 
   else:

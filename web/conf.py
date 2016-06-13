@@ -2,7 +2,7 @@
 
 vodpath = '/opt/vod/'
 workdir = '/tmp/'
-webpath = '/var/www/vod/'
+webpath = '/var/www/html/vod/'
 
 vod  = vodpath+'vod.py'
 src  = vodpath+'src.py'

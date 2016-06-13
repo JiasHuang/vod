@@ -7,16 +7,20 @@ import time
 import subprocess
 import xdef
 import youtubedl
+import mpv, omxp
 
 def getPlayer():
 
     if xdef.player != 'def':
         return xdef.player
 
+    if os.path.exists('/usr/bin/mpv'):
+        return 'mpv'
+
     if os.path.exists('/usr/bin/omxplayer'):
-        return 'omx'
-        
-    return 'mpv'
+        return 'omxp'
+
+    return 'err'
 
 def checkFileArgs(url):
     xargs = xdef.mpv_ytdl
@@ -94,14 +98,16 @@ def runMPV(url, ref):
 
 def runPIPE(url, ref):
     subprocess.Popen(['wget', '-q', '-O', xdef.fifo_bs, url])
-    setAct('stop')
+    setAct('stop', None)
     os.system('%s \'%s\' --input-file=%s' %(xdef.mpv, xdef.fifo_bs, xdef.fifo))
     return 0
 
-def runOMX(url, ref):
+def runOMXP(url, ref):
     if youtubedl.checkURL(url):
         url = youtubedl.extractURL(url)
-    os.system('%s \'%s\'' %(xdef.omx, url))
+    if checkProcessRunning('omxplayer.bin'):
+        omxp.setAct('stop', None)
+    os.system('%s \'%s\'' %(xdef.omxp, url))
     return 0
 
 def runDBG(url, ref):
@@ -134,16 +140,19 @@ def playURL(url, ref):
     if player == 'pipe':
         return runPIPE(url, ref)
 
-    if player == 'omx':
-        return runOMX(url, ref)
+    if player == 'omxp':
+        return runOMXP(url, ref)
 
     return runDBG(url, ref)
 
-def setAct(act):
+def setAct(act, val):
 
     player = getPlayer()
+    print '[xplay] %s,%s,%s' %(player, act, val)
 
     if player == 'mpv' and checkProcessRunning('mpv'):
-        os.system('echo %s > %s' %(act, xdef.fifo))
-    return 0
+        return mpv.setAct(act, val)
+
+    if player == 'omxp' and checkProcessRunning('omxplayer.bin'):
+        return omxp.setAct(act, val)
 
