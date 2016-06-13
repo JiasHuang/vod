@@ -29,10 +29,12 @@ def extractURL_def(url):
 
 def extractURL_web(url):
     print '\n[ytdl][url]\n\n\t%s' %(url)
-    return 'https://alltubedownload.net/redirect?url=%s&format=best&protocol^=http]' %(url)
+    src = 'https://alltubedownload.net/redirect?url=%s&format=%s' %(url, 'best[protocol^=http]')
+    print '\n[ytdl][src]\n\n\t%s' %(src)
+    return src
 
 def extractURL(url):
-    return extractURL_web(url)
+    return extractURL_def(url)
 
 def extractSUB(url):
 
