@@ -26,24 +26,22 @@
 4. sudo service apache2 restart
 
 -----------------------------------------------------------
-[vod]
+[rhino]
 
-1. cd /opt/vod/
-
-2. sudo ./install.sh
+1. sudo apt-get install rhino
 
 -----------------------------------------------------------
-[omxplayer]
+[vod]
 
-1. failed to open vchiq instance 
+1. sudo /opt/vod/install.sh
 
-sudo chmod a+rw /dev/vchiq
+2. view http://127.0.0.1/vod/view.py on your mobile device
 
-or
+-----------------------------------------------------------
+[option] failed to open vchiq instance
 
-su -
-echo 'SUBSYSTEM=="vchiq",GROUP="video",MODE="0660"' > /etc/udev/rules.d/10-vchiq-permissions.rules
-usermod -aGvideo USERNAME
-reboot
+1. sudo usermod -a -G video www-data
+
+2. sudo reboot
 
 -----------------------------------------------------------

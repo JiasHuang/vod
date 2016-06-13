@@ -5,6 +5,7 @@ import os
 import re
 import subprocess
 import xdef
+import xurl
 
 def findSite(url):
     m = re.search(r'://([^/]*)', url);
@@ -16,7 +17,7 @@ def checkURL(url):
     site = findSite(url)
     return re.compile('(youtube|dailymotion|facebook|google)').search(site)
 
-def extractURL(url):
+def extractURL_def(url):
     print '\n[ytdl][url]\n\n\t%s' %(url)
     cmd = '%s -g --cookies %s \'%s\'' %(xdef.ytdl, xdef.cookies, url)
     try:
@@ -25,6 +26,13 @@ def extractURL(url):
         return src
     except:
         return ''
+
+def extractURL_web(url):
+    print '\n[ytdl][url]\n\n\t%s' %(url)
+    return 'https://alltubedownload.net/redirect?url=%s&format=best&protocol^=http]' %(url)
+
+def extractURL(url):
+    return extractURL_web(url)
 
 def extractSUB(url):
 
