@@ -34,7 +34,7 @@ def loadURL(req, url):
     cmd = 'python -u %s \'%s\'' %(conf.vod, url)
     log = open(conf.log, 'a')
     if os.path.exists('/usr/bin/xterm'):
-        subprocess.Popen(['/usr/bin/xterm', '-display :0', '-e', cmd], stdout=log)
+        subprocess.Popen(['/usr/bin/xterm', '-display', ':0', '-e', cmd], stdout=log)
     else:
         subprocess.Popen(cmd, shell=True, stdout=log)
     req.write("<br>Sent")
@@ -43,7 +43,7 @@ def sendAct(act, val):
     cmd = 'python -u %s %s %s' %(conf.act, act, val)
     log = open(conf.log, 'a')
     if os.path.exists('/usr/bin/xterm'):
-        subprocess.Popen(['/usr/bin/xterm', '-display :0', '-e', cmd], stdout=log).communicate()
+        subprocess.Popen(['/usr/bin/xterm', '-display', ':0', '-e', cmd], stdout=log).communicate()
     else:
         subprocess.Popen(cmd, shell=True, stdout=log).communicate()
 
