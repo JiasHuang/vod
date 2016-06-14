@@ -9,7 +9,7 @@ def setAct(act, val):
     if act == 'forward' and val:
         cmd = 'seek %s' %(val)
     elif act == 'backward' and val:
-        cmd = 'seek %s' %(val)
+        cmd = 'seek -%s' %(val)
     elif act == 'percent' and val:
         cmd = 'seek %s absolute-percent' %(val)
     elif act in ['osd', 'mute', 'pause', 'stop', 'playlist_next', 'playlist_prev']:
