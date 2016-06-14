@@ -42,10 +42,7 @@ def loadURL(req, url):
 def sendAct(act, val):
     cmd = 'python -u %s %s %s' %(conf.act, act, val)
     log = open(conf.log, 'a')
-    if os.path.exists('/usr/bin/xterm'):
-        subprocess.Popen(['/usr/bin/xterm', '-display', ':0', '-e', cmd], stdout=log).communicate()
-    else:
-        subprocess.Popen(cmd, shell=True, stdout=log).communicate()
+    subprocess.Popen(cmd, shell=True, stdout=log).communicate()
 
 def index(req):
 
