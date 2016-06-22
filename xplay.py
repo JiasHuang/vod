@@ -56,6 +56,11 @@ def runXBMC(url, ref):
     return 0
 
 def runSMP(url, ref):
+    if youtubedl.checkURL(url):
+        url = youtubedl.extractURL(url)
+    if url == '':
+        print '[xplay] invalid url'
+        return 0
     subprocess.Popen(['smplayer', '-fullscreen', url])
     return 0
 
