@@ -44,9 +44,9 @@ def extractURL_keepvid(url):
     return None
 
 def extractURL(url):
-    src = extractURL_keepvid(url)
-    if src:
-        return src
+    #src = extractURL_keepvid(url)
+    #if src:
+    #    return src
     return extractURL_def(url)
 
 def extractSUB(url):
