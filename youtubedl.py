@@ -52,7 +52,7 @@ def extractURL_keepvid(url):
     return None
 
 def extractURL(url):
-    return extractSUB_keepvid(url)
+    return extractURL_keepvid(url)
 
 def extractSUB_def(url):
 
