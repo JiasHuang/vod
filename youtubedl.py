@@ -4,6 +4,7 @@
 import os
 import re
 import subprocess
+import base64
 import xdef
 import xurl
 
@@ -33,10 +34,17 @@ def extractURL_alltubedownload(url):
     return src
 
 def extractURL_keepvid(url):
-    local = xdef.workdir+'keepvid_result.html'
-    xurl.wget('http://keepvid.com/?url=+'+url, local)
+    local = xdef.workdir+'keepvid_result_'+base64.b64encode(url)
+    xurl.wget('http://keepvid.com/?url='+url, local)
     with open(local, 'r') as fd:
-        match = re.search(r'<a href="([^"]*)" class="l"', fd.read())
+        txt = fd.read()
+        match = re.search(r'<a href="([^"]*)" class="l" ([^>]*)>([^<])*</a> - <b>720p</b>', txt)
+        if match:
+            src = match.group(1)
+            print src
+            print '\n[ytdl][src][keepvid][720p]\n\n\t%s' %(src)
+            return src
+        match = re.search(r'<a href="([^"]*)" class="l"', txt)
         if match:
             src = match.group(1)
             print '\n[ytdl][src][keepvid]\n\n\t%s' %(src)
@@ -44,10 +52,7 @@ def extractURL_keepvid(url):
     return None
 
 def extractURL(url):
-    #src = extractURL_keepvid(url)
-    #if src:
-    #    return src
-    return extractURL_def(url)
+    return extractURL_keepvid(url)
 
 def extractSUB(url):
 
