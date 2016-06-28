@@ -27,13 +27,26 @@ def extractURL_def(url):
     except:
         return ''
 
-def extractURL_web(url):
-    print '\n[ytdl][url]\n\n\t%s' %(url)
+def extractURL_alltubedownload(url):
     src = 'https://alltubedownload.net/redirect?url=%s&format=%s' %(url, 'best[protocol^=http]')
     print '\n[ytdl][src]\n\n\t%s' %(src)
     return src
 
+def extractURL_keepvid(url):
+    local = xdef.workdir+'keepvid_result.html'
+    xurl.wget('http://keepvid.com/?url=+'+url, local)
+    with open(local, 'r') as fd:
+        match = re.search(r'<a href="([^"]*)" class="l"', fd.read())
+        if match:
+            src = match.group(1)
+            print '\n[ytdl][src][keepvid]\n\n\t%s' %(src)
+            return src
+    return None
+
 def extractURL(url):
+    src = extractURL_keepvid(url)
+    if src:
+        return src
     return extractURL_def(url)
 
 def extractSUB(url):
