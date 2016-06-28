@@ -34,27 +34,27 @@ def extractURL_alltubedownload(url):
     return src
 
 def extractURL_keepvid(url):
-    local = xdef.workdir+'keepvid_result_'+base64.b64encode(url)
-    xurl.wget('http://keepvid.com/?url='+url, local)
-    with open(local, 'r') as fd:
-        txt = fd.read()
-        match = re.search(r'<a href="([^"]*)" class="l" ([^>]*)>([^<])*</a> - <b>720p</b>', txt)
-        if match:
-            src = match.group(1)
-            print src
-            print '\n[ytdl][src][keepvid][720p]\n\n\t%s' %(src)
-            return src
-        match = re.search(r'<a href="([^"]*)" class="l"', txt)
-        if match:
-            src = match.group(1)
-            print '\n[ytdl][src][keepvid]\n\n\t%s' %(src)
-            return src
+
+    txt = xurl.load('http://keepvid.com/?url='+url)
+
+    match = re.search(r'<a href="([^"]*)" ([^>]*)>([^<])*</a> - <b>720p</b>', txt)
+    if match:
+        src = match.group(1)
+        print '\n[keepvid][src][720p]\n\n\t%s' %(src)
+        return src
+
+    match = re.search(r'<a href="([^"]*)" class="l"', txt)
+    if match:
+        src = match.group(1)
+        print '\n[keepvid][src]\n\n\t%s' %(src)
+        return src
+
     return None
 
 def extractURL(url):
     return extractURL_keepvid(url)
 
-def extractSUB(url):
+def extractSUB_def(url):
 
     if re.search(r'youtube.com', url):
         cmd = '%s --sub-lang=en --write-sub --skip-download \'%s\'' %(xdef.ytdl, url)
@@ -68,3 +68,20 @@ def extractSUB(url):
             return sub2
 
     return None
+
+def extractSUB_keepvid(url):
+
+    txt = xurl.load('http://keepvid.com/?mode=subs&url='+url)
+
+    match = re.search(r'<a href="([^"]*)" ([^>]*)>([^<])*</a> - <b>English</b>', txt)
+    if match:
+        src = match.group(1)
+        local = xdef.workdir+'keepvid_sub_'+base64.b64encode(url)
+        xurl.wget(src, local)
+        print '\n[keepvid][sub]\n\n\t%s' %(local)
+        return local
+
+    return None
+
+def extractSUB(url):
+    return extractSUB_keepvid(url)
