@@ -112,7 +112,8 @@ def runOMXP(url, ref):
         url = youtubedl.extractURL(url)
     if checkProcessRunning('omxplayer.bin'):
         omxp.setAct('stop', None)
-    os.system('%s \'%s\'' %(xdef.omxp, url))
+    sub = youtubedl.extractSUB(ref)
+    os.system('%s \'%s\' \'%s\'' %(xdef.omxp, url, sub))
     return 0
 
 def runDBG(url, ref):

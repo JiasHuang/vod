@@ -76,7 +76,7 @@ def extractSUB_keepvid(url):
     match = re.search(r'<a href="([^"]*)" ([^>]*)>([^<])*</a> - <b>English</b>', txt)
     if match:
         src = match.group(1)
-        local = xdef.workdir+'keepvid_sub_'+base64.b64encode(url)
+        local = xdef.workdir+'keepvid_sub_'+base64.urlsafe_b64encode(url)
         xurl.wget(src, local)
         print '\n[keepvid][sub]\n\n\t%s' %(local)
         return local

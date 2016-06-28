@@ -23,18 +23,20 @@ def setAct(act, val):
 def main():
 
     url = None
-    ref = None
+    sub = None
+    opt = '-o hdmi '
 
     if len(sys.argv) < 2:
-        print 'usage: omxp.py url'
+        print 'usage: omxp.py url sub'
         return
 
     url = sys.argv[1]
 
     if len(sys.argv) >= 3:
-        ref = sys.argv[2]
+        sub = sys.argv[2]
+        opt = opt + '--subtitle %s ' %(sub)
 
-    cmd = 'omxplayer -o hdmi \'%s\'' %(url)
+    cmd = 'omxplayer %s \'%s\'' %(opt, url)
     proc = subprocess.Popen(cmd, shell=True, stdin=subprocess.PIPE)
     pipe = proc.stdin
     fifo = open(xdef.fifo)
