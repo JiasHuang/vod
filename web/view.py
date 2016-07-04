@@ -40,7 +40,7 @@ def loadURL(req, url):
     req.write("<br>Sent")
 
 def sendAct(act, val):
-    cmd = 'python -u %s %s %s' %(conf.act, act, val)
+    cmd = 'python -u %s \'%s\' \'%s\'' %(conf.act, act, val)
     log = open(conf.log, 'a')
     subprocess.Popen(cmd, shell=True, stdout=log).communicate()
 

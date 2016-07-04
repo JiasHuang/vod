@@ -39,12 +39,24 @@ function setAct(key) {
     else if (key == "backward" && val.value == "") {
         val.value = "150";
     }
+    else if (key == "forward" && val.value == "#") {
+        act.value = "playlist-next";
+        val.value = "";
+    }
+    else if (key == "backward" && val.value == "#") {
+        act.value = "playlist-prev";
+        val.value = "";
+    }
     else if (key == "forward" && val.value == "*") {
-        act.value = "playlist_next";
+        act.value = "sub-next";
         val.value = "";
     }
     else if (key == "backward" && val.value == "*") {
-        act.value = "playlist_prev";
+        act.value = "sub-prev";
+        val.value = "";
+    }
+    else if (key == "stop" && val.value == "*") {
+        act.value = "sub-remove";
         val.value = "";
     }
 }
