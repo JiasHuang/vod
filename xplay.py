@@ -92,8 +92,8 @@ def runMPV(url, ref):
         os.system('%s %s \'%s\'' %(xdef.mpv, xargs, url))
 
     else:
-        os.system('echo sub-remove > %s' %(xdef.fifo))
         os.system('echo loadfile \"%s\" > %s' %(url, xdef.fifo))
+        os.system('echo sub-remove > %s' %(xdef.fifo))
 
         sub = youtubedl.extractSUB(ref)
         if sub:
