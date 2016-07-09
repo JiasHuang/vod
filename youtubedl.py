@@ -52,7 +52,9 @@ def extractURL_keepvid(url):
     return None
 
 def extractURL(url):
-    return extractURL_keepvid(url)
+    if re.search(r'youtube', url):
+        return extractURL_keepvid(url)
+    return extractURL_def(url)
 
 def extractSUB_def(url):
 
@@ -84,4 +86,6 @@ def extractSUB_keepvid(url):
     return None
 
 def extractSUB(url):
-    return extractSUB_keepvid(url)
+    if re.search(r'youtube.com', url):
+        return extractSUB_keepvid(url)
+    return extractSUB_def(url)
