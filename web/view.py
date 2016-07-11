@@ -5,6 +5,7 @@ import re
 import subprocess
 import page
 import conf
+import urllib
 
 from mod_python import util
 
@@ -31,34 +32,54 @@ def index(req):
     val  = arg.get('val', None)
     p    = arg.get('p', None)
     q    = arg.get('q', None)
+    s    = arg.get('s', None)
+    v    = arg.get('v', None)
+    d    = arg.get('d', None)
+    f    = arg.get('f', None)
+    w    = arg.get('w', None)
+    P    = arg.get('P', None)
 
-    if url and url[0:4] != 'http' and url[0] != '/':
-        q = url
-        url = None
+    if url:
+        if re.search(r'www.eslpod.com', url):
+            w = url
+        elif re.search(r'^http', url):
+            v = url
+        elif re.search(r'^/', url) and os.path.isdir(url):
+            d = url
+        elif re.search(r'^/', url) and os.path.exiists(url):
+            f = url
+        else:
+            q = url
+
+    if P:
+        p = urllib.unquote(P)
 
     if p:
-        src = page.listURL(req, p)
+        page.listURL(req, p)
 
     elif q:
-        page.render(req, 'list', page.search(q))
+        page.search(req, q, s)
 
-    elif url and re.search(r'^http', url):
-        if re.search(r'www.eslpod.com', url):
-            page.loadWord(req, url)
-        else:
-            playURL(url)
-            page.render(req, 'panel', 'playURL <a target=_blank href=%s>%s</a>' %(url, url))
+    elif d:
+        page.renderDIR(req, d)
 
-    elif url and re.search(r'^/', url):
-        if os.path.isdir(url):
-            page.renderDIR(req, url)
-        elif os.path.exists(url):
-            playURL(url)
-            page.render(req, 'panel', 'playURL '+url)
+    elif f:
+        playURL(f)
+        page.render(req, 'panel', 'playURL: '+v)
+
+    elif v:
+        playURL(v)
+        page.render(req, 'panel', '<br>playURL <a target=_blank href=%s>%s</a>' %(v, v))
+
+    elif w:
+        page.loadword(req, w)
 
     elif act:
-        sendACT(act, val)
-        page.render(req, 'panel', act+','+val)
+        if act == 'load' and val:
+            page.render(req, val, None)
+        else:
+            sendACT(act, val)
+            page.render(req, 'panel', '<br><h1>%s %s</h1>' %(act, val or ''))
 
     else:
         page.render(req, 'panel', None)

@@ -18,6 +18,13 @@ def getKey(url):
     return None
 
 def getSource(url):
+
+    if re.search(r'^http://vlog.xuite.net/play/', url):
+        txt = xurl.load(url)
+        m = re.search(r'http://m.xuite.net/vlog/([^"]*)', txt)
+        if m:
+            url = m.group(0)
+
     os.chdir(xdef.workdir)
     key = getKey(url)
     if key:

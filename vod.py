@@ -8,7 +8,7 @@ import youtubedl
 
 def processURL1(url): 
 
-    if re.search('http://m.xuite.net/vlog/', url):
+    if re.search('xuite.net', url):
         src = xuite.getSource(url)
         xplay.playURL(src, url)
         return 0
@@ -43,7 +43,7 @@ def processURL1(url):
         xplay.playURL(src, '')
         return 0
 
-    if re.search(r'(youtube|dailymotion|facebook|google)', url):
+    if youtubedl.checkURL(url):
         xplay.playURL(url, url)
         return 0
 
@@ -128,6 +128,9 @@ def main():
 
     if len(sys.argv) >= 2:
         url = sys.argv[1]
+        m = re.search(r'view.py?v=(.*)', url)
+        if m:
+            url = m.group(1)
 
     if len(sys.argv) >= 3:
         ref = sys.argv[2]

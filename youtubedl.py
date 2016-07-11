@@ -16,7 +16,7 @@ def findSite(url):
 
 def checkURL(url):
     site = findSite(url)
-    return re.compile('(youtube|dailymotion|facebook|google)').search(site)
+    return re.compile('(youtube|dailymotion|facebook|google|bilibili)').search(site)
 
 def extractURL_def(url):
     print('\n[ytdl][url]\n\n\t'+url)
@@ -36,7 +36,7 @@ def extractURL_def(url):
     if len(result) == 1:
         return result[0]
 
-    m3u = xdef.workdir+'ytdl_src_'+base64.urlsafe_b64encode(url)
+    m3u = xdef.workdir+'ytdl_src_'+base64.urlsafe_b64encode(url)+'.m3u'
     with open(m3u, 'w') as fd:
         for vid in result:
             fd.write(vid+'\n')

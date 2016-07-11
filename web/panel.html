@@ -3,110 +3,10 @@
 
 <head>
 
-<script type="text/javascript">
+<link rel="stylesheet" href="style.css">
 
-function addCode(key) {
-	var val = document.forms[0].val;
-	val.value = val.value + key;
-}
-
-function resetAll() {
-	document.forms[0].val.value = "";
-	document.forms[0].act.value = "";
-}
-
-function addSign() {
-	var val = document.forms[0].val;
-	val.value = '-' + val.value;
-}
-
-function setAct(key) {
-	var act = document.forms[0].act;
-	var val = document.forms[0].val;
-
-    act.value = key;
-
-    if (val.value == "*0413") {
-        act.value = "load";
-        val.value = "jav";
-    }
-
-    else if (key == "pause" && val.value != "") {
-        act.value = "percent"
-    }
-    else if (key == "forward" && val.value == "") {
-        val.value = "150";
-    }
-    else if (key == "backward" && val.value == "") {
-        val.value = "150";
-    }
-    else if (key == "forward" && val.value == "#") {
-        act.value = "playlist-next";
-        val.value = "";
-    }
-    else if (key == "backward" && val.value == "#") {
-        act.value = "playlist-prev";
-        val.value = "";
-    }
-    else if (key == "forward" && val.value == "*") {
-        act.value = "sub-next";
-        val.value = "";
-    }
-    else if (key == "backward" && val.value == "*") {
-        act.value = "sub-prev";
-        val.value = "";
-    }
-    else if (key == "stop" && val.value == "*") {
-        act.value = "sub-remove";
-        val.value = "";
-    }
-}
-
-</script>
-
-<style type="text/css">
-
-.input {
-	font-size:32px;
-    width:480px;
-    height:48px;
-}
-
-.display {
-	font-size:32px;
-	border:0px; 
-}
-
-.img {
-    max-width:480px;
-    max-height:320px;
-}
-
-.li{
-    margin: 16px 0;
-}
-
-#keypad {margin:auto; margin-top:8px;}
-
-#keypad tr td {
-	vertical-align:middle; 
-	text-align:center; 
-	border:1px solid #000000; 
-	font-size:64px; 
-	font-weight:bold; 
-	width:160px; 
-	height:80px; 
-	cursor:pointer; 
-	background-color:#666666; 
-	color:#ffffff;
-}
-
-#keypad tr td:hover {
-    background-color:#999999;
-    color:#FFFF00;
-}
-
-</style>
+<script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
+<script type="text/javascript" src="panel.js"></script>
 
 </head>
 
@@ -114,9 +14,6 @@ function setAct(key) {
 
 <center>
 
-<form action="view.py?" method="get">
-<input type="hidden" name="val" value="" maxlength="4" class="display" readonly="readonly" />
-<input type="hidden" name="act" value="" maxlength="4" class="display" readonly="readonly" />
 <table id="keypad" cellpadding="5" cellspacing="3">
 <tr>
     <td onclick="addCode('1');">1</td>
@@ -134,24 +31,28 @@ function setAct(key) {
     <td onclick="addCode('9');">9</td>
 </tr>
 <tr>
-    <td onclick="addCode('*')">*</td>
+    <td onclick="addCode('*');">*</td>
     <td onclick="addCode('0');">0</td>
-    <td onclick="resetAll();">#</td>
+    <td onclick="addCode('#');">#</td>
 </tr>
 </table>
 
 <br>
+<form action="view.py" method="get">
 <input type="image" src="Actions-media-skip-backward-icon.png"  onclick="setAct('backward');">
 <input type="image" src="Actions-media-playback-stop-icon.png"  onclick="setAct('stop');">
 <input type="image" src="Actions-media-playback-start-icon.png" onclick="setAct('pause');">
 <input type="image" src="Actions-media-skip-forward-icon.png"   onclick="setAct('forward');">
-
+<input type="hidden" name="val" value="" maxlength="4" class="display" readonly="readonly" />
+<input type="hidden" name="act" value="" maxlength="4" class="display" readonly="readonly" />
 </form>
 
-<form action="view.py?" method="get">
+<br>
+<form action="view.py" method="get">
 <input type="text" name="url" value="" class="input"\>
 </form>
 
+<br>
 <a href="view.py">Home</a>&nbsp&nbsp&nbsp&nbsp&nbsp
 <a href="bookmarks.html">Bookmarks</a>&nbsp&nbsp&nbsp&nbsp&nbsp
 <a href="learnings.html">Learnings</a>&nbsp&nbsp&nbsp&nbsp&nbsp
