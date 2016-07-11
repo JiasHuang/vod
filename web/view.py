@@ -39,7 +39,7 @@ def loadURL(req, url):
         subprocess.Popen(cmd, shell=True, stdout=log)
     req.write("<br>Sent")
 
-def sendAct(act, val):
+def sendACT(act, val):
     cmd = 'python -u %s \'%s\' \'%s\'' %(conf.act, act, val)
     log = open(conf.log, 'a')
     subprocess.Popen(cmd, shell=True, stdout=log).communicate()
@@ -85,7 +85,7 @@ def index(req):
         page.search(req, url)
 
   elif act:
-    sendAct(act, val)
+    sendACT(act, val)
     loadHTML(req, conf.webpath+'action.html')
 
   else:

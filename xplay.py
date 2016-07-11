@@ -121,7 +121,7 @@ def runOMXP(url, ref):
 
 def runDBG(url, ref):
     if youtubedl.checkURL(url):
-        url = youtubedl.extractURL(url)
+        youtubedl.extractURL(url)
     return 0
 
 def playURL(url, ref):
@@ -157,7 +157,7 @@ def playURL(url, ref):
 def setAct(act, val):
 
     player = getPlayer()
-    print '[xplay] %s,%s,%s' %(player, act, val)
+    print('\n[xplay]\n\n\t'+ '%s,%s,%s' %(player, act, val))
 
     if player == 'mpv' and checkProcessRunning('mpv'):
         return mpv.setAct(act, val)
