@@ -31,34 +31,51 @@ def index(req):
     val  = arg.get('val', None)
     p    = arg.get('p', None)
     q    = arg.get('q', None)
+    s    = arg.get('s', None)
+    v    = arg.get('v', None)
+    d    = arg.get('d', None)
+    f    = arg.get('f', None)
 
-    if url and url[0:4] != 'http' and url[0] != '/':
-        q = url
-        url = None
-
-    if p:
-        src = page.listURL(req, p)
-
-    elif q:
-        page.render(req, 'list', page.search(q))
-
-    elif url and re.search(r'^http', url):
+    if url:
         if re.search(r'www.eslpod.com', url):
             page.loadWord(req, url)
+            return
+        elif re.search(r'^http', url):
+            v = url
+        elif re.search(r'^/', url) and os.path.isdir(url):
+            d = url
+        elif re.search(r'^/', url) and os.path.exiists(url):
+            f = url
         else:
-            playURL(url)
-            page.render(req, 'panel', 'playURL <a target=_blank href=%s>%s</a>' %(url, url))
+            q = url
 
-    elif url and re.search(r'^/', url):
-        if os.path.isdir(url):
-            page.renderDIR(req, url)
-        elif os.path.exists(url):
-            playURL(url)
-            page.render(req, 'panel', 'playURL '+url)
+    if p:
+        page.listURL(req, p)
+
+    elif q:
+        page.search(req, q, s)
+
+    elif d:
+        page.renderDIR(req, d)
+
+    elif f:
+        playURL(f)
+        page.render(req, 'panel', 'playURL: '+v)
+
+    elif v:
+        playURL(v)
+        page.render(req, 'panel', '<br>playURL <a target=_blank href=%s>%s</a>' %(v, v))
+
+    elif act and val:
+        if act == 'load':
+            page.render(req, val, None)
+        else:
+            sendACT(act, val)
+            page.render(req, 'panel', '<br>%s %s' %(act, val))
 
     elif act:
-        sendACT(act, val)
-        page.render(req, 'panel', act+','+val)
+        sendACT(act, None)
+        page.render(req, 'panel', '<br>%s' %(act))
 
     else:
         page.render(req, 'panel', None)
