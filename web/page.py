@@ -1,11 +1,54 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import re, os, sys, time
-import requests, urllib2
-import subprocess
+import re
+import os
+import requests
+import urllib2
+import json
 import mangareader
 import eslpod
+
+class Entry:
+    def __init__(self, link=None, title=None, image=None):
+        self.link = link
+        self.title = title
+        self.image = image
+
+def loadFile(filename):
+    f = open(os.path.dirname(os.path.abspath(__file__))+'/'+filename, 'r')
+    return f.read()
+
+def render(req, filename, result):
+    html = loadFile(filename+'.html')
+    if result:
+        txt = ''
+        for obj in result:
+            if obj.link and obj.title:
+                txt += '<h2><a href=%s>%s</a></h2>\n' %(obj.link, obj.title)
+            if obj.link and obj.image:
+                txt += '<a href=%s><img src=%s class="img"/></a>\n' %(obj.link, obj.image)
+        html = re.sub('<!--result-->', txt, html)
+    req.write(html)
+
+def renderDIR(req, d):
+    html = loadFile('list.html')
+    txt = ''
+    txt += '<h1>Index of %s</h1>' %(d)
+    txt += '<div style="line-height:200%;font-size:20">'
+    txt += '<ul>'
+    for dirName, subdirList, fileList in os.walk(d):
+        for subdir in sorted(subdirList):
+            if subdir[0] != '.':
+                txt += '<li><img src="/icons/folder.gif"> <a href="view.py?url=%s/%s">%s</a>' %(dirName, subdir, subdir)
+        for fname in sorted(fileList):
+            if fname.lower().endswith(('.mkv', '.mp4', '.avi', '.flv', '.rmvb', '.rm', '.f4v', '.wmv', '.m3u', '.m3u8')):
+                txt += '<li><img src="/icons/movie.gif"> <a href="view.py?url=%s/%s">%s</a>' %(dirName, fname, fname)
+        break
+    txt += '</ul>'
+    txt += '</div>'
+    html = re.sub('<!--result-->', txt, html)
+    req.write(html)
 
 def load(url):
     headers={'User-Agent': 'Mozilla/5.0 (X11; Linux i686; rv:10.0) Gecko/20100101 Firefox/33.0'}
@@ -17,128 +60,83 @@ def load2(url):
     opener.addheaders = [('User-agent', 'Mozilla/5.0 (X11; Linux i686; rv:10.0) Gecko/20100101 Firefox/33.0')]
     return opener.open(url).read()
 
-def getImage(req, link):
-    if re.search(r'www.youtube.com/', link):
-        m = re.search(r'watch\?v=(.{11})', link)
+def image_yt(vid):
+    return 'http://img.youtube.com/vi/'+vid+'/0.jpg'
+
+def getImage(link):
+    m = re.search(r'www.youtube.com/watch\?v=(.{11})', link)
+    if m:
         return 'http://img.youtube.com/vi/%s/0.jpg' %(m.group(1))
-    if re.search(r'http://www.dailymotion.com/', link):
-        m = re.search(r'video/(.*)', link)
-        return 'http://www.dailymotion.com/thumbnail/video/%s' %(m.group(1))
-    return 'cat-walk-icon.png'
+    m = re.search(r'http://www.dailymotion.com/video/(.*)', link)
+    if m:
+        txt = load('https://api.dailymotion.com/video/%s?fields=thumbnail_large_url' %(m.group(1)))
+        data = json.loads(txt)
+        return data['thumbnail_large_url'].encode('utf8')
+    return None
 
-def addEntry(req, link, image, title):
-    req.write('\n\n<!-- ENTRY: %s -->\n' %(title))
-    if title != '':
-        req.write('<h2><a href=view.py?url=%s>%s</a></h2>\n' %(link, title))
-    if image == 'auto':
-        image = getImage(req, link)
-    req.write('<a href=view.py?url=%s><img src=%s class="img"/></a>\n' %(link, image))
+def entry_yt(vid, title):
+    link = 'view.py?url=https://www.youtube.com/watch?v='+vid
+    image = 'http://img.youtube.com/vi/'+vid+'/0.jpg'
+    return Entry(link, title, image)
 
-def addPage(req, link, title):
-    if title != '':
-        req.write('<h2>')
-        req.write('<a href=view.py?p=%s>%s</a>' %(link, title))
-        req.write('</h2>')
+def entry_dm(vid, title):
+    link = 'view.py?url=http://www.dailymotion.com/video/'+vid
+    txt = load('https://api.dailymotion.com/video/%s?fields=thumbnail_large_url' %(vid))
+    data = json.loads(txt)
+    return Entry(link, title, data['thumbnail_large_url'].encode('utf8'))
 
-def search_bing(req, q):
-    url = 'https://www.bing.com/videos/search?q=%s&qft=+filterui:duration-long+filterui:resolution-720p' %(q)
-    txt = load(url)
-    txt = re.sub('&quot;', '', txt)
-    match = re.finditer(r'vrhm="{([^}]*)}"', txt)
-    for m in match:
-        p = re.search(r'p:([^,]*)', m.group())
-        t = re.search(r't:([^,]*)', m.group())
-        if p and t:
-            addEntry(req, p.group(1), 'auto', 'Bing: '+t.group(1))
+def entry_p(link, title):
+    return Entry('view.py?p='+link, title, None)
 
-def search_yandex(req, q):
-    url = 'http://www.yandex.com/video/search?&text=%s&duration=long' %(q)
-    txt = load(url)
-    txt = re.sub('<b>', '', txt)
-    txt = re.sub('</b>', '', txt)
-    match = re.finditer(r'href="([^"]*)" target="_blank">([^<]*)</a></h2>', txt)
-    for m in match:
-        addEntry(req, m.group(1), 'auto', 'Yandex: '+m.group(2))
+def entry_v(link, title, image):
+    return Entry('view.py?url='+link, title, image)
 
-
-def search_google(req, q, site, arg):
-    if site != '':
-        q = 'site:%s+%s' %(site, q)
-    if arg == 'vid':
-        url = 'https://www.google.com.tw/search?tbm=vid&q=%s' %(q)
-    else:
-        url = 'https://www.google.com.tw/search?q=%s&safe=off&filter=0&num=10' %(q)
-
-    txt = load(url)
-    match = re.finditer(r'href="([^"]*)" [^>]*>([^<]*)</a></h3>', txt)
-    for m in match:
-        addEntry(req, m.group(1), 'auto', 'Google: '+m.group(2))
-
-    # Its suck !! Google will block robot requests
-    time.sleep(2)
-
-def search_youtube(req, q):
-    url = 'https://www.youtube.com/results?filters=hd&search_query=%s' %(q)
-    txt = load(url)
+def search_yt(q):
+    result = []
+    txt = load('https://www.youtube.com/results?filters=hd&search_query='+q)
     match = re.finditer(r'<a href="/watch\?v=(.{11})".*?>([^<]*)</a>', txt)
     for m in match:
-        addEntry(req, 'https://www.youtube.com/watch?v='+m.group(1), 'auto', 'YouTube: '+m.group(2))
+        result.append(entry_yt(m.group(1), m.group(2)))
+    return result
 
-def search_dailymotion(req, q):
-    url = 'http://www.dailymotion.com/tw/relevance/universal/search/%s/1' %(q)
-    txt = load(url)
+def search_dm(q):
+    result = []
+    txt = load('http://www.dailymotion.com/tw/relevance/universal/search/%s/1' %(q))
     match = re.finditer(r'href="/video/([^"]*)".*?>([^<]*)</a>', txt)
     for m in match:
-        addEntry(req, 'http://www.dailymotion.com/video/'+m.group(1), 'auto', 'Dailymotion: '+m.group(2))
+        result.append(entry_dm(m.group(1), m.group(2)))
+    return result
 
-def search(req, q):
+def search(q):
     q = re.sub(' ', '+', q)
-    search_youtube(req, q)
+    result = []
+    result.extend(search_yt(q))
+    result.extend(search_dm(q))
+    return result
 
 def loadWord(req, url):
     eslpod.loadWord(req, url)
 
 def listURL_def(req, url):
-
+    result = []
     vid = ''
     txt = load(url)
-    cnt = 0
-    link = ''
-    title = ''
-
     match = re.finditer(r'http://(www.dailymotion.com|videomega.tv|videowood.tv)/([^"]*)', txt)
     for m in match:
         if m.group() != vid:
-            if cnt == 1:
-                addEntry(req, link, 'auto', title)
             vid = m.group()
-            link = m.group()
-            title = m.group()
-            if cnt > 0:
-                addEntry(req, link, 'auto', title)
-            cnt = cnt + 1
-
+            result.append(entry_v(vid, vid, getImage(vid)))
     match = re.finditer(r'http://www.youtube.com/embed/(.{11})', txt)
     for m in match:
         if m.group(1) != vid:
-            if cnt == 1:
-                addEntry(req, link, 'auto', title)
             vid = m.group(1)
-            link = 'http://www.youtube.com/watch?v=%s' %(vid)
-            if cnt > 0:
-                addEntry(req, link, 'auto', 'Youtube: '+vid)
-            cnt = cnt + 1
-
-    if cnt == 1:
-        return link
-
-    return ''
+            result.append(entry_yt(vid, vid))
+    return result
 
 def listURL_xuite(req, url):
-
-    # http://vlog.xuite.net/isaac.ntnu*1 
+    # http://vlog.xuite.net/isaac.ntnu*1
     # http://m.xuite.net/vlog/isaac.ntnu/
-
+    result = []
     txt = load(url)
     hdr = re.sub('vlog.xuite.net/', 'm.xuite.net/vlog/', url)
     hdr = re.sub('\*.', '/', hdr)
@@ -149,91 +147,47 @@ def listURL_xuite(req, url):
         image = re.search(r'src="([^"]*)"', m.group(2))
         title = re.search(r'title="([^"]*)"', m.group(2))
         if image and title:
-            addEntry(req, link, 'http://vlog.xuite.net'+image.group(1), title.group(1))
+            result.append(entry_v(link, title.group(1), 'http://vlog.xuite.net'+image.group(1)))
+    return result
 
 def listURL_DramaQIndex(req, zone):
-
+    result = []
     home = 'http://www.dramaq.biz/'
     url = home + zone + '/'
     txt = load2(url)
-
     match = re.finditer(r'<a title="([^"]*)" href="([^"]*)"><img src="([^"]*)"', txt)
     for m in match:
         link = home + m.group(2)
         title = m.group(1)
         image = home + m.group(3)
-        addPage(req, link, title)
+        result.append(entry_p(link, title))
+    return result
 
 def listURL_dramaq(req, url):
     if re.search(r'php', url):
         return listURL_def(req, url)
-
+    result = []
     txt = load(url)
     match = re.finditer(r'<li class="item-751"><a href="([^.]*).php"', txt)
     for m in match:
         if re.search(r'ep', m.group(1)):
             link = url+m.group(1)+'.php'
             title = m.group(1)
-            addPage(req, link, title)
-
-def listURL_moviesunIndex(req, url, zone):
-
-    txt = load2(url)
-    state = 0
-
-    if zone == '':
-        state = 100
-
-    zone = '>%s<' %(zone)
-
-    for line in txt.splitlines():
-
-        if state != 100:
-            m = re.search(r'<h4 class="widget-title">(.*?)</h4>', line)
-            if m:
-                if re.search(zone, m.group()):
-                    state = 1
-                elif state == 1:
-                    break
-                else:
-                    state = 0
-                continue
-
-            m = re.search(r'<h3 class="widget-title section-title">(.*?)</h3>', line)
-            if m:
-                if re.search(zone, m.group()):
-                    state = 1
-                elif state == 1:
-                    break
-                else:
-                    state = 0
-                continue
-
-        if state >= 1:
-            m = re.search(r'<p class="cp-widget-title"><a href="([^"]*)" title="([^"]*)">', line)
-            if m:
-                link = m.group(1)
-                title = m.group(2)
-                addPage(req, link, title)
-
-
-def listURL_moviesun(req, url):
-    txt = load(url)
-    match = re.finditer(r'<li><strong><a href="([^"]*)" rel="bookmark" title="([^"]*)">', txt)
-    for m in match:
-        link = m.group(1)
-        title = m.group(2)
-        addEntry(req, link, 'auto', title)
+            result.append(entry_p(link, title))
+    return result
 
 def listURL_dodova(req, url):
+    result = []
     txt = load(url)
     match = re.finditer(r'<div class="mh-excerpt">([^<]*)<a href="([^"]*)" title="([^"]*)">', txt)
     for m in match:
         link = m.group(2)
         title = m.group(3)
-        addPage(req, link, title)
+        result.append(entry_v(link, title, None))
+    return result
 
 def listURL_jav(req, url):
+    result = []
     txt = load(url)
     match = re.finditer(r'href="([^"]*)"[^<]*<img([^>]*)>', txt)
     for m in match:
@@ -241,117 +195,99 @@ def listURL_jav(req, url):
         image = re.search(r'src="([^"]*)"', m.group(2))
         title = re.search(r'alt="([^"]*)"', m.group(2))
         if image and title:
-            addEntry(req, link, image.group(1), title.group(1))
+            result.append(entry_v(link, title.group(1), image.group(1)))
+    return result
 
 def listURL_youtube(req, url):
+    result = []
     vid = ''
     txt = load(url)
     match = re.finditer(r'watch\?v=(.{11})">([^<]*)</a>', txt)
     for m in match:
         if m.group(1) != vid:
             vid = m.group(1)
-            link = 'http://www.youtube.com/watch?v=%s' %(vid)
             title = m.group(2)
-            addEntry(req, link, 'auto', title)
-
+            result.append(entry_yt(vid, title))
     match = re.finditer(r'pl-video yt-uix-tile ([^>]*)', txt)
     for m in match:
-        link = re.search(r'data-video-id="([^"]*)"', m.group())
+        vid = re.search(r'data-video-id="([^"]*)"', m.group())
         title = re.search(r'data-title="([^"]*)"', m.group())
-        if link and title:
-            addEntry(req, 'http://www.youtube.com/watch?v='+link.group(1), 'auto', title.group(1))
+        if vid and title:
+            result.append(entry_yt(vid.group(1), title.group(1)))
+    return result
 
 def listURL_mangareader(req, url):
+    result = []
     txt = load(url)
     match = re.finditer(r'<a href="/one-piece/([^"]*)">([^"]*)</a>([^<]*)<', txt)
     for m in match:
         link = 'http://www.mangareader.net/one-piece/'+m.group(1)
         title = m.group(2)+m.group(3)
-        addPage(req, link, title)
+        result.append(entry_p(link, title))
+    return result
 
 def listURL_nbahd(req, url):
+    result = []
     txt = load(url)
     match = re.finditer(r'<h2 class="entry-title"><a href="([^"]*)"', txt)
-    if match:
-        req.write('<ul>')
-        for m in match:
-            url = m.group(1)
-            req.write('<li class="li"><a href=%s%s>%s</a>' %('view.py?url=', url, url))
-        req.write('</ul>')
-
-def listURL_letv(req, url):
-    txt = load(url)
-    fd = open('/tmp/letv.txt', 'w')
-    fd.write(txt)
-    fd.close
-    match = re.finditer(r'<dt class="hd_pic">.*?</dt>', txt, re.DOTALL)
     for m in match:
-        link = re.search(r'href="([^"]*)"', m.group())
-        image = re.search(r'src="([^"]*)"', m.group())
-        title = re.search(r'alt="([^"]*)"', m.group())
-        if link and image and title:
-            addEntry(req, link.group(1), image.group(1), title.group(1))
+        result.append(entry_p(m.group(1), m.group(1)))
+    return result
 
 def listURL(req, url):
 
+    result = []
+
     if url == 'mangareader':
-        listURL_mangareader(req, 'http://www.mangareader.net/one-piece')
-        return
+        result.extend(listURL_mangareader(req, 'http://www.mangareader.net/one-piece'))
 
-    if url == 'nbahd':
-        listURL_nbahd(req, 'http://nbahd.com/page/1/')
-        listURL_nbahd(req, 'http://nbahd.com/page/2/')
-        listURL_nbahd(req, 'http://nbahd.com/page/3/')
-        return
+    elif url == 'nbahd':
+        result.extend(listURL_nbahd(req, 'http://nbahd.com/page/1/'))
+        result.extend(listURL_nbahd(req, 'http://nbahd.com/page/2/'))
+        result.extend(listURL_nbahd(req, 'http://nbahd.com/page/3/'))
 
-    if url == 'dramaq-tw':
-        return listURL_DramaQIndex(req, 'tw')
+    elif url == 'dramaq-tw':
+        result.extend(listURL_DramaQIndex(req, 'tw'))
 
-    if url == 'dramaq-kr':
-        return listURL_DramaQIndex(req, '')
+    elif url == 'dramaq-kr':
+        result.extend(listURL_DramaQIndex(req, ''))
 
-    if url == 'dramaq-jp':
-        return listURL_DramaQIndex(req, 'jp')
+    elif url == 'dramaq-jp':
+        result.extend(listURL_DramaQIndex(req, 'jp'))
 
-    if url == 'dramaq-us':
-        return listURL_DramaQIndex(req, 'us')
+    elif url == 'dramaq-us':
+        result.extend(listURL_DramaQIndex(req, 'us'))
 
-    if url == 'dramaq-cn':
-        return listURL_DramaQIndex(req, 'cn')
+    elif url == 'dramaq-cn':
+        result.extend(listURL_DramaQIndex(req, 'cn'))
 
-    if url == 'moviesun-kr':
-        return listURL_moviesunIndex(req, 'http://moviesunkd.com/', '韓劇列表')
+    elif re.search(r'youtube.com', url):
+        result.extend(listURL_youtube(req, url))
 
-    if url == 'moviesun-jp':
-        return listURL_moviesunIndex(req, 'http://moviesuntw.com/', '日劇')
+    elif re.search(r'xuite.net', url):
+        result.extend(listURL_xuite(req, url))
 
-    if re.search(r'youtube.com', url):
-        return listURL_youtube(req, url)
+    elif re.search(r'dramaq', url):
+        result.extend(listURL_dramaq(req, url))
 
-    if re.search(r'xuite.net', url):
-        return listURL_xuite(req, url)
+    elif re.search(r'moviesun', url):
+        result.extend(listURL_moviesun(req, url))
 
-    if re.search(r'dramaq', url):
-        return listURL_dramaq(req, url)
-
-    if re.search(r'moviesun', url):
-        return listURL_moviesun(req, url)
-
-    if re.search(r'mangareader.net', url):
+    elif re.search(r'mangareader.net', url):
         return mangareader.loadImage(req, url)
 
-    if re.search(r'movie.dodova.com/category/', url):
-        listURL_dodova(req, url+'/page/1')
-        listURL_dodova(req, url+'/page/2')
-        listURL_dodova(req, url+'/page/3')
-        listURL_dodova(req, url+'/page/4')
-        listURL_dodova(req, url+'/page/5')
-        return
- 
-    if re.search('jav(68|pub|cuteonline)',url):
-        return listURL_jav(req, url)
+    elif re.search(r'movie.dodova.com/category/', url):
+        result.extend(listURL_dodova(req, url+'/page/1'))
+        result.extend(listURL_dodova(req, url+'/page/2'))
+        result.extend(listURL_dodova(req, url+'/page/3'))
+        result.extend(listURL_dodova(req, url+'/page/4'))
+        result.extend(listURL_dodova(req, url+'/page/5'))
 
-    if re.search('letv.com', url):
-        return listURL_letv(req, url)
+    elif re.search('jav(68|pub|cuteonline)',url):
+        result.extend(listURL_jav(req, url))
 
-    return listURL_def(req, url)
+    else:
+        result.extend(listURL_def(req, url))
+
+    render(req, 'list', result)
+

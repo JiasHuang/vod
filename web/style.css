@@ -1,0 +1,15 @@
+
+.display {
+	font-size:32px;
+	border:0px; 
+}
+
+.img {
+    max-width:480px;
+    max-height:320px;
+}
+
+.li{
+    margin: 16px 0;
+}
+

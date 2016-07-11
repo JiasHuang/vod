@@ -33,7 +33,7 @@ def processURL1(url):
         xplay.playURL(src, url)
         return 0
 
-    if re.search('nbahd.com', url):
+    if re.search('nbahd.net', url):
         src = nbahd.getSource(url)
         xplay.playURL(src, '')
         return 0
