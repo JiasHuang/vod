@@ -54,6 +54,19 @@ def index(req):
     if P:
         p = urllib.unquote(P)
 
+    if url:
+        if re.search(r'www.eslpod.com', url):
+            page.loadWord(req, url)
+            return
+        elif re.search(r'^http', url):
+            v = url
+        elif re.search(r'^/', url) and os.path.isdir(url):
+            d = url
+        elif re.search(r'^/', url) and os.path.exiists(url):
+            f = url
+        else:
+            q = url
+
     if p:
         page.listURL(req, p)
 
@@ -80,7 +93,6 @@ def index(req):
         else:
             sendACT(act, val)
             page.render(req, 'panel', '<br><h1>%s %s</h1>' %(act, val or ''))
-
     else:
         page.render(req, 'panel', None)
 
