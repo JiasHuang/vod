@@ -50,7 +50,7 @@ def findVideo(req, url):
 def findPage(req, url, showImage=False):
     parsed_uri = urlparse.urlparse(url)
     domain = '{uri.scheme}://{uri.netloc}'.format(uri=parsed_uri)
-    txt = load(url)
+    txt = load2(url)
     for m in re.finditer(r'<a .*?</a>', txt, re.DOTALL):
         link = re.search(r'href="([^"]*)"', m.group(0))
         title = re.search(r'title="([^"]*)"', m.group(0))
