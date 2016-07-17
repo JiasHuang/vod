@@ -86,7 +86,7 @@ def runMPV(url, ref):
         xargs = xargs + ' --referrer=\'%s\'' %(ref)
         xargs = xargs + ' --input-file=\'%s\'' %(xdef.fifo)
 
-        p = subprocess.call('%s %s \'%s\'' %(xdef.mpv, xargs, url), shell=True)
+        p = subprocess.Popen('%s %s \'%s\'' %(xdef.mpv, xargs, url), shell=True)
 
     else:
         os.system('echo loadfile \"%s\" > %s' %(url, xdef.fifo))
