@@ -66,6 +66,7 @@ def runSMP(url, ref):
 
 def runMPV(url, ref):
 
+    p = None
     xargs = ''
 
     if url[0] == '/':
@@ -85,19 +86,18 @@ def runMPV(url, ref):
         xargs = xargs + ' --referrer=\'%s\'' %(ref)
         xargs = xargs + ' --input-file=\'%s\'' %(xdef.fifo)
 
-        sub = youtubedl.extractSUB(ref)
-        if sub:
-            xargs = '%s --sub-file=\'%s\'' %(xargs, sub)
-
-        os.system('%s %s \'%s\'' %(xdef.mpv, xargs, url))
+        p = subprocess.call('%s %s \'%s\'' %(xdef.mpv, xargs, url), shell=True)
 
     else:
         os.system('echo loadfile \"%s\" > %s' %(url, xdef.fifo))
         os.system('echo sub-remove > %s' %(xdef.fifo))
 
-        sub = youtubedl.extractSUB(ref)
-        if sub:
-            os.system('echo sub-add \"%s\" select > %s' %(sub, xdef.fifo))
+    sub = youtubedl.extractSUB(ref)
+    if sub:
+        os.system('echo sub-add \"%s\" select > %s' %(sub, xdef.fifo))
+
+    if p:
+        p.communicate()
 
     return 0
 
