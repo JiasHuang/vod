@@ -82,7 +82,7 @@ def index(req):
 
     elif v:
         playURL(v)
-        page.render(req, 'panel', '<br>playURL <a target=_blank href=%s>%s</a>' %(v, v))
+        page.render(req, 'panel', '<br><br><br><h1>playURL <a target=_blank href=%s>%s</a><h1>' %(v, v))
 
     elif w:
         page.loadword(req, w)
@@ -92,7 +92,7 @@ def index(req):
             page.render(req, val, None)
         else:
             sendACT(act, val)
-            page.render(req, 'panel', '<br><h1>%s %s</h1>' %(act, val or ''))
+            page.render(req, 'panel', '<br><br><br><h1>%s %s</h1>' %(act, val or ''))
     else:
         page.render(req, 'panel', None)
 

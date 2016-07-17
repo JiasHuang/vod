@@ -114,9 +114,9 @@ def runOMXP(url, ref):
         omxp.setAct('stop', None)
     sub = youtubedl.extractSUB(ref)
     if sub:
-        os.system('%s \'%s\' \'%s\'' %(xdef.omxp, url, sub))
+        os.system('omxplayer -o hdmi -I --subtitle \'%s\' \'%s\' 2>&1 | tee %s' %(sub, url, xdef.log))
     else:
-        os.system('%s \'%s\'' %(xdef.omxp, url))
+        os.system('omxplayer -o hdmi -I \'%s\' 2>&1 | tee %s' %(url, xdef.log))
     return 0
 
 def runDBG(url, ref):

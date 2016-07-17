@@ -1,53 +1,32 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import os, sys, time
+import re
 import subprocess
 import xdef
 
 def setAct(act, val):
-    if act == 'pause':
-        cmd = 'p'
-    elif act == 'stop':
-        cmd = 'q'
-    elif act == 'forward' and val:
-        cmd = '\x1b[C'
+
+    if act == 'forward' and val:
+        cmd = 'seek %s' %(int(val) * 1000000)
     elif act == 'backward' and val:
-        cmd = '\x1b[D'
+        cmd = 'seek -%s' %(int(val) * 1000000)
+    elif act == 'percent' and val:
+        with open(xdef.log, 'r') as fd:
+            m = re.search(r'Duration: (.*?):(.*?):(.*?),', fd.read())
+            if m:
+                duration = int(m.group(1)) * 3600 + int(m.group(2)) * 60 + int(float(m.group(3)))
+                position = duration * int(val) * 1000000 / 100
+                cmd = 'setposition %s' %(position)
+            else:
+                print('Get Duration Fail')
+                return
+    elif act in ['pause', 'stop']:
+        cmd = '%s' %(act)
     else:
         print 'unsupported: %s %s' %(act, val)
         return
 
-    os.system('echo %s > %s' %(cmd, xdef.fifo))
-
-def main():
-
-    url = None
-    sub = None
-    opt = '-o hdmi '
-
-    if len(sys.argv) < 2:
-        print 'usage: omxp.py url sub'
-        return
-
-    url = sys.argv[1]
-
-    if len(sys.argv) >= 3:
-        sub = sys.argv[2]
-        opt = opt + '--subtitle %s ' %(sub)
-
-    cmd = 'omxplayer %s \'%s\'' %(opt, url)
-    proc = subprocess.Popen(cmd, shell=True, stdin=subprocess.PIPE)
-    pipe = proc.stdin
-    fifo = open(xdef.fifo)
-
-    while proc.poll() == None:
-        line = fifo.read()
-        if line:
-            line = line.rstrip()
-            proc.stdin.write(line)
-        time.sleep(1)
-
-
-if __name__ == '__main__':
-    main()
+    print('\n[omxp][act]\n\n\t%s%s %s' %(xdef.codedir, 'dbuscontrol.sh', cmd))
+    result = subprocess.check_output('%s%s %s' %(xdef.codedir, 'dbuscontrol.sh', cmd), shell=True)
+    print('\n[omxp][result]\n\n\t%s' %(result))
