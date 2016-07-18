@@ -11,6 +11,8 @@ import page
 def load(url):
     headers={'User-Agent': 'Mozilla/5.0 (X11; Linux i686; rv:10.0) Gecko/20100101 Firefox/33.0'}
     r = requests.get(url, headers=headers)
+    if r.encoding == 'ISO-8859-1' and r.apparent_encoding == 'utf-8':
+        r.encoding =  r.apparent_encoding
     return r.text.encode('utf8')
 
 def load2(url):
@@ -32,8 +34,7 @@ def getImage(link):
         return 'http://www.dailymotion.com/thumbnail/video/'+m.group(1)
     return None
 
-
-def findVideo(req, url):
+def findVideoLink(req, url, showPage=True, showImage=False):
     parsed_uri = urlparse.urlparse(url)
     domain = '{uri.scheme}://{uri.netloc}'.format(uri=parsed_uri)
     txt = load(url)
@@ -45,24 +46,18 @@ def findVideo(req, url):
             link1 = absURL(domain, link.group(1))
             title1 = title.group(1)
             image1 = absURL(domain, image.group(1))
-            page.addVideo(req, link1, title1, image1)
-
-def findPage(req, url, showImage=False):
-    parsed_uri = urlparse.urlparse(url)
-    domain = '{uri.scheme}://{uri.netloc}'.format(uri=parsed_uri)
-    txt = load2(url)
-    for m in re.finditer(r'<a .*?</a>', txt, re.DOTALL):
-        link = re.search(r'href="([^"]*)"', m.group(0))
-        title = re.search(r'title="([^"]*)"', m.group(0))
-        image = re.search(r'src="([^"]*)"', m.group(0))
-        if link and title and image:
-            link1 = absURL(domain, link.group(1))
-            title1 = title.group(1)
-            image1 = absURL(domain, image.group(1))
-            if showImage == True:
+            if showPage == False:
+                page.addVideo(req, link1, title1, image1)
+            elif showImage == True:
                 page.addPage(req, link1, title1, image1)
             else:
                 page.addPage(req, link1, title1)
+
+def findVideo(req, url):
+    return findVideoLink(req, url)
+
+def findPage(req, url, showImage=False):
+    return findVideoLink(req, url, True, showImage)
 
 def findLink(req, url):
     link = ''

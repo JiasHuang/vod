@@ -91,7 +91,7 @@ def search_dm(req, q):
             addDailyMotion(req, vid, title)
 
 def search_bi(req, q):
-    meta.findVideo(req, 'http://search.bilibili.com/video?keyword=%s&order=click' %(q))
+    meta.findPage(req, 'http://search.bilibili.com/video?keyword=%s&order=click' %(q), True)
 
 def search(req, q, s):
     html = re.split('<!--result-->', loadFile('list.html'))
@@ -138,20 +138,22 @@ def listURL_def(req, url):
 def listURL_xuite(req, url):
     meta.findVideo(req, url)
 
-def listURL_BilibiliIndex(req, tag):
-    x = re.split('/', tag)
-    url = 'http://www.bilibili.com/video/soap-three-1.html#!page=1&tag=%s&days=30&order=hot' %(x[1])
-    meta.findPage(req, url)
-
-def listURL_DramaQIndex(req, tag):
-    x = re.split('/', tag)
-    url = 'http://www.dramaq.biz/%s/' %(x[1])
-    url = re.sub('/kr/', '/', url)
-    meta.findPage(req, url)
+def listURL_bilibili(req, url):
+    if re.search(r'page=', url):
+        meta.findPage(req, url)
+        return
+    match = re.search(r'<select id=\'dedepagetitles\' .*?</select>', load(url), re.DOTALL)
+    if match:
+        for m in re.finditer(r'<option value=\'([^\']*)\'>([^<]*)</option>', match.group(0)):
+            addVideo(req, 'http://www.bilibili.com'+m.group(1), m.group(2))
+    else:
+        addVideo(req, url, url)
 
 def listURL_dramaq(req, url):
     if re.search(r'php', url):
         return listURL_def(req, url)
+    if re.search(r'(biz|jp/|us/)$', url):
+        return meta.findPage(req, url)
     for m in re.finditer(r'<li class="item-751"><a href="([^.]*).php"', load(url)):
         if re.search(r'ep', m.group(1)):
             link = url+m.group(1)+'.php'
@@ -209,20 +211,17 @@ def listURL(req, url):
         listURL_nbahd(req, 'http://nbahd.com/page/2/')
         listURL_nbahd(req, 'http://nbahd.com/page/3/')
 
-    elif re.search(r'bilibili/', url):
-        listURL_BilibiliIndex(req, url)
+    elif re.search(r'bilibili', url):
+        listURL_bilibili(req, url)
 
-    elif re.search(r'dramaq/', url):
-        listURL_DramaQIndex(req, url)
+    elif re.search(r'dramaq', url):
+        listURL_dramaq(req, url)
 
     elif re.search(r'youtube.com', url):
         listURL_youtube(req, url)
 
     elif re.search(r'xuite.net', url):
         listURL_xuite(req, url)
-
-    elif re.search(r'dramaq', url):
-        listURL_dramaq(req, url)
 
     elif re.search(r'mangareader.net', url):
         mangareader.loadImage(req, url)
