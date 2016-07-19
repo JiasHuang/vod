@@ -34,7 +34,7 @@ def getImage(link):
         return 'http://www.dailymotion.com/thumbnail/video/'+m.group(1)
     return None
 
-def findVideoLink(req, url, showPage=True, showImage=False):
+def findVideoLink(req, url, showPage=False, showImage=False):
     parsed_uri = urlparse.urlparse(url)
     domain = '{uri.scheme}://{uri.netloc}'.format(uri=parsed_uri)
     txt = load(url)
