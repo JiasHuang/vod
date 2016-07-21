@@ -153,7 +153,6 @@ def listURL_dramaq(req, url):
         return listURL_def(req, url)
     if re.search(r'(biz|jp/|us/|cn/)$', url):
         meta.findPage(req, url)
-        req.write('<hr>')
         for m in re.finditer(r'<a class="mod-articles-category-title " href="([^"]*)">([^"]*)</a>', load(url)):
             if m.group(1)[-1] == '/':
                 addPage(req, 'http://www.dramaq.biz'+m.group(1), m.group(2))
