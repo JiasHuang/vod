@@ -45,14 +45,7 @@ def renderDIR(req, d):
     req.write(html[1])
 
 def load(url):
-    headers={'User-Agent': 'Mozilla/5.0 (X11; Linux i686; rv:10.0) Gecko/20100101 Firefox/33.0'}
-    r = requests.get(url, headers=headers)
-    return r.text.encode('utf8')
-
-def load2(url):
-    opener = urllib2.build_opener()
-    opener.addheaders = [('User-agent', 'Mozilla/5.0 (X11; Linux i686; rv:10.0) Gecko/20100101 Firefox/33.0')]
-    return opener.open(url).read()
+    return meta.load(url)
 
 def addEntry(req, link, title, image=None):
     req.write('<a href=%s>\n' %(link))
@@ -142,18 +135,26 @@ def listURL_bilibili(req, url):
     if re.search(r'page=', url):
         meta.findPage(req, url)
         return
-    match = re.search(r'<select id=\'dedepagetitles\' .*?</select>', load(url), re.DOTALL)
+    txt = load(url)
+    match = re.search(r'<select id=\'dedepagetitles\' .*?</select>', txt, re.DOTALL)
     if match:
         for m in re.finditer(r'<option value=\'([^\']*)\'>([^<]*)</option>', match.group(0)):
             addVideo(req, 'http://www.bilibili.com'+m.group(1), m.group(2))
     else:
-        addVideo(req, url, url)
+        image = re.search(r'<img src="([^"]*)"', txt)
+        if image:
+            addVideo(req, url, url, image.group(1))
+        else:
+            addVideo(req, url, url)
 
 def listURL_dramaq(req, url):
     if re.search(r'php', url):
         return listURL_def(req, url)
-    if re.search(r'(biz|jp/|us/)$', url):
-        return meta.findPage(req, url)
+    if re.search(r'(biz|jp/|us/|cn/)$', url):
+        meta.findPage(req, url)
+        for m in re.finditer(r'<a class="mod-articles-category-title " href="([^"]*)">([^"]*)</a>', load(url)):
+            addPage(req, 'http://www.dramaq.biz'+m.group(1), m.group(2))
+        return
     for m in re.finditer(r'<li class="item-751"><a href="([^.]*).php"', load(url)):
         if re.search(r'ep', m.group(1)):
             link = url+m.group(1)+'.php'
