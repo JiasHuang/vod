@@ -22,11 +22,14 @@ def load1(url):
 def load2(url):
     opener = urllib2.build_opener()
     opener.addheaders = [('User-agent', 'Mozilla/5.0 (X11; Linux i686; rv:10.0) Gecko/20100101 Firefox/33.0')]
-    f = opener.open(url)
-    if f.info().get('Content-Encoding') == 'gzip':
-        buf = StringIO(f.read())
-        return gzip.GzipFile(fileobj=buf).read()
-    return f.read()
+    try:
+        f = opener.open(url)
+        if f.info().get('Content-Encoding') == 'gzip':
+            buf = StringIO(f.read())
+            return gzip.GzipFile(fileobj=buf).read()
+        return f.read()
+    except:
+        return ''
 
 def load(url):
     return load2(url)

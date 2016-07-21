@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import re
-import requests, urllib2
 import meta
 
 def loadWord(req, url):

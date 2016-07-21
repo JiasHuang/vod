@@ -3,8 +3,6 @@
 
 import os
 import re
-import requests
-import urllib2
 import meta
 
 def loadImage(req, url):
