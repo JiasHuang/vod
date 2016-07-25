@@ -92,7 +92,7 @@ def runMPV(url, ref):
         os.system('echo loadfile \"%s\" > %s' %(url, xdef.fifo))
         os.system('echo sub-remove > %s' %(xdef.fifo))
 
-    sub = youtubedl.extractSUB(ref)
+    sub = youtubedl.extractSUB_keepvid(ref)
     if sub:
         os.system('echo sub-add \"%s\" select > %s' %(sub, xdef.fifo))
 
@@ -112,7 +112,7 @@ def runOMXP(url, ref):
         url = youtubedl.extractURL(url)
     if checkProcessRunning('omxplayer.bin'):
         omxp.setAct('stop', None)
-    sub = youtubedl.extractSUB(ref)
+    sub = youtubedl.extractSUB_keepvid(ref)
     if sub:
         os.system('omxplayer -o hdmi -I --subtitle \'%s\' \'%s\' 2>&1 | tee %s' %(sub, url, xdef.log))
     else:
