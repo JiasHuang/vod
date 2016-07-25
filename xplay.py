@@ -114,8 +114,10 @@ def runOMXP(url, ref):
         omxp.setAct('stop', None)
     sub = youtubedl.extractSUB_keepvid(ref)
     if sub:
+        print('\n[omxp][play]\n\n\t')
         os.system('omxplayer -o hdmi -I --subtitle \'%s\' \'%s\' 2>&1 | tee %s' %(sub, url, xdef.log))
     else:
+        print('\n[omxp][play]\n\n\t')
         os.system('omxplayer -o hdmi -I \'%s\' 2>&1 | tee %s' %(url, xdef.log))
     return 0
 

@@ -1,5 +1,7 @@
 #!/bin/sh
 
+sudo python -m compileall .
+
 sudo mkdir -p /var/www/html/vod/
 sudo cp -vu web/* /var/www/html/vod/
 
