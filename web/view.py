@@ -82,7 +82,7 @@ def index(req):
 
     elif f:
         playURL(f)
-        page.render(req, 'panel', 'playURL: '+v)
+        page.render(req, 'panel', 'playURL: '+f)
 
     elif v:
         playURL(v)
