@@ -57,8 +57,10 @@ def addEntry(req, link, title, image=None):
 def addPage(req, link, title, image=None):
     addEntry(req, 'view.py?p='+link, title, image)
 
-def addVideo(req, link, title, image=None):
-    addEntry(req, 'view.py?v='+link, title, image)
+def addVideo(req, link, title=None, image=None):
+    if re.search(r'^//', link):
+        link = re.sub('//', 'http://', link)
+    addEntry(req, 'view.py?v='+link, title or link, image or meta.getImage(link))
 
 def addYouTube(req, vid, title):
     link = 'https://www.youtube.com/watch?v='+vid
@@ -150,7 +152,15 @@ def listURL_bilibili(req, url):
 
 def listURL_dramaq(req, url):
     if re.search(r'php', url):
-        return listURL_def(req, url)
+        for m in re.finditer(r'(.*?)\n(.*?)<iframe (.*?)</iframe>', load(url)):
+            src = re.search(r'src="([^"]*)"', m.group(3))
+            pw = re.search(r':([^<]*)</font>', m.group(1))
+            if src and pw:
+                addVideo(req, src.group(1)+'&ytdl_password='+pw.group(1))
+            elif src:
+                addVideo(req, src.group(1))
+        return
+
     if re.search(r'(biz|jp/|us/|cn/)$', url):
         meta.findPage(req, url)
         for m in re.finditer(r'<a class="mod-articles-category-title " href="([^"]*)">([^"]*)</a>', load(url)):

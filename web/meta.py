@@ -40,6 +40,7 @@ def absURL(domain, url):
     return url
 
 def getImage(link):
+    link = re.sub('/embed/', '/', link)
     m = re.search(r'www.youtube.com/watch\?v=(.{11})', link)
     if m:
         return 'http://img.youtube.com/vi/%s/0.jpg' %(m.group(1))

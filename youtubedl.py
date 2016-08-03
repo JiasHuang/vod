@@ -17,11 +17,20 @@ def findSite(url):
 
 def checkURL(url):
     site = findSite(url)
-    return re.compile('(youtube|dailymotion|facebook|google|bilibili)').search(site)
+    return re.compile('(youtube|dailymotion|facebook|google|bilibili|vimeo)').search(site)
 
 def extractURL_def(url):
+
     print('\n[ytdl][url]\n\n\t'+url)
-    cmd = '%s -g --cookies %s \'%s\'' %(xdef.ytdl, xdef.cookies, url)
+
+    xarg = ''
+    match = re.search(r'(.*?)&ytdl_password=(.*?)$', url)
+    if match:
+        url = match.group(1)
+        xarg = '--video-password ' + match.group(2)
+        print('\n[ytdl][password]\n\n\t'+match.group(2))
+
+    cmd = '%s -g --cookies %s %s \'%s\'' %(xdef.ytdl, xdef.cookies, xarg, url)
     try:
         start_time = timeit.default_timer()
         output = subprocess.check_output(cmd, shell=True)
