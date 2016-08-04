@@ -3,7 +3,8 @@
 
 import os, re, sys, time
 import xdef, xurl, xplay
-import videomega, videowood, openload, xuite, jav, nbahd, letv, goodtv
+import videomega, videowood, openload, up2stream
+import xuite, jav, nbahd, letv, goodtv
 import youtubedl
 
 def processURL1(url): 
@@ -30,6 +31,11 @@ def processURL1(url):
 
     if re.search('openload.co', url):
         src = openload.getSource(url)
+        xplay.playURL(src, url)
+        return 0
+
+    if re.search('up2stream.com', url):
+        src = up2stream.getSource(url)
         xplay.playURL(src, url)
         return 0
 

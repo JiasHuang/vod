@@ -39,14 +39,30 @@ def absURL(domain, url):
         return domain+url
     return url
 
+def findPoster(link):
+    poster = re.search(r'poster="([^"]*)"', load(link))
+    if poster:
+        return poster.group(1)
+    return None
+
 def getImage(link):
-    link = re.sub('/embed/', '/', link)
-    m = re.search(r'www.youtube.com/watch\?v=(.{11})', link)
+
+    m = re.search(r'www.youtube.com/(watch\?v=|embed/)(.{11})', link)
     if m:
-        return 'http://img.youtube.com/vi/%s/0.jpg' %(m.group(1))
-    m = re.search(r'http://www.dailymotion.com/video/(.*)', link)
+        return 'http://img.youtube.com/vi/%s/0.jpg' %(m.group(2))
+
+    m = re.search(r'http://www.dailymotion.com/(embed/|)video/(.*)', link)
     if m:
-        return 'http://www.dailymotion.com/thumbnail/video/'+m.group(1)
+        return 'http://www.dailymotion.com/thumbnail/video/'+m.group(2)
+
+    m = re.search(r'youku.com/(embed/|v_show/id_)([0-9a-zA-Z]*)', link)
+    if m:
+        return 'http://events.youku.com/global/api/video-thumb.php?vid=' + m.group(2)
+
+    m = re.search(r'(videomega.tv|up2stream.com)', link)
+    if m:
+        return findPoster(link)
+
     return None
 
 def findVideoLink(req, url, showPage=False, showImage=False):

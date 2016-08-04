@@ -51,7 +51,7 @@ def addEntry(req, link, title, image=None):
     req.write('<a href=%s>\n' %(link))
     req.write('<h2>%s</h2>\n' %(title))
     if image:
-        req.write('<img src=%s class=img/>\n' %(image))
+        req.write('<img src=%s class=img />\n' %(image))
     req.write('</a>\n')
 
 def addPage(req, link, title, image=None):
@@ -156,7 +156,8 @@ def listURL_dramaq(req, url):
             src = re.search(r'src="([^"]*)"', m.group(3))
             pw = re.search(r':([^<]*)</font>', m.group(1))
             if src and pw:
-                addVideo(req, src.group(1)+'&ytdl_password='+pw.group(1))
+                link = src.group(1)+'&ytdl_password='+re.split(' ', pw.group(1))[0]
+                addEntry(req, 'view.py?V='+urllib.quote(link), src.group(1))
             elif src:
                 addVideo(req, src.group(1))
         return
@@ -177,7 +178,7 @@ def listURL_dodova(req, url):
     for m in re.finditer(r'<div class="mh-excerpt">([^<]*)<a href="([^"]*)" title="([^"]*)">', load(url)):
         link = m.group(2)
         title = m.group(3)
-        addVideo(req, link, title, None)
+        addPage(req, link, title, None)
 
 def listURL_youtube(req, url):
     if re.search(r'playlist?', url):
@@ -243,8 +244,6 @@ def listURL(req, url):
         listURL_dodova(req, url+'/page/1')
         listURL_dodova(req, url+'/page/2')
         listURL_dodova(req, url+'/page/3')
-        listURL_dodova(req, url+'/page/4')
-        listURL_dodova(req, url+'/page/5')
 
     elif re.search('jav(68|pub|cuteonline)',url):
         listURL_jav(req, url)

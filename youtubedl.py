@@ -17,7 +17,12 @@ def findSite(url):
 
 def checkURL(url):
     site = findSite(url)
-    return re.compile('(youtube|dailymotion|facebook|google|bilibili|vimeo)').search(site)
+    return re.compile('(youtube|dailymotion|facebook|google|bilibili|vimeo|youku)').search(site)
+
+def redirectURL(url):
+    if re.search(r'youku', url):
+        url = re.sub('player.youku.com/embed/', 'v.youku.com/v_show/id_', url)
+    return url
 
 def extractURL_def(url):
 
@@ -106,5 +111,6 @@ def extractSUB_keepvid(url):
     return None
 
 def extractURL(url):
+    url = redirectURL(url)
     return extractURL_keepvid(url) or extractURL_def(url)
 

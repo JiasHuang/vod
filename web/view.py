@@ -42,6 +42,7 @@ def index(req):
     f    = arg.get('f', None)
     w    = arg.get('w', None)
     P    = arg.get('P', None)
+    V    = arg.get('V', None)
 
     if url:
         if re.search(r'www.eslpod.com', url):
@@ -57,6 +58,9 @@ def index(req):
 
     if P:
         p = urllib.unquote(P)
+
+    if V:
+        v = urllib.unquote(V)
 
     if url:
         if re.search(r'www.eslpod.com', url):
