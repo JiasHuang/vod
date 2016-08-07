@@ -20,6 +20,9 @@ def getPlayer():
     if os.path.exists('/usr/bin/omxplayer'):
         return 'omxp'
 
+    if os.path.exists('/usr/bin/smplayer'):
+        return 'smp'
+
     return 'err'
 
 def checkFileArgs(url):
@@ -42,17 +45,17 @@ def checkProcessRunning(process):
         return False
 
 def runIdle():
-    subprocess.Popen(['smplayer', '-send-action', 'stop'])
-    subprocess.Popen(['xbmc-send', '-a', 'Stop'])
+    subprocess.Popen('smplayer -send-action stop', shell=True)
+    subprocess.Popen('xbmc-send -a Stop', shell=True)
     return
 
 def runXBMC(url, ref):
      # start xbmc if necessary
     if not checkProcessRunning('kodi.bin'):
-        subprocess.Popen(['kodi'])
+        subprocess.Popen('kodi', shell=True)
         time.sleep(8)
     cmd = 'PlayMedia(%s|Referer=%s)' %(url, ref)
-    subprocess.Popen(['xbmc-send', '-a', cmd])
+    subprocess.Popen('xbmc-send -a %s' %(cmd), shell=True)
     return 0
 
 def runSMP(url, ref):
@@ -61,7 +64,7 @@ def runSMP(url, ref):
     if url == '':
         print '[xplay] invalid url'
         return 0
-    subprocess.Popen(['smplayer', '-fullscreen', url])
+    subprocess.Popen('%s \'%s\'' %(xdef.smp, url), shell=True)
     return 0
 
 def runMPV(url, ref):

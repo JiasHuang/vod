@@ -45,3 +45,9 @@
 2. sudo reboot
 
 -----------------------------------------------------------
+[option] xterm Xt error: Can't open display: :0
+
+1. sudo xhost +SI:localuser:www-data
+
+-----------------------------------------------------------
+
