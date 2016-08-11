@@ -59,9 +59,9 @@ def getImage(link):
     if m:
         return 'http://events.youku.com/global/api/video-thumb.php?vid=' + m.group(2)
 
-    m = re.search(r'(videomega.tv|up2stream.com)', link)
-    if m:
-        return findPoster(link)
+    #m = re.search(r'(videomega.tv|up2stream.com)', link)
+    #if m:
+    #    return findPoster(link)
 
     return None
 
@@ -92,9 +92,9 @@ def findPage(req, url, showImage=False):
 
 def findLink(req, url):
     link = ''
-    for m in re.finditer(r'http://(www.dailymotion.com|videomega.tv|videowood.tv|www.youtube.com)/([0-9a-zA-Z=/_?.]*)', load(url)):
-        if m.group() != link:
-            link = m.group()
+    txt = load(url)
+    for m in re.finditer(r'"http://(www.|)(dailymotion|videomega|videowood|youtube)(.com|.tv)([^"]*)', txt):
+        if m.group()[1:-1] != link:
+            link = m.group()[1:-1]
             image = getImage(link)
             page.addVideo(req, link, link, image)
-
