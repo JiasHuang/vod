@@ -51,3 +51,9 @@
 mmal error try setting video ram to 192
 echo "gpu_mem=192" >> /boot/config.txt (might need to be root)
 
+-----------------------------------------------------------
+[option] [ao/alsa] Playback open error: No such file or directory
+
+sudo setfacl -m u:www-data:rw /dev/snd/*
+
+-----------------------------------------------------------
