@@ -46,4 +46,8 @@
 1. sudo xhost +SI:localuser:www-data
 
 -----------------------------------------------------------
+[option] vo/rpi Could not create EGL surface
+
+mmal error try setting video ram to 192
+echo "gpu_mem=192" >> /boot/config.txt (might need to be root)
 
