@@ -47,14 +47,22 @@
 1. sudo xhost +SI:localuser:www-data
 
 -----------------------------------------------------------
-[option] vo/rpi Could not create EGL surface
-
-mmal error try setting video ram to 192
-echo "gpu_mem=192" >> /boot/config.txt (might need to be root)
-
 -----------------------------------------------------------
-[option] [ao/alsa] Playback open error: No such file or directory
+[option] pi
 
-sudo setfacl -m u:www-data:rw /dev/snd/*
+- vo/rpi Could not create EGL surface
+	echo "gpu_mem=192" >> /boot/config.txt
 
------------------------------------------------------------
+- [ao/alsa] Playback open error: No such file or directory
+	setfacl -m u:www-data:rw /dev/snd/*
+
+- autostart
+	/home/pi/.config/lxsession/LXDE-pi/autostart
+	@lxterminal -e "/home/pi/autostart.py" --geometry=80x32
+
+- disable screen sleep
+	/etc/lightdm/lightdm.conf
+	SeatDefaults
+	xserver-command=X -s 0 dpms
+
+

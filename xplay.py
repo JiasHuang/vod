@@ -14,11 +14,11 @@ def getPlayer():
     if xdef.player != 'def':
         return xdef.player
 
+    if re.search(r'raspberrypi', subprocess.check_output('uname -a', shell=True)):
+        return 'omxp'
+
     if os.path.exists('/usr/bin/mpv') or os.path.exists('/usr/local/bin/mpv'):
         return 'mpv'
-
-    if os.path.exists('/usr/bin/omxplayer'):
-        return 'omxp'
 
     if os.path.exists('/usr/bin/smplayer'):
         return 'smp'
@@ -75,14 +75,9 @@ def runMPV(url, ref):
     if url[0] == '/':
         xargs = checkFileArgs(url)
 
-    if youtubedl.checkURL(url):
+    if ref != 'x' and youtubedl.checkURL(url):
         url = youtubedl.extractURL(url)
         xargs = xdef.mpv_ytdl
-
-    if re.search(r'raspberrypi', subprocess.check_output('uname -a', shell=True)):
-        url = re.sub('https', 'http', url)
-        xdef.mpv = xdef.mpv_rpi
-        xargs = ''
 
     if url == '':
         print '[xplay] invalid url'

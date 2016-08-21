@@ -10,7 +10,7 @@ def getTxt(url):
     r = requests.get(url, headers=headers)
     return r.text.encode('utf8')
 
-def getIFrame(url):
+def getIFrame(url, LinkOnly=False):
     txt = getTxt(url)
     frm = re.search(r'<iframe ([^>]*)>', txt).group()
     src = re.search(r'src="([^"]*)"', frm).group(1)
@@ -19,6 +19,9 @@ def getIFrame(url):
 
     if re.search(r'(videowood|videomega|googlevideo|googleusercontent)', src):
         return src
+
+    if LinkOnly == True:
+        return ''
 
     return getTxt(src)
 
@@ -56,6 +59,6 @@ def getSource(url):
             if ref:
                 return ref
 
-    return ''
+    return getIFrame(url, True)
 
 

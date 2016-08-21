@@ -51,7 +51,7 @@ def index(req):
             v = url
         elif re.search(r'^/', url) and os.path.isdir(url):
             d = url
-        elif re.search(r'^/', url) and os.path.exiists(url):
+        elif re.search(r'^/', url) and os.path.exists(url):
             f = url
         else:
             q = url
@@ -70,7 +70,7 @@ def index(req):
             v = url
         elif re.search(r'^/', url) and os.path.isdir(url):
             d = url
-        elif re.search(r'^/', url) and os.path.exiists(url):
+        elif re.search(r'^/', url) and os.path.exists(url):
             f = url
         else:
             q = url

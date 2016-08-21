@@ -7,6 +7,8 @@ import videomega, videowood, openload, up2stream
 import xuite, jav, nbahd, letv, goodtv
 import youtubedl
 
+from optparse import OptionParser
+
 def processURL1(url): 
 
     if re.search('xuite.net', url):
@@ -128,18 +130,25 @@ def main():
 
     os.chdir(xdef.workdir)
 
-    if len(sys.argv) == 1:
+    parser = OptionParser()
+    parser.add_option("-p", "--player", dest="player")
+    (options, args) = parser.parse_args()
+
+    if options.player:
+        xdef.player = options.player
+
+    if len(args) == 0:
         xplay.runIdle()
         return
 
-    if len(sys.argv) >= 2:
-        url = sys.argv[1]
+    if len(args) >= 1:
+        url = args[0]
         m = re.search(r'view.py?v=(.*)', url)
         if m:
             url = m.group(1)
 
-    if len(sys.argv) >= 3:
-        ref = sys.argv[2]
+    if len(args) >= 2:
+        ref = args[1]
 
     playURL(url, ref)
 
