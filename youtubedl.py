@@ -17,7 +17,7 @@ def findSite(url):
 
 def checkURL(url):
     site = findSite(url)
-    return re.compile('(youtube|dailymotion|facebook|google|bilibili|vimeo|youku)').search(site)
+    return re.compile('(youtube|dailymotion|facebook|google|bilibili|vimeo|youku|openload)').search(site)
 
 def redirectURL(url):
     if re.search(r'youku', url):
@@ -35,7 +35,7 @@ def extractURL_def(url):
         xarg = '--video-password ' + match.group(2)
         print('\n[ytdl][password]\n\n\t'+match.group(2))
 
-    cmd = '%s -g --cookies %s %s \'%s\'' %(xdef.ytdl, xdef.cookies, xarg, url)
+    cmd = '%s -f 22 -g --cookies %s %s \'%s\'' %(xdef.ytdl, xdef.cookies, xarg, url)
     try:
         start_time = timeit.default_timer()
         output = subprocess.check_output(cmd, shell=True)
@@ -51,7 +51,9 @@ def extractURL_def(url):
 
     if len(result) == 0:
         return ''
+
     if len(result) == 1:
+        print('\n[ytdl][src]\n\n\t'+result[0])
         return result[0]
 
     m3u8 = xdef.workdir+'ytdl_src_'+base64.urlsafe_b64encode(url)+'.m3u8'
@@ -59,6 +61,7 @@ def extractURL_def(url):
         for vid in result:
             fd.write(vid+'\n')
 
+    print('\n[ytdl][src]\n\n\t'+m3u8)
     return m3u8
 
 def extractURL_alltubedownload(url):
@@ -69,7 +72,10 @@ def extractURL_alltubedownload(url):
 def extractURL_keepvid(url):
 
     if re.search(r'youtube.com', url):
+        start_time = timeit.default_timer()
         txt = xurl.load('http://keepvid.com/?url='+url)
+        elapsed = timeit.default_timer() - start_time
+        print('\n[keepvid][load]\n\n\t'+str(elapsed))
         m = re.search(r'<a href="([^"]*)" ([^>]*)>([^<])*</a> - <b>720p</b>', txt)
         if m:
             print '\n[keepvid][src][720p]\n\n\t%s' %(m.group(1))
@@ -112,5 +118,6 @@ def extractSUB_keepvid(url):
 
 def extractURL(url):
     url = redirectURL(url)
-    return extractURL_keepvid(url) or extractURL_def(url)
+    #return extractURL_keepvid(url) or extractURL_def(url)
+    return extractURL_def(url)
 

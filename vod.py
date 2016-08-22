@@ -31,10 +31,10 @@ def processURL1(url):
         xplay.playURL(src, url)
         return 0
 
-    if re.search('openload.co', url):
-        src = openload.getSource(url)
-        xplay.playURL(src, url)
-        return 0
+    #if re.search('openload.co', url):
+    #    src = openload.getSource(url)
+    #    xplay.playURL(src, url)
+    #    return 0
 
     if re.search('up2stream.com', url):
         src = up2stream.getSource(url)
