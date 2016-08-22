@@ -35,7 +35,7 @@ def extractURL_def(url):
         xarg = '--video-password ' + match.group(2)
         print('\n[ytdl][password]\n\n\t'+match.group(2))
 
-    cmd = '%s -f 22 -g --cookies %s %s \'%s\'' %(xdef.ytdl, xdef.cookies, xarg, url)
+    cmd = '%s -f best -g --cookies %s %s \'%s\'' %(xdef.ytdl, xdef.cookies, xarg, url)
     try:
         start_time = timeit.default_timer()
         output = subprocess.check_output(cmd, shell=True)
@@ -71,6 +71,8 @@ def extractURL_alltubedownload(url):
 
 def extractURL_keepvid(url):
 
+    return None
+
     if re.search(r'youtube.com', url):
         start_time = timeit.default_timer()
         txt = xurl.load('http://keepvid.com/?url='+url)
@@ -105,6 +107,8 @@ def extractSUB_def(url):
 
 def extractSUB_keepvid(url):
 
+    return None
+
     if re.search(r'youtube.com', url):
         txt = xurl.load('http://keepvid.com/?mode=subs&url='+url)
         m = re.search(r'<a href="([^"]*)" ([^>]*)>([^<])*</a> - <b>English</b>', txt)
@@ -118,6 +122,5 @@ def extractSUB_keepvid(url):
 
 def extractURL(url):
     url = redirectURL(url)
-    #return extractURL_keepvid(url) or extractURL_def(url)
-    return extractURL_def(url)
+    return extractURL_keepvid(url) or extractURL_def(url)
 
