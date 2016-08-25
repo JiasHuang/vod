@@ -17,7 +17,7 @@ def findSite(url):
 
 def checkURL(url):
     site = findSite(url)
-    return re.compile('(youtube|dailymotion|facebook|google|bilibili|vimeo|youku|openload)').search(site)
+    return re.compile('(youtube|dailymotion|facebook|bilibili|vimeo|youku|openload)').search(site)
 
 def redirectURL(url):
     if re.search(r'youku', url):

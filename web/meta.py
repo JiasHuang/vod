@@ -3,6 +3,7 @@
 
 import re
 import requests
+import urllib
 import urllib2
 import json
 import urlparse
@@ -83,6 +84,22 @@ def findVideoLink(req, url, showPage=False, showImage=False):
                 page.addPage(req, link1, title1, image1)
             else:
                 page.addPage(req, link1, title1)
+
+def findImageLink(req, url, unquote=False, showPage=False):
+    txt = load(url)
+    for m in re.finditer(r'<a .*?</a>', txt, re.DOTALL):
+        link = re.search(r'href="([^"]*)"', m.group(0))
+        image = re.search(r'src="([^"]*)"', m.group(0))
+        if link and image:
+            if unquote == True:
+                link1 = urllib.unquote(link.group(1))
+            else:
+                link1 = link.group(1)
+            image1 = image.group(1)
+            if showPage == False:
+                page.addVideo(req, link1, link1, image1)
+            else:
+                page.addPage(req, link1, link1, image1)
 
 def findVideo(req, url):
     return findVideoLink(req, url)

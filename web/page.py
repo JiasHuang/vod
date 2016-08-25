@@ -206,6 +206,15 @@ def listURL_nbahd(req, url):
 def listURL_jav(req, url):
     meta.findVideo(req, url)
 
+def listURL_cute(req, url):
+    if url.endswith('/'):
+        meta.findLink(req, url)
+    else:
+        meta.findImageLink(req, url, True, True)
+
+def listURL_porn2tube(req, url):
+        meta.findImageLink(req, url, True, False)
+
 def listURL_adult_dodova(req, url):
     if url.endswith('/'):
         meta.findLink(req, url)
@@ -245,8 +254,14 @@ def listURL(req, url):
         listURL_dodova(req, url+'/page/2')
         listURL_dodova(req, url+'/page/3')
 
-    elif re.search('jav(68|pub|cuteonline)',url):
+    elif re.search('jav(68|pub)',url):
         listURL_jav(req, url)
+
+    elif re.search('javcuteonline',url):
+        listURL_cute(req, url)
+
+    elif re.search('porn2tube',url):
+        listURL_porn2tube(req, url)
 
     elif re.search(r'adult.dodova.com', url):
         listURL_adult_dodova(req, url)

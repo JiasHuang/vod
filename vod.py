@@ -11,6 +11,10 @@ from optparse import OptionParser
 
 def processURL1(url): 
 
+    if re.search('google(video|usercontent).com', url):
+        xplay.playURL(url, url)
+        return 0
+
     if re.search('xuite.net', url):
         src = xuite.getSource(url)
         xplay.playURL(src, url)
@@ -49,6 +53,16 @@ def processURL1(url):
     if re.search('letv.com', url):
         src = letv.getSource(url)
         xplay.playURL(src, '')
+        return 0
+
+    if re.search(r'jav(68|pub|cuteonline)', url):
+        src = jav.getSource(url)
+        xplay.playURL(src, url)
+        return 0
+
+    if re.search(r'porn2tube', url):
+        src = jav.getSource(url)
+        xplay.playURL(src, url)
         return 0
 
     if youtubedl.checkURL(url):
@@ -104,10 +118,6 @@ def playURL(url, ref):
 
     if url[0:4] != 'http':
         return
-
-    if re.search(r'jav(68|pub|cuteonline)', url):
-        url = jav.getSource(url)
-        print '\n[vod][jav]\n\n\t%s\n' %(url)
 
     if url == '':
         return
