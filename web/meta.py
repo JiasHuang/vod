@@ -110,7 +110,7 @@ def findPage(req, url, showImage=False):
 def findLink(req, url):
     link = ''
     txt = load(url)
-    for m in re.finditer(r'"http://(www.|)(dailymotion|videomega|videowood|youtube|openload)(.com|.tv)([^"]*)', txt):
+    for m in re.finditer(r'"http(s|)://(www.|)(dailymotion|videomega|videowood|youtube|openload)(.com|.tv|.co)([^"]*)', txt):
         if m.group()[1:-1] != link:
             link = m.group()[1:-1]
             image = getImage(link)
