@@ -36,22 +36,25 @@ def savetext(text, local):
     return 0
 
 def verbose(url, local, agent):
-    print '[xurl] %s' %(color.GREEN+url+color.END)
-    print '[xurl] %s ==> %s' %(agent, local)
+    print('[xurl] %s' %(color.GREEN+url+color.END))
+    print('[xurl] %s ==> %s' %(agent, local))
     return 0
 
 def wget(url, local):
+    if os.path.exists(local):
+        print('[xurl] %s already exist' %(local))
+        return 0
     verbose(url, local, 'wget')
     cmd = '%s -U \'%s\' -O %s \'%s\' ' %(xdef.wget, xdef.ua, local, url)
     os.system(cmd.encode('utf8'))
-    print '[xurl] %s Done' %(local)
+    print('[xurl] %s Done' %(local))
     return 0
 
 def get(url, local):
     verbose(url, local, 'get')
     r = requests.get(url)
     savetext(r.text.encode('utf8'), local)
-    print '[xurl] %s Done' %(local)
+    print('[xurl] %s Done' %(local))
     return 0
 
 def urlretrieve(url, local):
@@ -59,20 +62,12 @@ def urlretrieve(url, local):
     try:
         #urllib.urlretrieve (url, local, dlProgress)
         urllib.urlretrieve (url, local)
-        print '[xurl] %s Done' %(local)
+        print('[xurl] %s Done' %(local))
     except:
-        print "[xurl] %s Fail" %(local)
+        print("[xurl] %s Fail" %(local))
     return 0
 
-def load(*arg):
-
-    url = None
-    payload = None
-
-    if len(arg) >= 1:
-        url = arg[0]
-    if len(arg) >= 2:
-        payload = arg[1]
+def load(url, payload=None):
 
     headers={'User-Agent': 'Mozilla/5.0 (X11; Linux i686; rv:10.0) Gecko/20100101 Firefox/33.0'}
 

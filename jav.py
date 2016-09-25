@@ -87,6 +87,8 @@ def getSource(url):
                 v = base64.b64decode(m.group(2))
             else:
                 v = m.group(2)
+            if not re.search(r'^http', v):
+                continue
             if re.search(r'1080p', m.group(3), re.IGNORECASE):
                 v1 = v
             elif re.search(r'720p', m.group(3), re.IGNORECASE):
