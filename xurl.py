@@ -5,8 +5,9 @@ import os
 import sys
 import requests
 import urllib
-import threading
+import re
 import xdef
+import base64
 
 class color:
    PURPLE = '\033[95m'
@@ -20,15 +21,6 @@ class color:
    UNDERLINE = '\033[4m'
    END = '\033[0m'
 
-def dlProgress(count, blockSize, totalSize):
-    percent = int(count*blockSize*100/totalSize)
-    if (0 <= percent < 100):
-        sys.stdout.write("\r%2d%%" % percent)
-        sys.stdout.flush()
-    if (percent >= 100):
-        sys.stdout.write("\r")
-        sys.stdout.flush()
-
 def savetext(text, local):
     fd = open(local, 'w')
     fd.write(text)
@@ -36,35 +28,59 @@ def savetext(text, local):
     return 0
 
 def verbose(url, local, agent):
-    print('[xurl] %s' %(color.GREEN+url+color.END))
-    print('[xurl] %s ==> %s' %(agent, local))
+    print('\n[xurl][%s]\n' %(agent))
+    print('\tsrc: %s' %(color.GREEN+url+color.END))
+    print('\tdst: %s' %(local))
     return 0
 
+def verbose_status(status):
+    print('\tret: %s' %(status))
+    return 0
+
+def readLocal(local):
+    with open(local, 'r') as fd:
+        return fd.read()
+    return ''
+
+def findSite(url):
+    m = re.search(r'://([^/]*)', url);
+    if m:
+        return m.group(1)
+    return ''
+
+def absURL(url, site=None):
+    if re.search(r'^//', url):
+        return 'http:'+url
+    if site and re.search(r'^/', url):
+        return re.sub('^/', site, url)
+    if not re.search(r'^http', url):
+        return 'http://'+url
+    return url
+
 def wget(url, local):
-    if os.path.exists(local):
-        print('[xurl] %s already exist' %(local))
-        return 0
     verbose(url, local, 'wget')
+    if os.path.exists(local):
+        verbose_status('already exist')
+        return 0
     cmd = '%s -U \'%s\' -O %s \'%s\' ' %(xdef.wget, xdef.ua, local, url)
     os.system(cmd.encode('utf8'))
-    print('[xurl] %s Done' %(local))
+    verbose_status('done')
     return 0
 
 def get(url, local):
     verbose(url, local, 'get')
     r = requests.get(url)
     savetext(r.text.encode('utf8'), local)
-    print('[xurl] %s Done' %(local))
+    verbose_status('done')
     return 0
 
 def urlretrieve(url, local):
     verbose(url, local, 'urlretrieve')
     try:
-        #urllib.urlretrieve (url, local, dlProgress)
         urllib.urlretrieve (url, local)
-        print('[xurl] %s Done' %(local))
+        verbose_status('done')
     except:
-        print("[xurl] %s Fail" %(local))
+        verbose_status('fail')
     return 0
 
 def load(url, payload=None):
@@ -77,4 +93,11 @@ def load(url, payload=None):
         r = requests.get(url, headers=headers)
 
     return r.text.encode('utf8')
+
+def load2(url, local=None):
+    url = absURL(url)
+    if not local:
+        local = xdef.workdir+'load_'+base64.urlsafe_b64encode(url)
+    wget(url, local)
+    return readLocal(local)
 

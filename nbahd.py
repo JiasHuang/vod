@@ -2,55 +2,43 @@
 # -*- coding: utf-8 -*-
 
 import os
-import sys
 import re
-import urllib2
 import xdef
-import jwplayer
+import xurl
+import xsrc
+import base64
 
-def load(url):
-    opener = urllib2.build_opener()
-    opener.addheaders = [('User-agent', 'Mozilla/5.0 (X11; Linux i686; rv:10.0) Gecko/20100101 Firefox/33.0')]
-    return opener.open(url).read()
+def addEntry(title, res, src):
+    print('\n[nbahd][src][%s]\n\n\t%s' %(res, src))
+    fd = open('%s_%s.m3u' %(title, res), 'a')
+    fd.write(src+'\n')
+    fd.close()
+    return
 
-def listSource(txt):
-    match = re.finditer(r'data-link="([^"]*)"', txt)
-    for m in match:
-        src = jwplayer.getSource(m.group(1))
-        res = 'auto'
-        print '\n[nbahd][src]\n\n\t%s (%s)' %(src, res)
-        fd = open('temp_%s.m3u' %res, 'a')
-        fd.write(src+'\n')
-        fd.close()
-        return 0
-    return -1
+def listPart(title, url):
+    txt = xurl.load2(url)
+    for m in re.finditer(r'<a href="([^"]*)" target="_blank"><img src=', txt):
+        part = m.group(1)
+        if re.search('nbahd.net', part):
+            print('\n[nbahd][part]\n\n\t%s' %(part))
+            for l in xsrc.findLink(part):
+                addEntry(title, 'auto', l)
+    return
 
-def listPart(url):
-    txt1 = load(url)
-    m = re.search('player.php?([^"]*)', txt1)
-    if m:
-        txt2 = load('http://nbahd.com/'+m.group())
-        listSource(txt2)
-    else:
-        listSource(txt1)
+def lookup(title):
+    for res in ['auto', '720', '480', '360']:
+        if os.path.exists('%s_%s.m3u' %(title, res)):
+            print('\n[nbahd][m3u]\n\n\t%s_%s.m3u' %(title, res))
+            return '%s_%s.m3u' %(title, res)
+    return None
 
 def listURL(url):
-    txt = load(url)
-    match = re.finditer(r'<a href="([^"]*)" target="_blank"><img src=', txt)
-    for m in match:
-        print '\n[nbahd][part]\n\n\t%s' %(m.group(1))
-        listPart(m.group(1))
-    title = url
-    title = re.sub('http://', '', title)
-    title = re.sub('/', '_', title)
-    title = re.sub('\.', '_', title)
-    for res in ['auto', '720', '480', '360']:
-        if os.path.exists('temp_%s.m3u' %(res)):
-            os.system('mv temp_%s.m3u %s_%s.m3u' %(res, title, res))
-            print '\n[nbahd][m3u]\n\n\t%s_%s.m3u' %(title, res)
-            return '%s_%s.m3u' %(title, res)
-
-    return None
+    title = base64.urlsafe_b64encode(url)
+    ret = lookup(title)
+    if ret:
+        return ret
+    listPart(title, url)
+    return lookup(title)
 
 def getSource(url):
     os.chdir(xdef.workdir)

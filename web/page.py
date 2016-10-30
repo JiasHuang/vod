@@ -201,7 +201,7 @@ def listURL_mangareader(req, url):
 
 def listURL_nbahd(req, url):
     for m in re.finditer(r'<h2 class="entry-title"><a href="([^"]*)"', load(url)):
-        addPage(req, m.group(1), m.group(1))
+        addVideo(req, m.group(1), m.group(1))
 
 def listURL_jav(req, url):
     meta.findVideo(req, url)

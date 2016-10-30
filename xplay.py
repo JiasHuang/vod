@@ -25,17 +25,6 @@ def getPlayer():
 
     return 'err'
 
-def checkFileArgs(url):
-    xargs = xdef.mpv_ytdl
-    if re.search(r'.m3u', url):
-        fd = open(url, 'r')
-        txt = fd.read()
-        if re.search(r'dailymotion', txt):
-            xargs = ''
-        fd.close()
-        return xargs
-    return xargs
-
 def checkProcessRunning(process):
     cmd = 'pidof %s' %(process)
     try:
@@ -73,7 +62,7 @@ def runMPV(url, ref):
     xargs = ''
 
     if url[0] == '/':
-        xargs = checkFileArgs(url)
+        xargs = xdef.mpv_ytdl
 
     if ref != 'x' and youtubedl.checkURL(url):
         url = youtubedl.extractURL(url)
@@ -95,7 +84,7 @@ def runMPV(url, ref):
         os.system('echo loadfile \"%s\" > %s' %(url, xdef.fifo))
         os.system('echo sub-remove > %s' %(xdef.fifo))
 
-    sub = youtubedl.extractSUB_keepvid(ref)
+    sub = youtubedl.extractSUB(ref)
     if sub:
         os.system('echo sub-add \"%s\" select > %s' %(sub, xdef.fifo))
 
