@@ -24,7 +24,7 @@ def setAct(act, val):
     elif act in ['pause', 'stop']:
         cmd = '%s' %(act)
     else:
-        print 'unsupported: %s %s' %(act, val)
+        print('unsupported: %s %s' %(act, val))
         return
 
     print('\n[omxp][act]\n\n\t%s%s %s' %(xdef.codedir, 'dbuscontrol.sh', cmd))

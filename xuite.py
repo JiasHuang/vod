@@ -33,7 +33,7 @@ def getSource(url):
         txt = xurl.load(url)
     m = re.search(r'data-original="([^"]*)"', txt)
     if m:
-        print '\n[xuite][src]\n\n\t%s' %(m.group(1))
+        print('\n[xuite][src]\n\n\t%s' %(m.group(1)))
         src_sd = m.group(1)
         src_hd = re.sub('q=360', 'q=720', m.group(1))
         m3u = 'xuite.m3u'
@@ -53,21 +53,21 @@ def findKey(url):
     while date1 <= date2:
         mmdd = date1.strftime('%m%d')
         date1 = date1 + day
-        print mmdd
+        print(mmdd)
         cmd = 'wget --post-data \'pwInput=%s\' \'%s\' -O /tmp/%s.html -q' %(mmdd, url, mmdd)
         os.system(cmd)
         if os.system('grep \'data-original\' /tmp/%s.html -q' %(mmdd)) == 0:
-            print '%s (OK)' %(mmdd)
+            print('%s (OK)' %(mmdd))
             break
 
 def findKey2(url, start, end):
     for num in xrange(start, end):
         mmdd = '{0:04}'.format(num)
-        print mmdd
+        print(mmdd)
         cmd = 'wget --post-data \'pwInput=%s\' \'%s\' -O /tmp/%s.html -q' %(mmdd, url, mmdd)
         os.system(cmd)
         if os.system('grep \'data-original\' /tmp/%s.html -q' %(mmdd)) == 0:
-            print '%s (OK)' %(mmdd)
+            print('%s (OK)' %(mmdd))
             break
 
 if __name__ == "__main__":

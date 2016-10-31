@@ -18,7 +18,7 @@ dl_agent = 'wget'
 
 def download(remote, local):
     if dl_agent == '':
-        print 'simulate %s --> %s' %(remote, local)
+        print('simulate %s --> %s' %(remote, local))
     elif dl_agent == 'wget':
         xurl.wget(remote, local)
     elif dl_agent == 'urlretrieve':
@@ -100,5 +100,5 @@ def processXML(path):
         merge = '%s.%s' %(obj.title, obj.ftype[0])
         if not os.path.exists(merge):
             ffmpeg.concatenate(obj.title, obj.ftype[0], obj.count)
-        print '[gen] %s OK' %(merge)
+        print('[gen] %s OK' %(merge))
 

@@ -51,7 +51,7 @@ def runSMP(url, ref):
     if youtubedl.checkURL(url):
         url = youtubedl.extractURL(url)
     if url == '':
-        print '[xplay] invalid url'
+        print('[xplay] invalid url')
         return 0
     subprocess.Popen('%s \'%s\'' %(xdef.smp, url), shell=True)
     return 0
@@ -69,7 +69,7 @@ def runMPV(url, ref):
         xargs = xdef.mpv_ytdl
 
     if url == '':
-        print '[xplay] invalid url'
+        print('[xplay] invalid url')
         return 0
 
     if not checkProcessRunning('mpv'):
@@ -123,8 +123,8 @@ def playURL(url, ref):
 
     player = getPlayer()
 
-    print '\n[xplay][%s][url]\n\n\t%s' %(player, url)
-    print '\n[xplay][%s][ref]\n\n\t%s' %(player, ref)
+    print('\n[xplay][%s][url]\n\n\t%s' %(player, url))
+    print('\n[xplay][%s][ref]\n\n\t%s' %(player, ref))
 
     if url == None or url == '':
         return 0

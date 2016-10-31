@@ -4,7 +4,7 @@
 import os
 
 def concatenate(title, ftype, count):
-    print '[ffmpeg] concatenate'
+    print('[ffmpeg] concatenate')
     locallist = open("%s.txt" %(title), "w")
     for index in range(0, count):
         local = "%s_%02d.%s" %(title, index+1, ftype)

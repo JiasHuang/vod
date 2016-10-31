@@ -21,13 +21,13 @@ def getSource_X(url):
         unpacked = jsunpack.unpack(packed)
 
     if unpacked:
-        print '\n[videowood][unpacked]\n\n\t%s' %(unpacked)
+        print('\n[videowood][unpacked]\n\n\t%s' %(unpacked))
         r = re.search('.+["\']file["\']\s*:\s*["\'](.+?/video\\\.+?)["\']', unpacked)
         if r:
             stream_url = r.group(1).replace('\\', '')
 
     if stream_url:
-        print '\n[videowood][src]\n\n\t%s' %(stream_url)
+        print('\n[videowood][src]\n\n\t%s' %(stream_url))
         return stream_url
 
     return ''

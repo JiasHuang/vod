@@ -30,9 +30,9 @@ def search_bing(q):
     for m in match:
         p = re.search(r'p:([^,]*)', m.group())
         t = re.search(r't:([^,]*)', m.group())
-        print '\n'
-        print 'bing: %s' %(t.group(1))
-        print '%s' %(p.group(1))
+        print('\n')
+        print('bing: %s' %(t.group(1)))
+        print('%s' %(p.group(1)))
 
 
 
@@ -54,9 +54,9 @@ def search_yandex(q):
         match = re.finditer(r'href="([^"]*)" target="_blank">([^<]*)</a></h2>', text)
 
         for m in match:
-            print '\n'
-            print 'yandex: %s' %(m.group(2))
-            print '%s' %(m.group(1))
+            print('\n')
+            print('yandex: %s' %(m.group(2)))
+            print('%s' %(m.group(1)))
 
 
 def search_google(q):
@@ -70,9 +70,9 @@ def search_google(q):
     match = re.finditer(r'href="([^"]*)" [^>]*>([^<]*)</a></h3>', text)
 
     for m in match:
-        print '\n'
-        print 'google: %s' %(m.group(2))
-        print '%s' %(m.group(1))
+        print('\n')
+        print('google: %s' %(m.group(2)))
+        print('%s' %(m.group(1)))
 
 
 def search_video(q):

@@ -15,7 +15,7 @@ def setAct(act, val):
     elif act in ['osd', 'mute', 'pause', 'stop', 'playlist-next', 'playlist-prev', 'sub-remove']:
         cmd = '%s' %(act)
     else:
-        print 'unsupported: %s %s' %(act, val)
+        print('unsupported: %s %s' %(act, val))
         return
  
     os.system('echo %s > %s' %(cmd, xdef.fifo))

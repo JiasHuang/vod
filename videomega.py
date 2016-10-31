@@ -10,7 +10,7 @@ def getSource(url):
     media_id = re.search(r'ref=([0-9a-zA-Z]+)', url).group(1)
     ref = 'http://videomega.tv/cdn.php?ref=%s' %(media_id)
 
-    print '\n[videomega][ref]\n\n\t%s' %(ref)
+    print('\n[videomega][ref]\n\n\t%s' %(ref))
 
     headers = {
         'User-Agent': 'Mozilla/5.0 (X11; Linux i686; rv:10.0) Gecko/20100101 Firefox/33.0',
@@ -27,13 +27,13 @@ def getSource(url):
         unpacked = jsunpack.unpack(packed)
 
     if unpacked:
-        print '\n[videomega][unpacked]\n\n\t%s' %(unpacked)
+        print('\n[videomega][unpacked]\n\n\t%s' %(unpacked))
         r = re.search(r'http://([^"]+)', unpacked)
         if r:
             stream_url = r.group()
 
     if stream_url:
-        print '\n[videomega][src]\n\n\t%s' %(stream_url)
+        print('\n[videomega][src]\n\n\t%s' %(stream_url))
         return stream_url
 
     return ''

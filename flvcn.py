@@ -62,42 +62,42 @@ def searchVerify(path, verify):
     text = open(path, 'r').read()
 
     if searchRegex('http://([\w\./=]+)/quality/base64:5YiG5q61X-i2hea4hV9NUDQ=/verify/(\w+)/t/(\d+)', text, verify) != -1:
-        print '[flvcn] 分段_超清_MP4'
+        print('[flvcn] 分段_超清_MP4')
         return 0
 
     if searchRegex('http://([\w\./=]+)/quality/base64:5YiG5q61X-i2hea4hV9GTFY=/verify/(\w+)/t/(\d+)', text, verify) != -1:
-        print '[flvcn] 分段_超清_FLV'
+        print('[flvcn] 分段_超清_FLV')
         return 0
 
     if searchRegex('http://([\w\./=]+)/quality/base64:5YiG5q61X-mrmOa4hV9NUDQ=/verify/(\w+)/t/(\d+)', text, verify) != -1:
-        print '[flvcn] 分段_高清_MP4'
+        print('[flvcn] 分段_高清_MP4')
         return 0
 
     if searchRegex('http://([\w\./=]+)/quality/base64:5YiG5q61X-mrmOa4hV9GTFY=/verify/(\w+)/t/(\d+)', text, verify) != -1:
-        print '[flvcn] 分段_高清_FLV'
+        print('[flvcn] 分段_高清_FLV')
         return 0
 
     if searchRegex('http://([\w\./=]+)/quality/base64:5YiG5q61X-agh-a4hV9NUDQ=/verify/(\w+)/t/(\d+)', text, verify) != -1:
-        print '[flvcn] 分段_标清_MP4'
+        print('[flvcn] 分段_标清_MP4')
         return 0
 
     if searchRegex('http://([\w\./=]+)/quality/base64:5Y2V5q61X-i2hea4hV9NUDQ=/verify/(\w+)/t/(\d+)', text, verify) != -1:
-        print '[flvcn] 单段_超清_MP4'
+        print('[flvcn] 单段_超清_MP4')
         return 0
 
     if searchRegex('http://([\w\./=]+)/quality/base64:5Y2V5q61X-mrmOa4hV9NUDQ=/verify/(\w+)/t/(\d+)', text, verify) != -1:
-        print '[flvcn] 单段_高清_MP4'
+        print('[flvcn] 单段_高清_MP4')
         return 0
 
     if searchRegex('http://([\w\./=]+)/quality/base64:5Y2V5q61X-agh-a4hV9NUDQ=/verify/(\w+)/t/(\d+)', text, verify) != -1:
-        print '[flvcn] 单段_标清_MP4'
+        print('[flvcn] 单段_标清_MP4')
         return 0
 
     if searchRegex('http://([\w\./=]+)/quality/base64:([\w=-]+)/verify/(\w+)/t/(\d+)', text, verify) != -1:
-        print '[flvcn] ???'
+        print('[flvcn] ???')
         return 0
 
-    print '[flvcn] searchVerify FAIL'
+    print('[flvcn] searchVerify FAIL')
     return -1
 
 def getXML(url, xml):
@@ -126,6 +126,6 @@ def getXML(url, xml):
         xurl.get(verify[0], xml)
         return 0
 
-    print '[flvcn] getXML FAIL'
+    print('[flvcn] getXML FAIL')
     return -1
  

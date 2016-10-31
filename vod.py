@@ -73,7 +73,7 @@ def processURL1(url):
 
 def processURL2(url):
 
-    print '\n[vod] Search context'
+    print('\n[vod] Search context')
  
     txt = xurl.load(url)
 
@@ -97,7 +97,7 @@ def processURL2(url):
     if m:
         return processURL1(m.group())
 
-    print '\n[vod] Not Found'
+    print('\n[vod] Not Found')
     return -1
 
 def playURL(url, ref):

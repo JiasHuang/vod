@@ -32,21 +32,21 @@ def getIFrame(url):
         src = re.search(r'src="([^"]*)"', frm.group()).group(1)
         if re.search(r'^//', src):
             src = 'http:'+src
-        print '\n[jav][iframe][url]\n\n\t%s' %(url)
-        print '\n[jav][iframe][src]\n\n\t%s' %(src)
+        print('\n[jav][iframe][url]\n\n\t%s' %(url))
+        print('\n[jav][iframe][src]\n\n\t%s' %(src))
         return src
     return None
 
 def getSource(url):
 
     if url == '':
-        print '\n[jav] invalid url'
+        print('\n[jav] invalid url')
 
     elif re.search(r'jav(68|pub)', url):
 
         if re.search('/movie/', url):
             url = re.search(r'http://([^/]*)/watch/([^"]*)', load(url)).group()
-            print '\n[jav][watch]\n\n\t%s' %(url)
+            print('\n[jav][watch]\n\n\t%s' %(url))
 
         txt = load(url)
 
