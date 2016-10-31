@@ -2,15 +2,16 @@
 # -*- coding: utf-8 -*-
 
 import re
-import requests
 import urllib2
 import base64
-import xurl, googlevideo, videomega, videowood
+import xurl
+import googlevideo
+import videomega
+import videowood
+import xurl
 
 def load(url):
-    headers={'User-Agent': 'Mozilla/5.0 (X11; Linux i686; rv:10.0) Gecko/20100101 Firefox/33.0'}
-    r = requests.get(url, headers=headers)
-    return r.text.encode('utf8')
+    return xurl.load(url)
 
 def load2(url):
     opener = urllib2.build_opener()

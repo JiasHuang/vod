@@ -3,44 +3,32 @@
 
 import os
 import sys
-import requests
-import urllib
 import re
-import xdef
+import urllib
+import urllib2
 import hashlib
-
-class color:
-   PURPLE = '\033[95m'
-   CYAN = '\033[96m'
-   DARKCYAN = '\033[36m'
-   BLUE = '\033[94m'
-   GREEN = '\033[92m'
-   YELLOW = '\033[93m'
-   RED = '\033[91m'
-   BOLD = '\033[1m'
-   UNDERLINE = '\033[4m'
-   END = '\033[0m'
-
-def savetext(text, local):
-    fd = open(local, 'w')
-    fd.write(text)
-    fd.close()
-    return 0
+import xdef
 
 def verbose(url, local, agent):
     print('\n[xurl][%s]\n' %(agent))
-    print('\tsrc: %s' %(color.GREEN+url+color.END))
-    print('\tdst: %s' %(local))
+    print('\tsrc: '+url)
+    print('\tdst: '+local)
     return 0
 
 def verbose_status(status):
-    print('\tret: %s' %(status))
+    print('\tret: '+status)
     return 0
 
 def readLocal(local):
     with open(local, 'r') as fd:
         return fd.read()
     return ''
+
+def saveLocal(text, local):
+    fd = open(local, 'w')
+    fd.write(text)
+    fd.close()
+    return
 
 def findSite(url):
     m = re.search(r'://([^/]*)', url);
@@ -68,11 +56,16 @@ def wget(url, local):
     return 0
 
 def get(url, local):
-    verbose(url, local, 'get')
-    r = requests.get(url)
-    savetext(r.text.encode('utf8'), local)
-    verbose_status('done')
-    return 0
+    opener = urllib2.build_opener()
+    opener.addheaders = [('User-agent', 'Mozilla/5.0 (X11; Linux i686; rv:10.0) Gecko/20100101 Firefox/33.0')]
+    try:
+        f = opener.open(url)
+        if f.info().get('Content-Encoding') == 'gzip':
+            buf = StringIO(f.read())
+            return gzip.GzipFile(fileobj=buf).read()
+        saveLocal(f.read(), local)
+    except:
+        return
 
 def urlretrieve(url, local):
     verbose(url, local, 'urlretrieve')
@@ -83,16 +76,22 @@ def urlretrieve(url, local):
         verbose_status('fail')
     return 0
 
-def load(url, payload=None):
+def load(url, local=None):
+    url = absURL(url)
+    if not local:
+        local = xdef.workdir+'load_'+hashlib.md5(url).hexdigest()
+    get(url, local)
+    return readLocal(local)
 
-    headers={'User-Agent': 'Mozilla/5.0 (X11; Linux i686; rv:10.0) Gecko/20100101 Firefox/33.0'}
-
-    if payload:
-        r = requests.post(url, data=payload)
-    else:
-        r = requests.get(url, headers=headers)
-
-    return r.text.encode('utf8')
+def post(url, payload):
+    opener = urllib2.build_opener()
+    opener.addheaders = [('User-agent', 'Mozilla/5.0 (X11; Linux i686; rv:10.0) Gecko/20100101 Firefox/33.0')]
+    data = urllib.urlencode(payload)
+    try:
+        f = opener.open(url, data)
+        return f.read()
+    except:
+        return ''
 
 def load2(url, local=None):
     url = absURL(url)

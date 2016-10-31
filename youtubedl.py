@@ -69,6 +69,9 @@ def extractURL(url):
 
 def extractSUB(url):
 
+    if not re.search(r'youtube.com', url):
+        return None
+
     print('\n[ytdl][extracSUB]\n')
     print('\turl: '+url)
 
@@ -79,12 +82,16 @@ def extractSUB(url):
             print('\tsub: '+xdef.workdir+files)
             return files
 
-    if re.search(r'youtube.com', url):
+    try:
         cmd = '%s --sub-lang=en --write-sub --skip-download -o %s%s \'%s\'' %(xdef.ytdl, xdef.workdir, sub, url)
-        txt = subprocess.check_output(cmd, shell=True)
-        m = re.search(r'Writing video subtitles to: (.*)', txt)
-        if m:
-            print('\tsub: '+m.group(1))
-            return m.group(1)
+        output = subprocess.check_output(cmd, shell=True)
+    except:
+        print('\tret: fail')
+        return None
+    m = re.search(r'Writing video subtitles to: (.*)', output)
+    if m:
+        local = m.group(1)
+        print('\tsub: '+local)
+        return local
     return None
 

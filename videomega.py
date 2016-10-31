@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 import re
-import requests
 import jsunpack
+import xurl
 
 def getSource(url):
 
@@ -17,13 +17,10 @@ def getSource(url):
         'Referer': ref
     }
 
-    r = requests.get(ref, headers=headers)
-    txt = r.text.encode('utf8')
-
     stream_url = None
     unpacked = None
 
-    packed = re.search('(eval\(function\(p,a,c,k,e,d\)\{.+\))', txt)
+    packed = re.search('(eval\(function\(p,a,c,k,e,d\)\{.+\))', xurl.load(ref))
     if packed:
         # change radix before trying to unpack, 58-61 seen in testing, 62 worked for all
         packed = re.sub(r"(.+}\('.*', *)\d+(, *\d+, *'.*?'\.split\('\|'\))", "\g<01>62\g<02>", packed.group(1))

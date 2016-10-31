@@ -28,7 +28,7 @@ def getSource(url):
     os.chdir(xdef.workdir)
     key = getKey(url)
     if key:
-        txt = xurl.load(url, {'pwInput': key})
+        txt = xurl.post(url, {'pwInput': key})
     else:
         txt = xurl.load(url)
     m = re.search(r'data-original="([^"]*)"', txt)

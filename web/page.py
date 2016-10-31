@@ -3,7 +3,6 @@
 
 import re
 import os
-import requests
 import urllib
 import json
 import mangareader

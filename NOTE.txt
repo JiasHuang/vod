@@ -1,11 +1,5 @@
 
 -----------------------------------------------------------
-[python]
-
-1. sudo apt-get install pip
-2. sudo pip install requests
-
------------------------------------------------------------
 [apache2]
 
 1. sudo apt-get install apache2
