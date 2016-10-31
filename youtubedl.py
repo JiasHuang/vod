@@ -46,9 +46,9 @@ def extractURL(url):
         start_time = timeit.default_timer()
         output = subprocess.check_output(cmd, shell=True)
         elapsed = timeit.default_timer() - start_time
-        print('\tcmd: done in '+str(elapsed))
+        print('\tsec: '+str(elapsed))
     except:
-        print('\tcmd: fail')
+        print('\tret: exception')
         return ''
 
     result = []
@@ -95,14 +95,19 @@ def extractSUB(url):
 
     try:
         cmd = '%s --sub-lang=en --write-sub --skip-download -o %s%s \'%s\'' %(xdef.ytdl, xdef.workdir, sub, url)
+        start_time = timeit.default_timer()
         output = subprocess.check_output(cmd, shell=True)
+        elapsed = timeit.default_timer() - start_time
+        print('\tsec: '+str(elapsed))
     except:
-        print('\tret: fail')
+        print('\tret: exception')
         return None
+
     m = re.search(r'Writing video subtitles to: (.*)', output)
     if m:
         local = m.group(1)
         print('\tsub: '+local)
         return local
+
     return None
 
