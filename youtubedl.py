@@ -46,8 +46,9 @@ def extractURL(url):
         start_time = timeit.default_timer()
         output = subprocess.check_output(cmd, shell=True)
         elapsed = timeit.default_timer() - start_time
+        print('\tcmd: done in '+str(elapsed))
     except:
-        print('\tret: fail')
+        print('\tcmd: fail')
         return ''
 
     result = []
@@ -56,7 +57,7 @@ def extractURL(url):
         result.append(m.group(0))
 
     if len(result) == 0:
-        print('\tret: %s (%s)' %('none', str(elapsed)))
+        print('\tret: none')
         return ''
 
     fd = open(m3u8, 'w')
@@ -64,8 +65,18 @@ def extractURL(url):
         fd.write(vid+'\n')
     fd.close()
 
-    print('\tret: %s (%s)' %(m3u8, str(elapsed)))
+    print('\tret: '+m3u8)
     return m3u8
+
+def extractURL2(url):
+    lists = []
+    m3u8 = extractURL(url)
+    if m3u8 != '':
+        fd = open(m3u8, 'r')
+        for l in fd.readlines():
+            lists.append(l.rstrip('\n'))
+        fd.close()
+    return lists
 
 def extractSUB(url):
 

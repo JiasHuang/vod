@@ -13,11 +13,11 @@ def verbose(url, local, agent):
     print('\n[xurl][%s]\n' %(agent))
     print('\tsrc: '+url)
     print('\tdst: '+local)
-    return 0
+    return
 
 def verbose_status(status):
     print('\tret: '+status)
-    return 0
+    return
 
 def readLocal(local):
     with open(local, 'r') as fd:
@@ -31,7 +31,10 @@ def saveLocal(text, local):
     return
 
 def findSite(url):
-    m = re.search(r'://([^/]*)', url);
+    if re.search(r'://', url):
+        m = re.search(r'://([^/]*)', url);
+    else:
+        m = re.search(r'([^/]*)', url);
     if m:
         return m.group(1)
     return ''
@@ -49,23 +52,30 @@ def wget(url, local):
     verbose(url, local, 'wget')
     if os.path.exists(local):
         verbose_status('already exist')
-        return 0
+        return
     cmd = '%s -U \'%s\' -O %s \'%s\' ' %(xdef.wget, xdef.ua, local, url)
     os.system(cmd.encode('utf8'))
     verbose_status('done')
-    return 0
+    return
 
 def get(url, local):
+    verbose(url, local, 'urllib2')
+    if os.path.exists(local):
+        verbose_status('already exist')
+        return
     opener = urllib2.build_opener()
     opener.addheaders = [('User-agent', 'Mozilla/5.0 (X11; Linux i686; rv:10.0) Gecko/20100101 Firefox/33.0')]
     try:
         f = opener.open(url)
         if f.info().get('Content-Encoding') == 'gzip':
             buf = StringIO(f.read())
-            return gzip.GzipFile(fileobj=buf).read()
-        saveLocal(f.read(), local)
+            saveLocal(gzip.GzipFile(fileobj=buf).read(), local)
+        else:
+            saveLocal(f.read(), local)
+        verbose_status('done')
     except:
-        return
+        verbose_status('fail')
+    return
 
 def urlretrieve(url, local):
     verbose(url, local, 'urlretrieve')
@@ -74,7 +84,7 @@ def urlretrieve(url, local):
         verbose_status('done')
     except:
         verbose_status('fail')
-    return 0
+    return
 
 def load(url, local=None):
     url = absURL(url)

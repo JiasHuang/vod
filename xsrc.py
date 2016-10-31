@@ -14,7 +14,8 @@ def findLink(url):
     srcs = []
     for link in urls:
         if youtubedl.checkURL(link):
-            link = youtubedl.extractURL(link)
-        srcs.append(link)
+            srcs = srcs+youtubedl.extractURL2(link)
+        else:
+            srcs.append(link)
     return srcs
 

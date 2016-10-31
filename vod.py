@@ -85,7 +85,7 @@ def processURL2(url):
     if m:
         return processURL1(m.group())
 
-    m = re.search(r'www.dailymotion.com/[^"]*', txt)
+    m = re.search(r'http://www.dailymotion.com/[^"]*', txt)
     if m:
         return processURL1(m.group())
 
