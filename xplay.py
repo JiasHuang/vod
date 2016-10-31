@@ -116,6 +116,7 @@ def runOMXP(url, ref):
 def runDBG(url, ref):
     if youtubedl.checkURL(url):
         youtubedl.extractURL(url)
+    youtubedl.extractSUB(url)
     return 0
 
 def playURL(url, ref):

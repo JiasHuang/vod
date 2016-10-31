@@ -7,7 +7,7 @@ import requests
 import urllib
 import re
 import xdef
-import base64
+import hashlib
 
 class color:
    PURPLE = '\033[95m'
@@ -97,7 +97,7 @@ def load(url, payload=None):
 def load2(url, local=None):
     url = absURL(url)
     if not local:
-        local = xdef.workdir+'load_'+base64.urlsafe_b64encode(url)
+        local = xdef.workdir+'load_'+hashlib.md5(url).hexdigest()
     wget(url, local)
     return readLocal(local)
 

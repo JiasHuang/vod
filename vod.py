@@ -153,7 +153,7 @@ def main():
 
     if len(args) >= 1:
         url = args[0]
-        m = re.search(r'view.py?v=(.*)', url)
+        m = re.search(r'view.py\?v=(.*)', url)
         if m:
             url = m.group(1)
 

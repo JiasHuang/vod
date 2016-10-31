@@ -4,7 +4,7 @@
 import os
 import re
 import subprocess
-import base64
+import hashlib
 import timeit
 import xdef
 import xurl
@@ -28,21 +28,21 @@ def parseParameters(url):
 def extractURL(url):
 
     print('\n[ytdl][extracURL]\n')
-
-    if not url:
-        print('\tret: invalid url')
-        return ''
+    print('\turl: '+url)
 
     url = redirectURL(url)
     arg = parseParameters(url)
-
-    print('\turl: %s' %(url))
+    m3u8 = xdef.workdir+'list_'+hashlib.md5(url).hexdigest()+'.m3u8'
 
     if arg:
-        print('\targ: %s' %(arg))
+        print('\targ: '+arg)
 
-    cmd = '%s -f best -g --cookies %s %s \'%s\'' %(xdef.ytdl, xdef.cookies, arg or '', url)
+    if os.path.exists(m3u8):
+        print('\tret: '+m3u8)
+        return m3u8
+
     try:
+        cmd = '%s -f best -g --cookies %s %s \'%s\'' %(xdef.ytdl, xdef.cookies, arg or '', url)
         start_time = timeit.default_timer()
         output = subprocess.check_output(cmd, shell=True)
         elapsed = timeit.default_timer() - start_time
@@ -59,14 +59,10 @@ def extractURL(url):
         print('\tret: %s (%s)' %('none', str(elapsed)))
         return ''
 
-    if len(result) == 1:
-        print('\tret: %s (%s)' %(result[0], str(elapsed)))
-        return result[0]
-
-    m3u8 = xdef.workdir+'ytdl_src_'+base64.urlsafe_b64encode(url)+'.m3u8'
-    with open(m3u8, 'w') as fd:
-        for vid in result:
-            fd.write(vid+'\n')
+    fd = open(m3u8, 'w')
+    for vid in result:
+        fd.write(vid+'\n')
+    fd.close()
 
     print('\tret: %s (%s)' %(m3u8, str(elapsed)))
     return m3u8
@@ -74,20 +70,21 @@ def extractURL(url):
 def extractSUB(url):
 
     print('\n[ytdl][extracSUB]\n')
+    print('\turl: '+url)
 
-    if not url:
-        print('\tret: invalid url')
-        return ''
+    sub = 'sub_'+hashlib.md5(url).hexdigest()
+
+    for files in os.listdir(xdef.workdir):
+        if files.startswith(sub):
+            print('\tsub: '+xdef.workdir+files)
+            return files
 
     if re.search(r'youtube.com', url):
-        cmd = '%s --sub-lang=en --write-sub --skip-download \'%s\'' %(xdef.ytdl, url)
+        cmd = '%s --sub-lang=en --write-sub --skip-download -o %s%s \'%s\'' %(xdef.ytdl, xdef.workdir, sub, url)
         txt = subprocess.check_output(cmd, shell=True)
         m = re.search(r'Writing video subtitles to: (.*)', txt)
         if m:
             print('\tsub: '+m.group(1))
-            sub1 = '%s%s' %(xdef.workdir, m.group(1))
-            sub2 = re.sub(' ', '_', sub1)
-            os.rename(sub1, sub2)
-            return sub2
+            return m.group(1)
     return None
 

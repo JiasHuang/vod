@@ -6,43 +6,40 @@ import re
 import xdef
 import xurl
 import xsrc
-import base64
+import hashlib
 
-def addEntry(title, res, src):
-    print('\n[nbahd][src][%s]\n\n\t%s' %(res, src))
-    fd = open('%s_%s.m3u' %(title, res), 'a')
-    fd.write(src+'\n')
+def addEntry(m3u8, part, link):
+    print('\n[nbahd][entry]\n')
+    print('\tpart: '+part)
+    print('\tlink: '+link)
+    fd = open(m3u8, 'a')
+    fd.write(link+'\n')
     fd.close()
     return
 
-def listPart(title, url):
+def listPart(m3u8, url):
     txt = xurl.load2(url)
     for m in re.finditer(r'<a href="([^"]*)" target="_blank"><img src=', txt):
         part = m.group(1)
         if re.search('nbahd.net', part):
-            print('\n[nbahd][part]\n\n\t%s' %(part))
-            for l in xsrc.findLink(part):
-                addEntry(title, 'auto', l)
+            for link in xsrc.findLink(part):
+                addEntry(m3u8, part, link)
     return
 
-def lookup(title):
-    for res in ['auto', '720', '480', '360']:
-        if os.path.exists('%s_%s.m3u' %(title, res)):
-            print('\n[nbahd][m3u]\n\n\t%s_%s.m3u' %(title, res))
-            return '%s_%s.m3u' %(title, res)
+def lookup(m3u8):
+    if os.path.exists(m3u8):
+        return m3u8
     return None
 
 def listURL(url):
-    title = base64.urlsafe_b64encode(url)
-    ret = lookup(title)
-    if ret:
-        return ret
-    listPart(title, url)
-    return lookup(title)
+    m3u8 = xdef.workdir+'list_'+hashlib.md5(url).hexdigest()+'.m3u8'
+    if lookup(m3u8):
+        return m3u8
+    listPart(m3u8, url)
+    return lookup(m3u8)
 
 def getSource(url):
-    os.chdir(xdef.workdir)
-    m3u = listURL(url)
-    if m3u:
-        return '%s%s' %(xdef.workdir, m3u)
+    m3u8 = listURL(url)
+    if m3u8:
+        return m3u8
     return ''
