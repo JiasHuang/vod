@@ -32,14 +32,14 @@ def extractURL(url):
 
     url = redirectURL(url)
     arg = parseParameters(url)
-    m3u8 = xdef.workdir+'list_'+hashlib.md5(url).hexdigest()+'.m3u8'
+    m3u = xdef.workdir+'list_'+hashlib.md5(url).hexdigest()+'.m3u'
 
     if arg:
         print('\targ: '+arg)
 
-    if os.path.exists(m3u8):
-        print('\tret: '+m3u8)
-        return m3u8
+    if os.path.exists(m3u):
+        print('\tret: '+m3u)
+        return m3u
 
     try:
         cmd = '%s -f best -g --cookies %s %s \'%s\'' %(xdef.ytdl, xdef.cookies, arg or '', url)
@@ -49,7 +49,7 @@ def extractURL(url):
         print('\tsec: '+str(elapsed))
     except:
         print('\tret: exception')
-        return ''
+        return None
 
     result = []
     match = re.finditer(r'^http.*', output, re.MULTILINE)
@@ -58,24 +58,25 @@ def extractURL(url):
 
     if len(result) == 0:
         print('\tret: none')
-        return ''
+        return None
 
-    fd = open(m3u8, 'w')
+    fd = open(m3u, 'w')
     for vid in result:
         fd.write(vid+'\n')
     fd.close()
 
-    print('\tret: '+m3u8)
-    return m3u8
+    print('\tret: '+m3u)
+    return m3u
 
 def extractURL2(url):
     lists = []
-    m3u8 = extractURL(url)
-    if m3u8 != '':
-        fd = open(m3u8, 'r')
-        for l in fd.readlines():
-            lists.append(l.rstrip('\n'))
-        fd.close()
+    m3u = extractURL(url)
+    if not m3u:
+        return None
+    fd = open(m3u, 'r')
+    for l in fd.readlines():
+        lists.append(l.rstrip('\n'))
+    fd.close()
     return lists
 
 def extractSUB(url):

@@ -50,7 +50,7 @@ def runXBMC(url, ref):
 def runSMP(url, ref):
     if youtubedl.checkURL(url):
         url = youtubedl.extractURL(url)
-    if url == '':
+    if not url:
         print('[xplay] invalid url')
         return 0
     subprocess.Popen('%s \'%s\'' %(xdef.smp, url), shell=True)
@@ -68,7 +68,7 @@ def runMPV(url, ref):
         url = youtubedl.extractURL(url)
         xargs = xdef.mpv_ytdl
 
-    if url == '':
+    if not url:
         print('[xplay] invalid url')
         return 0
 
@@ -102,15 +102,11 @@ def runPIPE(url, ref):
 def runOMXP(url, ref):
     if youtubedl.checkURL(url):
         url = youtubedl.extractURL(url)
+    if not url:
+        print('[xplay] invalid url')
+        return 0
     if checkProcessRunning('omxplayer.bin'):
         omxp.setAct('stop', None)
-    sub = youtubedl.extractSUB_keepvid(ref)
-    if sub:
-        print('\n[omxp][play]\n\n\t')
-        os.system('omxplayer -o hdmi -I --subtitle \'%s\' \'%s\' 2>&1 | tee %s' %(sub, url, xdef.log))
-    else:
-        print('\n[omxp][play]\n\n\t')
-        os.system('omxplayer -o hdmi -I \'%s\' 2>&1 | tee %s' %(url, xdef.log))
     return 0
 
 def runDBG(url, ref):

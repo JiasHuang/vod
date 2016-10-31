@@ -8,22 +8,10 @@ import xurl
 import googlevideo
 import videomega
 import videowood
-import xurl
+import xdef
 
-def load(url):
-    return xurl.load(url)
-
-def load2(url):
-    opener = urllib2.build_opener()
-    opener.addheaders = [('User-agent', 'Mozilla/5.0 (X11; Linux i686; rv:10.0) Gecko/20100101 Firefox/33.0')]
-    try:
-        f = opener.open(url)
-        if f.info().get('Content-Encoding') == 'gzip':
-            buf = StringIO(f.read())
-            return gzip.GzipFile(fileobj=buf).read()
-        return f.read()
-    except:
-        return ''
+def load(url, local=None):
+    return xurl.load(url, local)
 
 def getIFrame(url):
     txt = load(url)
@@ -76,8 +64,8 @@ def getSource(url):
     elif re.search(r'porn2tube', url):
         src = getIFrame(url)
         if src:
-            local = '/tmp/porn2tube_src_'+base64.urlsafe_b64encode(url)
-            xurl.wget(src, local)
+            local = xdef.workdir+'porn2tube_'+hashlib.md5(url).hexdigest()
+            load(src, local)
             txt = open(local, 'r').read()
         else:
             txt = load(url)

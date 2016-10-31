@@ -128,7 +128,7 @@ def playURL(url, ref):
     if processURL2(url) != -1:
         return
 
-    src = youtubedl.extractURL(url)
+    src = youtubedl.extractURL(url) or ''
     xplay.playURL(src, url)
     return
 
