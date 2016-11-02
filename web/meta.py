@@ -49,9 +49,9 @@ def getImage(link):
     if m:
         return 'http://events.youku.com/global/api/video-thumb.php?vid=' + m.group(2)
 
-    #m = re.search(r'(videomega.tv|up2stream.com)', link)
-    #if m:
-    #    return findPoster(link)
+    m = re.search(r'(openload.co|videomega.tv|up2stream.com)', link)
+    if m:
+        return findPoster(link)
 
     return None
 
