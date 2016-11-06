@@ -54,7 +54,10 @@ def addEntry(req, link, title, image=None):
     req.write('</a>\n')
 
 def addPage(req, link, title, image=None):
-    addEntry(req, 'view.py?p='+link, title, image)
+    if re.search(r'&', link):
+        addEntry(req, 'view.py?P='+urllib.quote(link), title, image)
+    else:
+        addEntry(req, 'view.py?p='+link, title, image)
 
 def addVideo(req, link, title=None, image=None):
     if re.search(r'^//', link):
@@ -132,6 +135,31 @@ def listURL_def(req, url):
 
 def listURL_xuite(req, url):
     meta.findVideo(req, url)
+
+def listURL_xuiteDIR(req, url):
+
+    m = re.search(r'xuite.net/([a-z0-9A-Z]*)($)', url)
+    if not m:
+        return
+
+    user = m.group(1)
+
+    m = re.search(r'userSn=([0-9]*)', load(url))
+    if not m:
+        return
+
+    userSn = m.group(1)
+
+    data = json.loads(load('http://vlog.xuite.net/default/media/widget?title=dir&userSn=%s' %(userSn)))
+    if 'content' not in data:
+        return
+
+    for d in data['content']:
+        t = d['TITLE'].encode('utf8')
+        p = d['PARENT_SEQUENCE'].encode('utf8')
+        l = 'http://vlog.xuite.net/%s?t=cat&p=%s&dir_num=0' %(user, p)
+        addPage(req, l, t)
+    return
 
 def listURL_bilibili(req, url):
     if re.search(r'page=', url):
@@ -243,7 +271,10 @@ def listURL(req, url):
         listURL_youtube(req, url)
 
     elif re.search(r'xuite.net', url):
-        listURL_xuite(req, url)
+        if re.search(r'xuite.net/([a-zA-Z0-9]*)($)', url):
+            listURL_xuiteDIR(req, url)
+        else:
+            listURL_xuite(req, url)
 
     elif re.search(r'mangareader.net', url):
         mangareader.loadImage(req, url)
