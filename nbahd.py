@@ -32,7 +32,7 @@ def lookup(m3u):
     return None
 
 def listURL(url):
-    m3u = xdef.workdir+'list_'+hashlib.md5(url).hexdigest()+'.m3u'
+    m3u = xdef.workdir+'vod_list_'+hashlib.md5(url).hexdigest()+'.m3u'
     if lookup(m3u):
         return m3u
     listPart(m3u, url)

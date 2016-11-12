@@ -32,7 +32,7 @@ def extractURL(url):
 
     url = redirectURL(url)
     arg = parseParameters(url)
-    m3u = xdef.workdir+'list_'+hashlib.md5(url).hexdigest()+'.m3u'
+    m3u = xdef.workdir+'vod_list_'+hashlib.md5(url).hexdigest()+'.m3u'
 
     if arg:
         print('\targ: '+arg)
@@ -87,7 +87,7 @@ def extractSUB(url):
     print('\n[ytdl][extracSUB]\n')
     print('\turl: '+url)
 
-    sub = 'sub_'+hashlib.md5(url).hexdigest()
+    sub = 'vod_sub_'+hashlib.md5(url).hexdigest()
 
     for files in os.listdir(xdef.workdir):
         if files.startswith(sub):

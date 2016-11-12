@@ -4,6 +4,7 @@
 import re
 import urllib2
 import base64
+import hashlib
 import xurl
 import googlevideo
 import videomega
@@ -11,7 +12,7 @@ import videowood
 import xdef
 
 def load(url, local=None):
-    return xurl.load(url, local)
+    return xurl.load2(url, local)
 
 def getIFrame(url):
     txt = load(url)
@@ -64,7 +65,7 @@ def getSource(url):
     elif re.search(r'porn2tube', url):
         src = getIFrame(url)
         if src:
-            local = xdef.workdir+'porn2tube_'+hashlib.md5(url).hexdigest()
+            local = xdef.workdir+'vod_porn2tube_'+hashlib.md5(url).hexdigest()
             load(src, local)
             txt = open(local, 'r').read()
         else:

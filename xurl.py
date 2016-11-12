@@ -89,7 +89,7 @@ def urlretrieve(url, local):
 def load(url, local=None):
     url = absURL(url)
     if not local:
-        local = xdef.workdir+'load_'+hashlib.md5(url).hexdigest()
+        local = xdef.workdir+'vod_load_'+hashlib.md5(url).hexdigest()
     get(url, local)
     return readLocal(local)
 
@@ -106,7 +106,7 @@ def post(url, payload):
 def load2(url, local=None):
     url = absURL(url)
     if not local:
-        local = xdef.workdir+'load_'+hashlib.md5(url).hexdigest()
+        local = xdef.workdir+'vod_load_'+hashlib.md5(url).hexdigest()
     wget(url, local)
     return readLocal(local)
 
