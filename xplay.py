@@ -6,8 +6,10 @@ import re
 import time
 import subprocess
 import xdef
+import xurl
 import youtubedl
-import mpv, omxp
+import mpv
+import omxp
 
 def getPlayer():
 
@@ -107,6 +109,12 @@ def runOMXP(url, ref):
         return 0
     if checkProcessRunning('omxplayer.bin'):
         omxp.setAct('stop', None)
+    if re.search(r'.m3u($)', url):
+        url = xurl.readLocal(url).rstrip()
+        print('[omxp][play] '+url)
+    p = subprocess.Popen('%s \"%s\"' %(xdef.omxp, url), shell=True)
+    if p:
+        p.communicate()
     return 0
 
 def runDBG(url, ref):
