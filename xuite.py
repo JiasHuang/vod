@@ -1,8 +1,11 @@
 #!/usr/bin/env python
 
-import os, sys, re
+import os
+import sys
+import re
 import datetime
-import xurl, xdef
+import xurl
+import xdef
 
 def getKey(url):
     if re.search('m.xuite.net/vlog/amwkx/', url):

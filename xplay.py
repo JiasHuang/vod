@@ -111,7 +111,7 @@ def runOMXP(url, ref):
         omxp.setAct('stop', None)
     if re.search(r'.m3u($)', url):
         url = xurl.readLocal(url).rstrip()
-        print('[omxp][play] '+url)
+        print('\n[omxp][play] '+url)
     p = subprocess.Popen('%s \"%s\"' %(xdef.omxp, url), shell=True)
     if p:
         p.communicate()
