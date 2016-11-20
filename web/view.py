@@ -98,6 +98,9 @@ def index(req):
     elif act:
         if act == 'load' and val:
             page.render(req, val, None)
+        elif act == 'update':
+            os.system('touch /var/tmp/autostart_update')
+            page.render(req, val, None)
         else:
             sendACT(act, val)
             page.render(req, 'panel', '<br><br><br><h1>%s %s</h1>' %(act, val or ''))
