@@ -18,12 +18,10 @@ function setAct(key) {
         act = "load";
         val = "jav";
     }
-
-    else if (val = "*0000") {
+    else if (val == "*0000") {
         act = "update";
         val = "update";
     }
-
     else if (key == "pause" && val != "") {
         act = "percent"
     }
