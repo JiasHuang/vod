@@ -1,0 +1,3 @@
+@lxpanel --profile LXDE-pi
+@pcmanfm --desktop --profile LXDE-pi
+@lxterminal -e "/home/pi/autostart.py" --geometry=80x32
