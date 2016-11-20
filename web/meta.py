@@ -104,3 +104,4 @@ def findLink(req, url):
             link = m.group()[1:-1]
             image = getImage(link)
             page.addVideo(req, link, link, image)
+

@@ -69,6 +69,13 @@ def addYouTube(req, vid, title):
     image = 'http://img.youtube.com/vi/'+vid+'/0.jpg'
     addVideo(req, link, title, image)
 
+def addPlayList(req, playlist, title, video=None):
+    link = 'https://www.youtube.com/playlist?list='+playlist
+    image = None
+    if video:
+        image = 'http://img.youtube.com/vi/'+video+'/0.jpg'
+    addPage(req, link, title, image)
+
 def addDailyMotion(req, vid, title):
     link = 'http://www.dailymotion.com/video/'+vid
     image = 'http://www.dailymotion.com/thumbnail/video/'+vid
@@ -78,6 +85,14 @@ def search_yt(req, q):
     txt = load('https://www.youtube.com/results?filters=hd&search_query='+q)
     for m in re.finditer(r'<a href="/watch\?v=(.{11})".*?>([^<]*)</a>', txt):
         addYouTube(req, m.group(1), m.group(2))
+
+def search_pl(req, q):
+    url = 'https://www.youtube.com/results?sp=EgIQAw%253D%253D&q='+q
+    playlist = None
+    for m in re.finditer(r'href="/watch\?v=(.{11})&amp;list=([^"]*)".*?>([^<]*)</a>', load(url)):
+        if playlist != m.group(2):
+            video, playlist, title = m.group(1), m.group(2), m.group(3)
+            addPlaylist(req, playlist, title, video)
 
 def search_dm(req, q):
     data = json.loads(load('https://api.dailymotion.com/videos?search=%s&page=1' %(q)))
@@ -102,6 +117,7 @@ def search(req, q, s):
     req.write('<h1><pre>')
     req.write('<a href=view.py>Home</a>    ')
     req.write('<a href=view.py?q=%s>YouTube</a>    ' %(q1))
+    req.write('<a href=view.py?q=%s&s=pl>PlayList</a>    ' %(q1))
     req.write('<a href=view.py?q=%s&s=dm>DailyMotion</a>    ' %(q1))
     req.write('<a href=view.py?q=%s&s=bi>Bilibili</a>    ' %(q1))
     req.write('</pre></h1>')
@@ -117,6 +133,8 @@ def search(req, q, s):
 
     if s == 'yt':
         search_yt(req, q1)
+    elif s == 'pl':
+        search_pl(req, q1)
     elif s == 'dm':
         search_dm(req, q1)
     elif s == 'bi':
@@ -208,7 +226,13 @@ def listURL_dodova(req, url):
         addPage(req, link, title, None)
 
 def listURL_youtube(req, url):
-    if re.search(r'playlist?', url):
+    if re.search(r'playlists($)', url):
+        playlist = None
+        for m in re.finditer(r'href="/playlist\?list=([^"]*)"*?>([^<]*)</a>', load(url)):
+            if playlist != m.group(1):
+                playlist, title = m.group(1), m.group(2)
+                addPlayList(req, playlist, title)
+    elif re.search(r'playlist\?', url):
         for m in re.finditer(r'pl-video yt-uix-tile ([^>]*)', load(url)):
             vid = re.search(r'data-video-id="([^"]*)"', m.group())
             title = re.search(r'data-title="([^"]*)"', m.group())
