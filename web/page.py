@@ -92,7 +92,7 @@ def search_pl(req, q):
     for m in re.finditer(r'href="/watch\?v=(.{11})&amp;list=([^"]*)".*?>([^<]*)</a>', load(url)):
         if playlist != m.group(2):
             video, playlist, title = m.group(1), m.group(2), m.group(3)
-            addPlaylist(req, playlist, title, video)
+            addPlayList(req, playlist, title, video)
 
 def search_dm(req, q):
     data = json.loads(load('https://api.dailymotion.com/videos?search=%s&page=1' %(q)))
