@@ -52,7 +52,7 @@
 
 - autostart
 	/home/pi/.config/lxsession/LXDE-pi/autostart
-	@lxterminal -e "/home/pi/autostart.py" --geometry=80x32
+	@lxterminal -e "/home/pi/autostart.py" --geometry=80x60
 
 - disable screen sleep
 	/etc/lightdm/lightdm.conf
