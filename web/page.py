@@ -95,7 +95,7 @@ def search_pl(req, q):
             addPlayList(req, playlist, title, video)
 
 def search_ll(req, q):
-    url = 'https://www.youtube.com/results?sp=CAISAhgC&q='+q
+    url = 'https://www.youtube.com/results?sp=CAISBBgCIAE%253D&q='+q
     for m in re.finditer(r'<a href="/watch\?v=(.{11})".*?>([^<]*)</a>', load(url)):
         addYouTube(req, m.group(1), m.group(2))
 
