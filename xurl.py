@@ -48,12 +48,12 @@ def absURL(url, site=None):
         return 'http://'+url
     return url
 
-def wget(url, local):
+def wget(url, local, options=None):
     verbose(url, local, 'wget')
     if os.path.exists(local):
         verbose_status('already exist')
         return
-    cmd = '%s -U \'%s\' -O %s \'%s\' ' %(xdef.wget, xdef.ua, local, url)
+    cmd = '%s -U \'%s\' -O %s \'%s\' %s' %(xdef.wget, xdef.ua, local, url, options or '')
     os.system(cmd.encode('utf8'))
     verbose_status('done')
     return

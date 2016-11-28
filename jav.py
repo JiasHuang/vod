@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import os
 import re
 import urllib2
 import base64
@@ -66,8 +67,17 @@ def getSource(url):
         src = getIFrame(url)
         if src:
             local = xdef.workdir+'vod_porn2tube_'+hashlib.md5(url).hexdigest()
-            load(src, local)
-            txt = open(local, 'r').read()
+            local_packed = xdef.workdir+'vod_porn2tube_packed_'+hashlib.md5(url).hexdigest()
+            local_unpack = xdef.workdir+'vod_porn2tube_unpack_'+hashlib.md5(url).hexdigest()
+            xurl.wget(src, local, '--referer='+url)
+            packed = re.search('(eval\(function\(p,a,c,k,e,d\)\{.+\))', xurl.readLocal(local))
+            if packed:
+                fd = open(local_packed, "w")
+                fd.write(packed.group())
+                fd.close()
+                os.system('js-beautify %s > %s' %(local_packed, local_unpack))
+                txt = xurl.readLocal(local_unpack)
+                print('\n[unpack]\n\n\t%s' %(txt))
         else:
             txt = load(url)
 
