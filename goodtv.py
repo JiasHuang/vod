@@ -6,8 +6,8 @@ import xurl
 
 def getSource(url):
     txt = xurl.load(url)
-    m = re.search(r'/hls-vod/sc/([a-zA-Z0-9_]+).m3u8', txt)
+    m = re.search(r'source src="([^"]*)"', txt)
     if m:
-        return 'http://scvod1.goodtv.org'+m.group()
+        return m.group()
     return url
 
