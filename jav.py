@@ -7,13 +7,14 @@ import urllib2
 import base64
 import hashlib
 import xurl
+import xdef
 import googlevideo
 import videomega
 import videowood
-import xdef
+import jsunpack
 
-def load(url, local=None):
-    return xurl.load2(url, local)
+def load(url, local=None, options=None):
+    return xurl.load2(url, local, options)
 
 def getIFrame(url):
     txt = load(url)
@@ -67,33 +68,27 @@ def getSource(url):
         src = getIFrame(url)
         if src:
             local = xdef.workdir+'vod_porn2tube_'+hashlib.md5(url).hexdigest()
-            local_packed = xdef.workdir+'vod_porn2tube_packed_'+hashlib.md5(url).hexdigest()
-            local_unpack = xdef.workdir+'vod_porn2tube_unpack_'+hashlib.md5(url).hexdigest()
-            xurl.wget(src, local, '--referer='+url)
-            packed = re.search('(eval\(function\(p,a,c,k,e,d\)\{.+\))', xurl.readLocal(local))
-            if packed:
-                fd = open(local_packed, "w")
-                fd.write(packed.group())
-                fd.close()
-                os.system('js-beautify %s > %s' %(local_packed, local_unpack))
-                txt = xurl.readLocal(local_unpack)
-                print('\n[unpack]\n\n\t%s' %(txt))
+            load(src, local, '--referer='+url)
+            txt = jsunpack.unpackFILE(local) or ''
         else:
             txt = load(url)
 
         v = v1 = v2 = v3 = None
-        for m in re.finditer(r'file:([^"]*)"([^"]*)"([^}]*)', txt):
-            if re.search(r'atob', m.group(1)):
-                v = base64.b64decode(m.group(2))
+        for m in re.finditer(r'{file:([^,]*),label:([^,]*),type:([^,]*)}', txt):
+            f, label, t = m.group(1), m.group(2), m.group(3)
+            f = re.sub('["\']', '', f)
+            m = re.search(r'window.atob(([^)]*))', f)
+            if m:
+                v = base64.b64decode(m.group(1))
             else:
-                v = m.group(2)
+                v = f
             if not re.search(r'^http', v):
                 continue
-            if re.search(r'1080p', m.group(3), re.IGNORECASE):
+            if re.search(r'1080p', label, re.IGNORECASE):
                 v1 = v
-            elif re.search(r'720p', m.group(3), re.IGNORECASE):
+            elif re.search(r'720p', label, re.IGNORECASE):
                 v2 = v
-            elif re.search(r'480p', m.group(3), re.IGNORECASE):
+            elif re.search(r'480p', label, re.IGNORECASE):
                 v3 = v
         return v1 or v2 or v3 or v or ''
 

@@ -30,6 +30,9 @@ def saveLocal(text, local):
     fd.close()
     return
 
+def dict2str(adict):
+    return ''.join('{}{}'.format(key, val) for key, val in adict.items())
+
 def findSite(url):
     if re.search(r'://', url):
         m = re.search(r'://([^/]*)', url);
@@ -93,20 +96,27 @@ def load(url, local=None):
     get(url, local)
     return readLocal(local)
 
-def post(url, payload):
+def post(url, payload, local=None):
+    if not local:
+        local = xdef.workdir+'vod_post_'+hashlib.md5(dict2str(payload)).hexdigest()
+    if os.path.exists(local):
+        verbose_status('already exist')
+        return readLocal(local)
     opener = urllib2.build_opener()
     opener.addheaders = [('User-agent', 'Mozilla/5.0 (X11; Linux i686; rv:10.0) Gecko/20100101 Firefox/33.0')]
     data = urllib.urlencode(payload)
     try:
         f = opener.open(url, data)
-        return f.read()
+        txt = f.read()
+        saveLocal(txt, local)
+        return txt
     except:
         return ''
 
-def load2(url, local=None):
+def load2(url, local=None, options=None):
     url = absURL(url)
     if not local:
         local = xdef.workdir+'vod_load_'+hashlib.md5(url).hexdigest()
-    wget(url, local)
+    wget(url, local, options)
     return readLocal(local)
 
