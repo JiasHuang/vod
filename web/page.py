@@ -87,7 +87,7 @@ def search_yt(req, q):
         addYouTube(req, m.group(1), m.group(2))
 
 def search_pl(req, q):
-    url = 'https://www.youtube.com/results?sp=EgIQAw%253D%253D&q='+q
+    url = 'https://www.youtube.com/results?sp=EgIQAw%3D%3D&q='+q
     playlist = None
     for m in re.finditer(r'href="/watch\?v=(.{11})&amp;list=([^"]*)".*?>([^<]*)</a>', load(url)):
         if playlist != m.group(2):
@@ -95,7 +95,7 @@ def search_pl(req, q):
             addPlayList(req, playlist, title, video)
 
 def search_fx(req, q):
-    url = 'https://www.youtube.com/results?sp=EgIYAg%253D%253D&q='+q
+    url = 'https://www.youtube.com/results?sp=EgQYAiAB&q='+q
     for m in re.finditer(r'<a href="/watch\?v=(.{11})".*?>([^<]*)</a>', load(url)):
         addYouTube(req, m.group(1), m.group(2))
 
@@ -251,6 +251,23 @@ def listURL_youtube(req, url):
             vid = m.group(1)
             addYouTube(req, m.group(1), m.group(2))
 
+def listURL_eslpod(req, url):
+    txt = load(url)
+    if re.search(r'show_podcast.php', url):
+        m = re.search(r'<a href="([^"]*)" target="_blank">Download Podcast</a>', txt)
+        if m:
+            src = m.group(1)
+            req.write('<a href="view.py?w=%s" target="_blank">Load Words</a>' %(url))
+            req.write('<a href="view.py?v=%s" target="_blank">Load Media</a>' %(src))
+            dialog = re.search(r'<table width="100%" border="0" cellspacing="0" cellpadding="0" class="podcast_table_home">.*?</table>', txt, re.MULTILINE)
+            if dialog:
+                req.write(req, dialog.group())
+    elif re.search(r'show_all.php', url):
+        for m in re.finditer(r'<a href="([^"]*)" class="podcast_title">([^<]*)</a>', txt):
+            link, title = m.group(1), m.group(2)
+            if not re.search(r'^http', link):
+                link = 'https://www.eslpod.com/website/'+link
+            addPage(req, link, title)
 
 def listURL_mangareader(req, url):
     for m in re.finditer(r'<a href="/one-piece/([^"]*)">([^"]*)</a>([^<]*)<', load(url)):
@@ -301,6 +318,9 @@ def listURL(req, url):
 
     elif re.search(r'youtube.com', url):
         listURL_youtube(req, url)
+
+    elif re.search(r'eslpod.com', url):
+        listURL_eslpod(req, url)
 
     elif re.search(r'xuite.net', url):
         if re.search(r'xuite.net/([a-zA-Z0-9]*)($)', url):
