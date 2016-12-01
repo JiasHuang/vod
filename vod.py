@@ -122,6 +122,10 @@ def playURL(url, ref):
     if url == '':
         return
 
+    if url.lower().endswith(('.mkv', '.mp4', '.avi', '.flv', '.f4v', '.m3u', '.m3u8', '.mp3', 'm4a')):
+        xplay.playURL(url, '')
+        return
+
     if processURL1(url) != -1:
         return
 

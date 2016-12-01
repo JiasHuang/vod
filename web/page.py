@@ -256,12 +256,11 @@ def listURL_eslpod(req, url):
     if re.search(r'show_podcast.php', url):
         m = re.search(r'<a href="([^"]*)" target="_blank">Download Podcast</a>', txt)
         if m:
-            src = m.group(1)
-            req.write('<a href="view.py?w=%s" target="_blank">Load Words</a>' %(url))
-            req.write('<a href="view.py?v=%s" target="_blank">Load Media</a>' %(src))
-            dialog = re.search(r'<table width="100%" border="0" cellspacing="0" cellpadding="0" class="podcast_table_home">.*?</table>', txt, re.MULTILINE)
-            if dialog:
-                req.write(req, dialog.group())
+            req.write('<br><h1><a href="view.py?v=%s" target="_blank">Load Media</a></h1>\n' %(m.group(1)))
+        m = re.search(r'<table width="100%" border="0" cellspacing="0" cellpadding="0" class="podcast_table_home">.*?</table>', txt, re.MULTILINE)
+        if m:
+            req.write(req, m.group())
+            eslpod.parseWord(req, m.group())
     elif re.search(r'show_all.php', url):
         for m in re.finditer(r'<a href="([^"]*)" class="podcast_title">([^<]*)</a>', txt):
             link, title = m.group(1), m.group(2)
