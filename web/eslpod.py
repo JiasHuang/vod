@@ -13,8 +13,8 @@ def parseWord(req, txt):
     dictWebster = 'http://www.merriam-webster.com/dictionary/'
     dictYahoo = 'https://tw.dictionary.yahoo.com/dictionary?p='
 
-    req.write('<ul>')
-    req.write('<font size=6>')
+    req.write('<br><br><hr><ul>')
+    req.write('<font size=5>')
 
     for m in re.finditer(r'<b>([^<]*)</b>', txt):
         q = m.group(1)
@@ -23,11 +23,11 @@ def parseWord(req, txt):
         q = q.replace(' ', '+')
 
         s = '<li>%s' %(q)
-        s = s + '<a target="_blank" href=%s> [Cambridge] </a>' %(dictCambridge+q)
-        s = s + '<a target="_blank" href=%s> [Webster] </a>' %(dictWebster+q)
-        s = s + '<a target="_blank" href=%s> [Yahoo] </a>' %(dictYahoo+q)
+        s = s + '<a target="_blank" href=%s>[Cambridge]</a>' %(dictCambridge+q)
+        s = s + '<a target="_blank" href=%s>[Webster]</a>' %(dictWebster+q)
+        s = s + '<a target="_blank" href=%s>[Yahoo]</a>' %(dictYahoo+q)
         s = s + '\n'
 
         req.write(s)
 
-    req.write('</ul>')
+    req.write('</ul><hr><br><br>')

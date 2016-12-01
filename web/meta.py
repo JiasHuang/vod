@@ -1,18 +1,36 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import os
 import re
 import urllib
 import urllib2
 import json
 import urlparse
+import hashlib
+import conf
 
 from StringIO import StringIO
 import gzip
 
 import page
 
-def load(url):
+def readLocal(local):
+    with open(local, 'r') as fd:
+        return fd.read()
+    return ''
+
+def saveLocal(text, local):
+    fd = open(local, 'w')
+    fd.write(text)
+    fd.close()
+    return
+
+def load(url, local=None):
+    if not local:
+        local = conf.workdir+'vod_load_'+hashlib.md5(url).hexdigest()
+    if os.path.exists(local):
+        return readLocal(local)
     opener = urllib2.build_opener()
     opener.addheaders = [('User-agent', 'Mozilla/5.0 (X11; Linux i686; rv:10.0) Gecko/20100101 Firefox/33.0')]
     try:
@@ -20,7 +38,9 @@ def load(url):
         if f.info().get('Content-Encoding') == 'gzip':
             buf = StringIO(f.read())
             return gzip.GzipFile(fileobj=buf).read()
-        return f.read()
+        txt = f.read()
+        saveLocal(txt, local)
+        return txt
     except:
         return ''
 

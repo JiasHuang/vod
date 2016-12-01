@@ -253,20 +253,23 @@ def listURL_youtube(req, url):
 
 def listURL_eslpod(req, url):
     txt = load(url)
-    if re.search(r'show_podcast.php', url):
-        m = re.search(r'<a href="([^"]*)" target="_blank">Download Podcast</a>', txt)
+    if re.search(r'/podcast/', url):
+        m = re.search(r'/podcast/esl-podcast-([0-9]*)', url)
         if m:
-            req.write('<br><h1><a href="view.py?v=%s" target="_blank">Load Media</a></h1>\n' %(m.group(1)))
-        m = re.search(r'<table width="100%" border="0" cellspacing="0" cellpadding="0" class="podcast_table_home">.*?</table>', txt, re.MULTILINE)
+            src = 'https://traffic.libsyn.com/secure/eslpod/ESLPod%s.mp3' %(m.group(1))
+            req.write('<h1><a href="view.py?v=%s" target="_blank">Load Media</a></h1>\n' %(src))
+            req.write('<h1><a href="%s" target="_blank">Download Media</a></h1>\n' %(src))
+        m = re.search(r'<div id="home" class="tab-pane fade in active">(.*?)</div>', txt, re.DOTALL|re.MULTILINE)
         if m:
-            req.write(req, m.group())
-            eslpod.parseWord(req, m.group())
-    elif re.search(r'show_all.php', url):
-        for m in re.finditer(r'<a href="([^"]*)" class="podcast_title">([^<]*)</a>', txt):
+            req.write('<br><hr><font size=4>')
+            req.write(m.group(1))
+            req.write('</font><hr><br>')
+            eslpod.parseWord(req, m.group(1))
+    elif re.search(r'/library/', url):
+        for m in re.finditer(r'<a href="([^"]*)">([^<]*)</a>', txt):
             link, title = m.group(1), m.group(2)
-            if not re.search(r'^http', link):
-                link = 'https://www.eslpod.com/website/'+link
-            addPage(req, link, title)
+            if re.search(r'/podcast/', link):
+                addPage(req, link, title)
 
 def listURL_mangareader(req, url):
     for m in re.finditer(r'<a href="/one-piece/([^"]*)">([^"]*)</a>([^<]*)<', load(url)):
