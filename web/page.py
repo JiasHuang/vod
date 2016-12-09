@@ -94,11 +94,6 @@ def search_pl(req, q):
             video, playlist, title = m.group(1), m.group(2), m.group(3)
             addPlayList(req, playlist, title, video)
 
-def search_fx(req, q):
-    url = 'https://www.youtube.com/results?sp=EgQYAiAB&q='+q
-    for m in re.finditer(r'<a href="/watch\?v=(.{11})".*?>([^<]*)</a>', load(url)):
-        addYouTube(req, m.group(1), m.group(2))
-
 def search_dm(req, q):
     data = json.loads(load('https://api.dailymotion.com/videos?search=%s&page=1' %(q)))
     if 'list' in data:
@@ -121,11 +116,10 @@ def search(req, q, s):
 
     req.write('<h1><pre>')
     req.write('<a href=view.py>Home</a>    ')
-    req.write('<a href=view.py?s=yt&q='+q+'>YouTube</a>    ')
-    req.write('<a href=view.py?s=pl&q='+q+'>PlayList</a>    ')
-    req.write('<a href=view.py?s=fx&q='+q+'>Filter</a>    ')
-    req.write('<a href=view.py?s=dm&q='+q+'>DailyMotion</a>    ')
-    req.write('<a href=view.py?s=bi&q='+q+'>Bilibili</a>    ')
+    req.write('<a href=view.py?s=yt&q='+q1+'>YouTube</a>    ')
+    req.write('<a href=view.py?s=pl&q='+q1+'>PlayList</a>    ')
+    req.write('<a href=view.py?s=dm&q='+q1+'>DailyMotion</a>    ')
+    req.write('<a href=view.py?s=bi&q='+q1+'>Bilibili</a>    ')
     req.write('</pre></h1>')
 
     req.write('<br>')
@@ -141,8 +135,6 @@ def search(req, q, s):
         search_yt(req, q1)
     elif s == 'pl':
         search_pl(req, q1)
-    elif s == 'fx':
-        search_fx(req, q1)
     elif s == 'dm':
         search_dm(req, q1)
     elif s == 'bi':
