@@ -125,3 +125,9 @@ def findLink(req, url):
             image = getImage(link)
             page.addVideo(req, link, link, image)
 
+def findFrame(req, url):
+    for m in re.finditer(r'<iframe (.*?)</iframe>', load(url)):
+        src = re.search(r'src="([^"]*)"', m.group(1))
+        if src:
+            page.addVideo(req, src.group(1))
+

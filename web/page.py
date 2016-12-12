@@ -197,33 +197,30 @@ def listURL_bilibili(req, url):
 
 def listURL_dramaq(req, url):
     if re.search(r'php', url):
-        for m in re.finditer(r'(.*?)\n(.*?)<iframe (.*?)</iframe>', load(url)):
-            src = re.search(r'src="([^"]*)"', m.group(3))
-            pw = re.search(r':([^<]*)</font>', m.group(1))
-            if src and pw:
-                link = src.group(1)+'&ytdl_password='+re.split(' ', pw.group(1))[0]
-                addEntry(req, 'view.py?V='+urllib.quote(link), src.group(1))
-            elif src:
-                addVideo(req, src.group(1))
-        return
-
-    if re.search(r'(biz|jp/|us/|cn/)$', url):
+        meta.findFrame(req, url)
+    elif re.search(r'(biz|jp/|us/|cn/)$', url):
         meta.findPage(req, url)
         for m in re.finditer(r'<a class="mod-articles-category-title " href="([^"]*)">([^"]*)</a>', load(url)):
             if m.group(1)[-1] == '/':
                 addPage(req, 'http://www.dramaq.biz'+m.group(1), m.group(2))
-        return
-    for m in re.finditer(r'<li class="item-751"><a href="([^.]*).php"', load(url)):
-        if re.search(r'ep', m.group(1)):
-            link = url+m.group(1)+'.php'
-            title = m.group(1)
-            addPage(req, link, title)
+    else:
+        for m in re.finditer(r'<li class="item-751"><a href="([^.]*).php"', load(url)):
+            if re.search(r'ep', m.group(1)):
+                link, title = url+m.group(1)+'.php', m.group(1)
+                addPage(req, link, title)
 
 def listURL_dodova(req, url):
-    for m in re.finditer(r'<div class="mh-excerpt">([^<]*)<a href="([^"]*)" title="([^"]*)">', load(url)):
-        link = m.group(2)
-        title = m.group(3)
-        addPage(req, link, title, None)
+    if re.search(r'imovie.dodova.com/category/', url):
+        for i in range(1, 3):
+            for m in re.finditer(r'<div class="mh-excerpt">([^<]*)<a href="([^"]*)" title="([^"]*)">', load(url+'/page/'+str(i))):
+                link, title = m.group(2), m.group(3)
+                addPage(req, link, title, None)
+    elif re.search(r'imovie.dodova.com/', url):
+        meta.findFrame(req, url)
+        for m in re.finditer(r'<a href="([^"]*)" title="openload" target="_blank">', load(url)):
+            meta.findLink(req, m.group(1).replace('&#038;', '&'))
+    elif re.search(r'video.imovie.dodova.com/', url):
+        meta.findLink(req, url)
 
 def listURL_youtube(req, url):
     if re.search(r'playlists($)', url):
@@ -325,10 +322,8 @@ def listURL(req, url):
     elif re.search(r'mangareader.net', url):
         mangareader.loadImage(req, url)
 
-    elif re.search(r'movie.dodova.com/category/', url):
-        listURL_dodova(req, url+'/page/1')
-        listURL_dodova(req, url+'/page/2')
-        listURL_dodova(req, url+'/page/3')
+    elif re.search(r'imovie.dodova.com', url):
+        listURL_dodova(req, url)
 
     elif re.search('jav(68|pub)',url):
         listURL_jav(req, url)
