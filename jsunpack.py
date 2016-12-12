@@ -34,26 +34,24 @@ def parseCode(code):
         idx = idx + 1
     return code[func_start:func_end+1], code[func_end+1:-1]
 
-def unpackCode(code):
-    func, args = parseCode(code)
-    local = xdef.workdir+'vod_code'
-    fd = open(local, 'w')
-    fd.write('function unpack(p,a,c,k,e,d)%s\n' %(func))
-    fd.write('print(unpack%s);\n' %(args))
-    fd.close()
-    output = subprocess.check_output('js '+local, shell=True).rstrip('\n')
-    return output
+def showAll(code, output):
+    print('\n----------------------------------------------------- [packed] -------------------------------------------------------------\n\n')
+    print(code)
+    print('\n----------------------------------------------------- [unpack] -------------------------------------------------------------\n\n')
+    print(output)
+    print('\n----------------------------------------------------------------------------------------------------------------------------\n\n')
 
 def unpack(txt):
     m = re.search('(eval\(function\(p,a,c,k,e,d\)\{.+\))', txt)
-    if m :
+    if m:
         code = m.group()
-        output = unpackCode(code)
-        print('\n----------------------------------------------------- [packed] -------------------------------------------------------------\n\n')
-        print(code)
-        print('\n----------------------------------------------------- [unpack] -------------------------------------------------------------\n\n')
-        print(output)
-        print('\n----------------------------------------------------------------------------------------------------------------------------\n\n')
+        func, args = parseCode(code)
+        local = xdef.workdir+'vod_code'
+        txt = 'function unpack(p,a,c,k,e,d)%s\nconsole.log(unpack%s);\n' %(func, args)
+        xurl.saveLocal(txt, local)
+        output = subprocess.check_output('js '+local, shell=True).rstrip('\n')
+        output = output.replace("\/", "/")
+        showAll(code, output)
         return output
     return None
 
