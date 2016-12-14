@@ -8,6 +8,6 @@ def getSource(url):
     txt = xurl.load(url)
     m = re.search(r'source src="([^"]*)"', txt)
     if m:
-        return m.group()
+        return m.group(1)
     return url
 

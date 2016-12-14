@@ -1,10 +1,18 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import os, re, sys, time
-import xdef, xurl, xplay
-import videomega, videowood, openload, up2stream
-import xuite, jav, nbahd, letv, goodtv
+import os
+import re
+import xdef
+import xurl
+import xplay
+import videomega
+import videowood
+import up2stream
+import xuite
+import jav
+import nbahd
+import goodtv
 import youtubedl
 
 from optparse import OptionParser
@@ -35,11 +43,6 @@ def processURL1(url):
         xplay.playURL(src, url)
         return 0
 
-    #if re.search('openload.co', url):
-    #    src = openload.getSource(url)
-    #    xplay.playURL(src, url)
-    #    return 0
-
     if re.search('up2stream.com', url):
         src = up2stream.getSource(url)
         xplay.playURL(src, url)
@@ -48,16 +51,6 @@ def processURL1(url):
     if re.search('nbahd.net', url):
         src = nbahd.getSource(url)
         xplay.playURL(src, '')
-        return 0
-
-    if re.search('letv.com', url):
-        src = letv.getSource(url)
-        xplay.playURL(src, '')
-        return 0
-
-    if re.search(r'jav(68|pub|cuteonline)', url):
-        src = jav.getSource(url)
-        xplay.playURL(src, url)
         return 0
 
     if re.search(r'porn2tube', url):
@@ -77,23 +70,7 @@ def processURL2(url):
  
     txt = xurl.load(url)
 
-    m = re.search(r'http://(videomega|videowood).tv/[^"]*', txt)
-    if m:
-        return processURL1(m.group())
-
-    m = re.search(r'https:/openload.co/[^"]*', txt)
-    if m:
-        return processURL1(m.group())
-
-    m = re.search(r'http://www.dailymotion.com/[^"]*', txt)
-    if m:
-        return processURL1(m.group())
-
-    m = re.search(r'https://.*?.googleusercontent.com/([^"]*)', txt)
-    if m:
-        return processURL1(m.group())
-
-    m = re.search(r'https://redirector.googlevideo.com/([^"]*)', txt)
+    m = re.search(r'"http(s|)://(www.|)(redirector.googlevideo|dailymotion|videomega|videowood|youtube|openload)(.com|.tv|.co)([^"]*)', txt)
     if m:
         return processURL1(m.group())
 

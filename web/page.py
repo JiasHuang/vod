@@ -280,7 +280,7 @@ def listURL_cute(req, url):
         meta.findImageLink(req, url, True, True)
 
 def listURL_porn2tube(req, url):
-        meta.findImageLink(req, url, True, False)
+    meta.findImageLink(req, url, True, False)
 
 def listURL_adult_dodova(req, url):
     if url.endswith('/'):
