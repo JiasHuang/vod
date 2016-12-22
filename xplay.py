@@ -76,6 +76,9 @@ def runMPV(url, ref):
 
     if not checkProcessRunning('mpv'):
 
+        if os.path.exists('/etc/alternatives/x86_64-linux-gnu_libvdpau_nvidia.so'):
+            xargs = xargs + ' --hwdec=vdpau'
+
         xargs = xargs + ' --user-agent=\'%s\'' %(xdef.ua)
         xargs = xargs + ' --referrer=\'%s\'' %(ref)
         xargs = xargs + ' --input-file=\'%s\'' %(xdef.fifo)

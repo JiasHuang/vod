@@ -57,7 +57,7 @@ def wget(url, local, options=None):
         verbose_status('already exist')
         return
     cmd = '%s -U \'%s\' -O %s \'%s\' %s' %(xdef.wget, xdef.ua, local, url, options or '')
-    os.system(cmd.encode('utf8'))
+    os.system(cmd)
     verbose_status('done')
     return
 

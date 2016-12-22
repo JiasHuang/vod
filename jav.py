@@ -7,6 +7,7 @@ import hashlib
 import xurl
 import xdef
 import jsunpack
+import youtubedl
 
 def load(url, local=None, options=None):
     return xurl.load2(url, local, options)
@@ -19,6 +20,8 @@ def getSource(url):
     elif re.search(r'porn2tube', url):
         src = xurl.getFrame(url)
         if src:
+            if youtubedl.checkURL(src):
+                return src
             local = xdef.workdir+'vod_porn2tube_'+hashlib.md5(url).hexdigest()
             load(src, local, '--referer='+url)
             txt = jsunpack.unpackFILE(local) or ''
@@ -26,7 +29,7 @@ def getSource(url):
             txt = load(url)
 
         v = v1 = v2 = v3 = None
-        for m in re.finditer(r'file:([^,]*),label:([^,]*),', txt):
+        for m in re.finditer(r'file:(.*?),label:(.*?)', txt):
             link, label, = m.group(1), m.group(2)
             link = re.sub('["\']', '', link)
             m = re.search(r'window.atob(([^)]*))', link)

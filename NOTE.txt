@@ -33,8 +33,6 @@
 
 1. sudo usermod -a -G video www-data
 
-2. sudo reboot
-
 -----------------------------------------------------------
 [option] xterm Xt error: Can't open display: :0
 
