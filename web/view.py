@@ -12,19 +12,17 @@ from mod_python import util
 def playURL(url):
     if not os.path.exists(conf.vod):
         return
-    cmd = 'python -u %s \'%s\'' %(conf.vod, url)
-    log = open(conf.log, 'a')
+    cmd = 'python -u %s \'%s\' | tee -a %s' %(conf.vod, url, conf.log)
     if os.path.exists('/usr/bin/xterm'):
-        subprocess.Popen(['/usr/bin/xterm', '-display', ':0', '-e', cmd], stdout=log)
+        subprocess.Popen(['/usr/bin/xterm', '-display', ':0', '-e', cmd])
     else:
-        subprocess.Popen(cmd, shell=True, stdout=log)
+        subprocess.Popen(cmd, shell=True)
 
 def sendACT(act, val):
     if not os.path.exists(conf.act):
         return
-    cmd = 'python -u %s \'%s\' \'%s\'' %(conf.act, act, val)
-    log = open(conf.log, 'a')
-    subprocess.Popen(cmd, shell=True, stdout=log).communicate()
+    cmd = 'python -u %s \'%s\' \'%s\' | tee -a %s' %(conf.act, act, val, conf.log)
+    subprocess.Popen(cmd, shell=True).communicate()
 
 def index(req):
 

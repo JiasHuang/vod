@@ -3,6 +3,7 @@
 
 import os
 import re
+import urllib
 import xdef
 import xurl
 import xplay
@@ -134,9 +135,9 @@ def main():
 
     if len(args) >= 1:
         url = args[0]
-        m = re.search(r'view.py\?v=(.*)', url)
+        m = re.search(r'view.py\?(v|url)=(.*)', url)
         if m:
-            url = m.group(1)
+            url = urllib.unquote(m.group(2))
 
     if len(args) >= 2:
         ref = args[1]

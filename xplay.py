@@ -136,9 +136,6 @@ def playURL(url, ref):
     if url == None or url == '':
         return 0
 
-    #if re.search(r'vizplay', url):
-    #    player = 'pipe'
-
     if player == 'smp':
         return runSMP(url, ref)
 

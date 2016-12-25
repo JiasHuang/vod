@@ -1,11 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import getpass
+
 player   = 'def'
 workdir  = '/tmp/'
 codedir  = '/opt/vod/'
-cookies  = workdir+'vod.cookies'
-json     = workdir+'vod.json'
+cookies  = workdir+'vod_%s.cookies' %(getpass.getuser())
+json     = workdir+'vod_%s.json' %(getpass.getuser())
 ytdl     = 'youtube-dl'
 fifo     = '/opt/vod/vod.fifo'
 fifo_bs  = '/opt/vod/vod.bs.fifo'
