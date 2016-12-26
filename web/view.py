@@ -43,9 +43,7 @@ def index(req):
     V    = arg.get('V', None)
 
     if url:
-        if re.search(r'www.eslpod.com', url):
-            w = url
-        elif re.search(r'^http', url):
+        if re.search(r'^http', url):
             v = url
         elif re.search(r'^/', url) and os.path.isdir(url):
             d = url
@@ -61,10 +59,7 @@ def index(req):
         v = urllib.unquote(V)
 
     if url:
-        if re.search(r'www.eslpod.com', url):
-            page.loadWord(req, url)
-            return
-        elif re.search(r'^http', url):
+        if re.search(r'^http', url):
             v = url
         elif re.search(r'^/', url) and os.path.isdir(url):
             d = url
