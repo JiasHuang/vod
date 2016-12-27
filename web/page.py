@@ -248,7 +248,7 @@ def listURL_dailyesl(req, url):
     for m in re.finditer(r'file: "([^"]*)"', txt):
         audio = 'http://www.dailyesl.com/'+m.group(1)
         addAudio(req, audio)
-    for m in re.finditer(r'</table>(.*?)<p>', txt, re.DOTALL|re.MULTILINE):
+    for m in re.finditer(r'</script></td></tr></table>(.*?)<p>', txt, re.DOTALL|re.MULTILINE):
         if re.search(r'<b>', m.group(1)):
             req.write('<font size=5><p>%s</p></font>' %(m.group(1)))
             esl.parseWord(req, m.group(1))
