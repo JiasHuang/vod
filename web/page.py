@@ -211,7 +211,7 @@ def listURL_dramaq(req, url):
 
 def listURL_dodova(req, url):
     if re.search(r'imovie.dodova.com/category/', url):
-        for i in range(1, 3):
+        for i in range(1, 5):
             for m in re.finditer(r'<div class="mh-excerpt">([^<]*)<a href="([^"]*)" title="([^"]*)">', load(url+'/page/'+str(i))):
                 link, title = m.group(2), m.group(3)
                 addPage(req, link, title, None)
