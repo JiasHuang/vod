@@ -6,6 +6,7 @@ import getpass
 player   = 'def'
 workdir  = '/tmp/'
 codedir  = '/opt/vod/'
+dldir    = '/var/tmp/'
 cookies  = workdir+'vod_%s.cookies' %(getpass.getuser())
 json     = workdir+'vod_%s.json' %(getpass.getuser())
 ytdl     = 'youtube-dl'
