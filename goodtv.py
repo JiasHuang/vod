@@ -29,10 +29,3 @@ def download(url=None):
             os.system('cat %s >> %s' %(m.group(), target))
     return
 
-def main():
-    os.chdir(xdef.workdir)
-    download()
-    return
-
-if __name__ == '__main__':
-    main()
