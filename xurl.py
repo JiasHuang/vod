@@ -7,6 +7,8 @@ import re
 import urllib
 import urllib2
 import hashlib
+import urlparse
+
 import xdef
 
 def verbose(url, local, agent):
@@ -41,6 +43,12 @@ def findSite(url):
     if m:
         return m.group(1)
     return ''
+
+def parse(url):
+    p = urlparse.urlparse(url)
+    prefix = p.scheme + '://' + p.netloc + os.path.dirname(p.path) + '/'
+    basename = os.path.basename(p.path)
+    return prefix, basename
 
 def absURL(url, site=None):
     if re.search(r'^//', url):

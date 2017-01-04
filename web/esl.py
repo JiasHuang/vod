@@ -23,9 +23,9 @@ def parseWord(req, txt):
         q = q.replace(' ', '+')
 
         s = '<li>%s' %(q)
-        s = s + '<a target="_blank" href=%s>[Cambridge]</a>' %(dictCambridge+q)
-        s = s + '<a target="_blank" href=%s>[Webster]</a>' %(dictWebster+q)
-        s = s + '<a target="_blank" href=%s>[Yahoo]</a>' %(dictYahoo+q)
+        s = s + '<a target="_cambridge" href=%s>[Cambridge]</a>' %(dictCambridge+q)
+        s = s + '<a target="_webster" href=%s>[Webster]</a>' %(dictWebster+q)
+        s = s + '<a target="_yahoo" href=%s>[Yahoo]</a>' %(dictYahoo+q)
         s = s + '\n'
 
         req.write(s)

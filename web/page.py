@@ -6,7 +6,7 @@ import os
 import urllib
 import json
 import mangareader
-import eslpod
+import esl
 import meta
 
 class Entry:
@@ -63,6 +63,11 @@ def addVideo(req, link, title=None, image=None):
     if re.search(r'^//', link):
         link = re.sub('//', 'http://', link)
     addEntry(req, 'view.py?v='+link, title or link, image or meta.getImage(link))
+
+def addAudio(req, url):
+    req.write('<audio controls>\n')
+    req.write('<source src="%s" type="audio/mpeg">\n' %(url))
+    req.write('</audio>\n')
 
 def addYouTube(req, vid, title):
     link = 'https://www.youtube.com/watch?v='+vid
@@ -140,12 +145,6 @@ def search(req, q, s):
     elif s == 'bi':
         search_bi(req, q1)
 
-    req.write(html[1])
-
-def loadWord(req, url):
-    html = re.split('<!--result-->', loadFile('list.html'))
-    req.write(html[0])
-    eslpod.loadWord(req, url)
     req.write(html[1])
 
 def listURL_def(req, url):
@@ -240,53 +239,34 @@ def listURL_youtube(req, url):
             vid = m.group(1)
             addYouTube(req, m.group(1), m.group(2))
 
-def listURL_eslpod(req, url):
+def listURL_dailyesl(req, url):
     txt = load(url)
-    if re.search(r'/podcast/', url):
-        m = re.search(r'/podcast/esl-podcast-([0-9]*)', url)
-        if m:
-            src = 'https://traffic.libsyn.com/secure/eslpod/ESLPod%s.mp3' %(m.group(1))
-            req.write('<h1><a href="view.py?v=%s" target="_blank">Load Media</a></h1>\n' %(src))
-            req.write('<h1><a href="%s" target="_blank">Download Media</a></h1>\n' %(src))
-        m = re.search(r'<div id="home" class="tab-pane fade in active">(.*?)</div>', txt, re.DOTALL|re.MULTILINE)
-        if m:
-            req.write('<br><hr><font size=4>')
-            req.write(m.group(1))
-            req.write('</font><hr><br>')
-            eslpod.parseWord(req, m.group(1))
-    elif re.search(r'/library/', url):
-        for m in re.finditer(r'<a href="([^"]*)">([^<]*)</a>', txt):
-            link, title = m.group(1), m.group(2)
-            if re.search(r'/podcast/', link):
-                addPage(req, link, title)
+    if url == 'http://www.dailyesl.com/':
+        for m in re.finditer(r'<a href="(.*?)">(.*?)</a>', txt):
+            addPage(req, 'http://www.dailyesl.com/'+m.group(1), m.group(2))
+        return
+    for m in re.finditer(r'file: "([^"]*)"', txt):
+        audio = 'http://www.dailyesl.com/'+m.group(1)
+        addAudio(req, audio)
+    for m in re.finditer(r'</table>(.*?)<p>', txt, re.DOTALL|re.MULTILINE):
+        if re.search(r'<b>', m.group(1)):
+            req.write('<font size=5><p>%s</p></font>' %(m.group(1)))
+            esl.parseWord(req, m.group(1))
 
-def listURL_mangareader(req, url):
-    for m in re.finditer(r'<a href="/one-piece/([^"]*)">([^"]*)</a>([^<]*)<', load(url)):
+def listURL_mangareader(req):
+    txt = load('http://www.mangareader.net/one-piece')
+    for m in re.finditer(r'<a href="/one-piece/([^"]*)">([^"]*)</a>([^<]*)<', txt):
         link = 'http://www.mangareader.net/one-piece/'+m.group(1)
         title = m.group(2)+m.group(3)
         addPage(req, link, title)
 
-def listURL_nbahd(req, url):
-    for m in re.finditer(r'<h2 class="entry-title"><a href="([^"]*)"', load(url)):
-        addVideo(req, m.group(1), m.group(1))
-
-def listURL_jav(req, url):
-    meta.findVideo(req, url)
-
-def listURL_cute(req, url):
-    if url.endswith('/'):
-        meta.findLink(req, url)
-    else:
-        meta.findImageLink(req, url, True, True)
+def listURL_nbahd(req):
+    for i in range(1, 3):
+        for m in re.finditer(r'<h2 class="entry-title"><a href="([^"]*)"', load('http://nbahd.com/page/'+str(i))):
+            addVideo(req, m.group(1), m.group(1))
 
 def listURL_porn2tube(req, url):
     meta.findImageLink(req, url, True, False)
-
-def listURL_adult_dodova(req, url):
-    if url.endswith('/'):
-        meta.findLink(req, url)
-    else:
-        meta.findPage(req, url, True)
 
 def listURL(req, url):
 
@@ -294,12 +274,10 @@ def listURL(req, url):
     req.write(html[0])
 
     if url == 'mangareader':
-        listURL_mangareader(req, 'http://www.mangareader.net/one-piece')
+        listURL_mangareader(req)
 
     elif url == 'nbahd':
-        listURL_nbahd(req, 'http://nbahd.com/page/1/')
-        listURL_nbahd(req, 'http://nbahd.com/page/2/')
-        listURL_nbahd(req, 'http://nbahd.com/page/3/')
+        listURL_nbahd(req)
 
     elif re.search(r'bilibili', url):
         listURL_bilibili(req, url)
@@ -307,35 +285,26 @@ def listURL(req, url):
     elif re.search(r'dramaq', url):
         listURL_dramaq(req, url)
 
-    elif re.search(r'youtube.com', url):
+    elif re.search(r'youtube', url):
         listURL_youtube(req, url)
 
-    elif re.search(r'eslpod.com', url):
-        listURL_eslpod(req, url)
+    elif re.search(r'dailyesl', url):
+        listURL_dailyesl(req, url)
 
-    elif re.search(r'xuite.net', url):
+    elif re.search(r'xuite', url):
         if re.search(r'xuite.net/([a-zA-Z0-9]*)($)', url):
             listURL_xuiteDIR(req, url)
         else:
             listURL_xuite(req, url)
 
-    elif re.search(r'mangareader.net', url):
+    elif re.search(r'mangareader', url):
         mangareader.loadImage(req, url)
 
-    elif re.search(r'imovie.dodova.com', url):
+    elif re.search(r'imovie.dodova', url):
         listURL_dodova(req, url)
-
-    elif re.search('jav(68|pub)',url):
-        listURL_jav(req, url)
-
-    elif re.search('javcuteonline',url):
-        listURL_cute(req, url)
 
     elif re.search('porn2tube',url):
         listURL_porn2tube(req, url)
-
-    elif re.search(r'adult.dodova.com', url):
-        listURL_adult_dodova(req, url)
 
     else:
         listURL_def(req, url)
