@@ -37,7 +37,7 @@ def renderDIR(req, d):
             if subdir[0] != '.':
                 req.write('<li><img src="/icons/folder.gif"> <a href="view.py?d=%s/%s">%s</a>' %(dirName, subdir, subdir))
         for fname in sorted(fileList):
-            if fname.lower().endswith(('.mkv', '.mp4', '.avi', '.flv', '.rmvb', '.rm', '.f4v', '.wmv', '.m3u', '.m3u8')):
+            if fname.lower().endswith(('.mkv', '.mp4', '.avi', '.flv', '.rmvb', '.rm', '.f4v', '.wmv', '.m3u', '.m3u8', '.ts')):
                 req.write('<li><img src="/icons/movie.gif"> <a href="view.py?f=%s/%s">%s</a>' %(dirName, fname, fname))
         break
     req.write('</div>')
@@ -210,7 +210,7 @@ def listURL_dramaq(req, url):
 
 def listURL_dodova(req, url):
     if re.search(r'imovie.dodova.com/category/', url):
-        for i in range(1, 3):
+        for i in range(1, 5):
             for m in re.finditer(r'<div class="mh-excerpt">([^<]*)<a href="([^"]*)" title="([^"]*)">', load(url+'/page/'+str(i))):
                 link, title = m.group(2), m.group(3)
                 addPage(req, link, title, None)
