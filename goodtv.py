@@ -15,17 +15,26 @@ def getSource(url):
         return m.group(1)
     return url
 
-def download(url=None):
+def dl(src, target, bitrate):
+    src = re.sub('.m3u8', '_%s.mp4.m3u8' %(bitrate), src)
+    prefix, m3u8 = xurl.parse(src)
+    txt = xurl.load(src)
+    for m in re.finditer(r'(.*?).ts', txt):
+        link, local = prefix+m.group(), xdef.workdir+m.group()
+        xurl.wget(link, local)
+    for m in re.finditer(r'(.*?).ts', txt):
+        local = xdef.workdir+m.group()
+        if os.path.exists(local):
+            os.system('cat %s >> %s' %(local, target))
+    return
+
+def download():
     mmdd = datetime.datetime.now().strftime("%m%d")
     target = xdef.dldir+'studio_classroom_'+mmdd+'.ts'
-    if not url:
-        url = 'http://w2.goodtv.org/studio_classroom/'
-    if not os.path.exists(target):
-        src = re.sub('.m3u8', '_1200k.mp4.m3u8', getSource(url))
-        prefix, m3u8 = xurl.parse(src)
-        xurl.wget(src, m3u8)
-        for m in re.finditer(r'(.*?).ts', xurl.readLocal(m3u8)):
-            xurl.wget(prefix+m.group(), m.group(), '--referer='+url)
-            os.system('cat %s >> %s' %(m.group(), target))
+    url = 'http://w2.goodtv.org/studio_classroom/'
+    src = getSource(url)
+    for bitrate in ['1200k', '500k', '350k']:
+        if not os.path.exists(target):
+            dl(src, target, bitrate)
     return
 
