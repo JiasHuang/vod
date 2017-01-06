@@ -29,7 +29,7 @@ def getSource(url):
             txt = load(url)
 
         v = v1 = v2 = v3 = None
-        for m in re.finditer(r'file:(.*?),label:(.*?)', txt):
+        for m in re.finditer(r'file:(.*?),label:([a-zA-Z0-9\']*)', txt):
             link, label, = m.group(1), m.group(2)
             link = re.sub('["\']', '', link)
             m = re.search(r'window.atob(([^)]*))', link)

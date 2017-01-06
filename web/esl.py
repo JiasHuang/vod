@@ -4,10 +4,12 @@
 import re
 import os
 import random
-import page
-import meta
 
 from optparse import OptionParser
+from mod_python import util
+
+import page
+import meta
 
 def loadWord(req, url):
     return parseWord(req, meta.load(url))
@@ -41,13 +43,13 @@ def parseWord(req, txt):
 def genDB():
     return
 
-def outDB(out=None, key=None):
+def outDB(out, key=None):
 
-    out = out or 'output.html'
     links = []
+    db = os.path.dirname(os.path.realpath(__file__)) + '/db/'
 
-    for f in os.listdir('db'):
-        fd = open('db/'+f, 'r')
+    for f in os.listdir(db):
+        fd = open(db+f, 'r')
         lines = fd.readlines()
         if key:
             for l in lines:
@@ -60,12 +62,17 @@ def outDB(out=None, key=None):
         fd.close()
 
     if len(links):
-        fd = open(out, 'w')
         for link in links:
             print(link)
-            page.listURL(fd, link)
-        fd.close()
+            page.listURL(out, link)
 
+    return
+
+def index(req):
+    req.content_type = 'text/html; charset=utf-8'
+    arg  = util.FieldStorage(req)
+    k    = arg.get('k', None)
+    outDB(req, k)
     return
 
 def main():
@@ -77,10 +84,14 @@ def main():
 
     options, args = parser.parse_args()
 
+    out = options.out or 'output.html'
+
     if options.gen == True:
         genDB()
     else:
+        fd = open(out, "w")
         outDB(options.out, options.key)
+        fd.close()
 
     return
 

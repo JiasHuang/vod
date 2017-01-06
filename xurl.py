@@ -139,3 +139,9 @@ def getFrame(url):
             return link
     return None
 
+def getContentType(url):
+    res = urllib.urlopen(url)
+    info = res.info()
+    res.close()
+    return info.type
+

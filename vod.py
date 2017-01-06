@@ -63,12 +63,16 @@ def processURL1(url):
         xplay.playURL(url, url)
         return 0
 
+    if xurl.getContentType(url) != 'text/html':
+        xplay.playURL(url, url)
+        return 0
+
     return -1
 
 def processURL2(url):
 
     print('\n[vod] Search context')
- 
+
     txt = xurl.load(url)
 
     m = re.search(r'"http(s|)://(www.|)(redirector.googlevideo|dailymotion|videomega|videowood|youtube|openload)(.com|.tv|.co)([^"]*)', txt)

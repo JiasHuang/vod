@@ -65,9 +65,9 @@ def addVideo(req, link, title=None, image=None):
     addEntry(req, 'view.py?v='+link, title or link, image or meta.getImage(link))
 
 def addAudio(req, url):
-    req.write('<audio controls>\n')
-    req.write('<source src="%s" type="audio/mpeg">\n' %(url))
-    req.write('</audio>\n')
+    req.write('<hr>\n')
+    req.write('<audio controls><source src="%s" type="audio/mpeg"></audio>\n' %(url))
+    req.write('<hr>\n')
 
 def addYouTube(req, vid, title):
     link = 'https://www.youtube.com/watch?v='+vid
@@ -245,13 +245,13 @@ def listURL_dailyesl(req, url):
         for m in re.finditer(r'<a href="(.*?)">(.*?)</a>', txt):
             addPage(req, 'http://www.dailyesl.com/'+m.group(1), m.group(2))
         return
+    req.write('<h1><a href=%s>%s</a></h1>' %(url, url))
     for m in re.finditer(r'file: "([^"]*)"', txt):
         audio = 'http://www.dailyesl.com/'+m.group(1)
         addAudio(req, audio)
-    for m in re.finditer(r'</script></td></tr></table>(.*?)<p>', txt, re.DOTALL|re.MULTILINE):
-        if re.search(r'<b>', m.group(1)):
-            req.write('<font size=5><p>%s</p></font>' %(m.group(1)))
-            esl.parseWord(req, m.group(1))
+    for m in re.finditer(r'(</script>\n|</script>)</td></tr></table>(.*?)<p>', txt, re.DOTALL|re.MULTILINE):
+        req.write('<font size=5><p>%s</p></font>' %(m.group(2)))
+        esl.parseWord(req, m.group(2))
 
 def listURL_mangareader(req):
     txt = load('http://www.mangareader.net/one-piece')

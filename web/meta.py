@@ -8,11 +8,11 @@ import urllib2
 import json
 import urlparse
 import hashlib
-import conf
 
 from StringIO import StringIO
 import gzip
 
+import conf
 import page
 
 def readLocal(local):
@@ -105,6 +105,8 @@ def findImageLink(req, url, unquote=False, showPage=False):
             else:
                 link1 = link.group(1)
             image1 = image.group(1)
+            if urlparse.urlparse(link1).path.rstrip('/') == '':
+                continue
             if showPage == False:
                 page.addVideo(req, link1, link1, image1)
             else:
