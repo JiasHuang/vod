@@ -4,6 +4,7 @@
 import re
 import os
 import subprocess
+
 import xurl
 import xdef
 
@@ -46,7 +47,7 @@ def unpack(txt):
     if m:
         code = m.group()
         func, args = parseCode(code)
-        local = xdef.workdir+'vod_code'
+        local = xdef.workdir+'vod_code_'+str(os.getuid())
         if os.path.exists('/usr/bin/rhino'):
             txt = 'function unpack(p,a,c,k,e,d)%s\nprint(unpack%s);\n' %(func, args)
         else:

@@ -66,7 +66,7 @@ def addVideo(req, link, title=None, image=None):
 
 def addAudio(req, url):
     req.write('<hr>\n')
-    req.write('<audio controls><source src="%s" type="audio/mpeg"></audio>\n' %(url))
+    req.write('<audio controls preload=none style="width:800px;"><source src="%s" type="audio/mpeg"></audio>\n' %(url))
     req.write('<hr>\n')
 
 def addYouTube(req, vid, title):
@@ -239,6 +239,24 @@ def listURL_youtube(req, url):
             vid = m.group(1)
             addYouTube(req, m.group(1), m.group(2))
 
+def listURL_eslpod(req, url):
+    txt = load(url)
+    if re.search(r'/podcast/', url):
+        req.write('<h1><a href=%s>%s</a></h1>' %(url, url))
+        m = re.search(r'podcast-([0-9]*)', url)
+        if m:
+            audio = 'https://traffic.libsyn.com/preview/secure/eslpod/DE%s.mp3' %(m.group(1))
+            addAudio(req, audio)
+        m = re.search(r'<div id="home" class="tab-pane fade in active">(.*?)</div>', txt, re.DOTALL|re.MULTILINE)
+        if m:
+            req.write('<font size=5><p>%s</p></font>' %(m.group(1)))
+            esl.parseWord(req, m.group(1))
+    elif re.search(r'/library/', url):
+        for m in re.finditer(r'<a href="([^"]*)">([^<]*)</a>', txt):
+            link, title = m.group(1), m.group(2)
+            if re.search(r'/podcast/', link):
+                addPage(req, link, title)
+
 def listURL_dailyesl(req, url):
     txt = load(url)
     if url == 'http://www.dailyesl.com/':
@@ -287,6 +305,9 @@ def listURL(req, url):
 
     elif re.search(r'youtube', url):
         listURL_youtube(req, url)
+
+    elif re.search(r'eslpod.com', url):
+        listURL_eslpod(req, url)
 
     elif re.search(r'dailyesl', url):
         listURL_dailyesl(req, url)
