@@ -6,7 +6,11 @@ import os
 import random
 
 from optparse import OptionParser
-from mod_python import util
+
+try:
+    from mod_python import util
+except:
+    print('no mod_python')
 
 import page
 import meta
@@ -16,8 +20,6 @@ def loadWord(req, url):
 
 def parseWord(req, txt):
 
-    dictCambridge = 'http://dictionary.cambridge.org/dictionary/english-chinese-traditional/'
-    dictWebster = 'http://www.merriam-webster.com/dictionary/'
     dictYahoo = 'https://tw.dictionary.yahoo.com/dictionary?p='
 
     req.write('<br><br><hr><ul>')
@@ -30,8 +32,6 @@ def parseWord(req, txt):
         q = q.replace(' ', '+')
 
         s = '<li>%s' %(q)
-        s = s + '<a target="_cambridge" href=%s>[Cambridge]</a>' %(dictCambridge+q)
-        s = s + '<a target="_webster" href=%s>[Webster]</a>' %(dictWebster+q)
         s = s + '<a target="_yahoo" href=%s>[Yahoo]</a>' %(dictYahoo+q)
         s = s + '\n'
 
@@ -90,7 +90,7 @@ def main():
         genDB()
     else:
         fd = open(out, "w")
-        outDB(options.out, options.key)
+        outDB(fd, options.key)
         fd.close()
 
     return
