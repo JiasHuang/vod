@@ -45,6 +45,8 @@ def load(url, local=None):
         return ''
 
 def absURL(domain, url):
+    if re.search(r'^//', url):
+	return 'http:'+url
     if re.search(r'^/', url):
         return domain+url
     return url
@@ -75,14 +77,17 @@ def getImage(link):
 
     return None
 
-def findVideoLink(req, url, showPage=False, showImage=False):
+def findVideoLink(req, url, showPage=False, showImage=False, DataImage=False):
     parsed_uri = urlparse.urlparse(url)
     domain = '{uri.scheme}://{uri.netloc}'.format(uri=parsed_uri)
     txt = load(url)
     for m in re.finditer(r'<a .*?</a>', txt, re.DOTALL):
         link = re.search(r'href="([^"]*)"', m.group(0))
         title = re.search(r'title="([^"]*)"', m.group(0))
-        image = re.search(r'src="([^"]*)"', m.group(0))
+        if DataImage:
+            image = re.search(r'data-img="([^"]*)"', m.group(0))
+        else:
+            image = re.search(r'src="([^"]*)"', m.group(0))
         if link and title and image:
             link1 = absURL(domain, link.group(1))
             title1 = title.group(1)

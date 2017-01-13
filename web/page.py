@@ -62,7 +62,10 @@ def addPage(req, link, title, image=None):
 def addVideo(req, link, title=None, image=None):
     if re.search(r'^//', link):
         link = re.sub('//', 'http://', link)
-    addEntry(req, 'view.py?v='+link, title or link, image or meta.getImage(link))
+    if re.search(r'&', link):
+        addEntry(req, 'view.py?V='+urllib.quote(link), title or link, image or meta.getImage(link))
+    else:
+        addEntry(req, 'view.py?v='+link, title or link, image or meta.getImage(link))
 
 def addAudio(req, url):
     req.write('<hr>\n')
@@ -124,7 +127,7 @@ def search(req, q, s):
     req.write('<a href=view.py?s=yt&q='+q1+'>YouTube</a>    ')
     req.write('<a href=view.py?s=pl&q='+q1+'>PlayList</a>    ')
     req.write('<a href=view.py?s=dm&q='+q1+'>DailyMotion</a>    ')
-    req.write('<a href=view.py?s=bi&q='+q1+'>Bilibili</a>    ')
+    #req.write('<a href=view.py?s=bi&q='+q1+'>Bilibili</a>    ')
     req.write('</pre></h1>')
 
     req.write('<br>')
@@ -193,6 +196,22 @@ def listURL_bilibili(req, url):
             addVideo(req, url, url, image.group(1))
         else:
             addVideo(req, url, url)
+
+def listURL_litv(req, url):
+    txt = load(url)
+    m = re.search(r'(\?|&)id=([a-zA-Z0-9]*)', url)
+    if m:
+        _contentId = m.group(2)
+        for m in re.finditer(r'{"contentId":"([^"]*)",.*?}', txt, re.DOTALL):
+            contentId = m.group(1)
+            subtitle = re.search(r'"subtitle":"([^"]*)"', m.group())
+            imageFile = re.search(r'"imageFile":"([^"]*)"', m.group())
+            if subtitle and imageFile:
+                addVideo(req, re.sub(_contentId, contentId, url), subtitle.group(1), imageFile.group(1))
+            elif subtitle:
+                addVideo(req, re.sub(_contentId, contentId, url), subtitle.group(1))
+    else:
+        meta.findVideoLink(req, url, True, True, True)
 
 def listURL_dramaq(req, url):
     if re.search(r'php', url):
@@ -300,13 +319,16 @@ def listURL(req, url):
     elif re.search(r'bilibili', url):
         listURL_bilibili(req, url)
 
+    elif re.search(r'litv', url):
+        listURL_litv(req, url);
+
     elif re.search(r'dramaq', url):
         listURL_dramaq(req, url)
 
     elif re.search(r'youtube', url):
         listURL_youtube(req, url)
 
-    elif re.search(r'eslpod.com', url):
+    elif re.search(r'eslpod', url):
         listURL_eslpod(req, url)
 
     elif re.search(r'dailyesl', url):

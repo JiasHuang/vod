@@ -2,43 +2,29 @@
 -----------------------------------------------------------
 [apache2]
 
-1. sudo apt-get install apache2
+1. sudo apt-get install apache2 libapache2-mod-python
 
-2. sudo apt-get install libapache2-mod-python
-
-3. vi /etc/apache2/sites-available/default
+2. sudo vi /etc/apache2/sites-available/default
 
 	<Directory /var/www/html/vod>
 		AddHandler mod_python .py
 		PythonHandler mod_python.publisher
 		PythonDebug On
 	</Directory>
+3. sudo vi /etc/apache2/apache2.conf
 
 4. sudo service apache2 restart
 
 -----------------------------------------------------------
-[rhino]
+[javascript]
 
-1. sudo apt-get install rhino
+1. sudo apt-get install nodejs
 
 -----------------------------------------------------------
 [vod]
 
 1. sudo /opt/vod/install.sh
 
-2. view http://127.0.0.1/vod/view.py on your mobile device
-
------------------------------------------------------------
-[option] failed to open vchiq instance
-
-1. sudo usermod -a -G video www-data
-
------------------------------------------------------------
-[option] xterm Xt error: Can't open display: :0
-
-1. sudo xhost +SI:localuser:www-data
-
------------------------------------------------------------
 -----------------------------------------------------------
 [option] pi
 

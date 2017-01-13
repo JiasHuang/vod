@@ -14,7 +14,7 @@ def playURL(url):
         return
     cmd = 'python -u %s \'%s\' | tee -a %s' %(conf.vod, url, conf.log)
     if os.path.exists('/usr/bin/xterm'):
-        subprocess.Popen(['/usr/bin/xterm', '-display', ':0', '-e', cmd])
+        subprocess.Popen(['/usr/bin/xterm', '-geometry', '80x24+0+0', '-display', ':0', '-e', cmd])
     else:
         subprocess.Popen(cmd, shell=True)
 

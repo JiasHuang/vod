@@ -11,7 +11,7 @@ import xurl
 
 def checkURL(url):
     site = xurl.findSite(url)
-    return re.compile('(youtube|dailymotion|facebook|bilibili|vimeo|youku|openload)').search(site)
+    return re.compile('(youtube|dailymotion|facebook|bilibili|vimeo|youku|openload|litv)').search(site)
 
 def redirectURL(url):
     if re.search(r'youku', url):
