@@ -42,7 +42,7 @@ def extractURL(url):
         return m3u
 
     try:
-        cmd = '%s -f mp4 -g --cookies %s %s \'%s\'' %(xdef.ytdl, xdef.cookies, arg or '', url)
+        cmd = '%s -f mp4 -g --no-playlist --cookies %s %s \'%s\'' %(xdef.ytdl, xdef.cookies, arg or '', url)
         start_time = timeit.default_timer()
         output = subprocess.check_output(cmd, shell=True)
         elapsed = timeit.default_timer() - start_time
