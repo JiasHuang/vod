@@ -197,19 +197,28 @@ def listURL_bilibili(req, url):
         else:
             addVideo(req, url, url)
 
-def listURL_litv(req, url):
+def listURL_litv_getProgramInfo(req, url, _contentId):
     txt = load(url)
+    Found = False
+    for m in re.finditer(r'{"contentId":"([^"]*)",.*?}', txt, re.DOTALL):
+        contentId = m.group(1)
+        imageLink = None
+        subtitle = re.search(r'"subtitle":"([^"]*)"', m.group())
+        imageFile = re.search(r'"imageFile":"([^"]*)"', m.group())
+        if imageFile:
+            imageLink = imageFile.group(1)
+        if subtitle:
+            addVideo(req, re.sub(_contentId, contentId, url), subtitle.group(1), imageLink)
+            Found = True
+    return Found
+
+def listURL_litv(req, url):
     m = re.search(r'(\?|&)id=([a-zA-Z0-9]*)', url)
     if m:
         _contentId = m.group(2)
-        for m in re.finditer(r'{"contentId":"([^"]*)",.*?}', txt, re.DOTALL):
-            contentId = m.group(1)
-            subtitle = re.search(r'"subtitle":"([^"]*)"', m.group())
-            imageFile = re.search(r'"imageFile":"([^"]*)"', m.group())
-            if subtitle and imageFile:
-                addVideo(req, re.sub(_contentId, contentId, url), subtitle.group(1), imageFile.group(1))
-            elif subtitle:
-                addVideo(req, re.sub(_contentId, contentId, url), subtitle.group(1))
+        if not listURL_litv_getProgramInfo(req, url, _contentId):
+            url2 = 'https://www.litv.tv/vod/ajax/getProgramInfo?contentId='+_contentId
+            listURL_litv_getProgramInfo(req, url2, _contentId)
     else:
         meta.findVideoLink(req, url, True, True, True)
 
