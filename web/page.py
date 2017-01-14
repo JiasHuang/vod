@@ -197,8 +197,7 @@ def listURL_bilibili(req, url):
         else:
             addVideo(req, url, url)
 
-def listURL_litv_getProgramInfo(req, url, _contentId):
-    txt = load(url)
+def listURL_litv_getProgramInfo(req, txt, url, _contentId):
     Found = False
     for m in re.finditer(r'{"contentId":"([^"]*)",.*?}', txt, re.DOTALL):
         contentId = m.group(1)
@@ -216,9 +215,9 @@ def listURL_litv(req, url):
     m = re.search(r'(\?|&)id=([a-zA-Z0-9]*)', url)
     if m:
         _contentId = m.group(2)
-        if not listURL_litv_getProgramInfo(req, url, _contentId):
+        if not listURL_litv_getProgramInfo(req, load(url), url, _contentId):
             url2 = 'https://www.litv.tv/vod/ajax/getProgramInfo?contentId='+_contentId
-            listURL_litv_getProgramInfo(req, url2, _contentId)
+            listURL_litv_getProgramInfo(req, load(url2), url, _contentId)
     else:
         meta.findVideoLink(req, url, True, True, True)
 
