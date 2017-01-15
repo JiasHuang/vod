@@ -9,6 +9,15 @@ import urllib
 
 from mod_python import util
 
+def runCmd(val):
+    if not os.path.exists(conf.vod):
+        return
+    cmd = 'python %s %s' %(conf.cmd, val or '')
+    if os.path.exists('/usr/bin/xterm'):
+        subprocess.Popen(['/usr/bin/xterm', '-geometry', '80x24+0+0', '-display', ':0', '-e', cmd])
+    else:
+        subprocess.Popen(cmd, shell=True).communicate()
+
 def playURL(url):
     if not os.path.exists(conf.vod):
         return
@@ -91,9 +100,9 @@ def index(req):
     elif act:
         if act == 'load' and val:
             page.render(req, val, None)
-        elif act == 'update':
-            os.system('touch /var/tmp/autostart_update')
-            page.render(req, val, None)
+        elif act == 'cmd':
+            runCmd(val)
+            page.render(req, act, None)
         else:
             sendACT(act, val)
             page.render(req, 'panel', '<br><br><br><h1>%s %s</h1>' %(act, val or ''))

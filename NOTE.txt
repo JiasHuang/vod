@@ -11,6 +11,7 @@
 		PythonHandler mod_python.publisher
 		PythonDebug On
 	</Directory>
+
 3. sudo vi /etc/apache2/apache2.conf
 
 4. sudo service apache2 restart
@@ -18,7 +19,7 @@
 -----------------------------------------------------------
 [javascript]
 
-1. sudo apt-get install nodejs
+1. sudo apt-get install nodejs xterm
 
 -----------------------------------------------------------
 [vod]
@@ -31,12 +32,9 @@
 - vo/rpi Could not create EGL surface
 	echo "gpu_mem=192" >> /boot/config.txt
 
-- [ao/alsa] Playback open error: No such file or directory
-	setfacl -m u:www-data:rw /dev/snd/*
-
 - autostart
-	/home/pi/.config/lxsession/LXDE-pi/autostart
-	@lxterminal -e "/home/pi/autostart.py" --geometry=80x60
+    /home/pi/.config/lxsession/LXDE-pi/autostart
+    @lxterminal -e "/opt/vod/cmd.py showInfo" --geometry=80x60
 
 - disable screen sleep
 	/etc/lightdm/lightdm.conf

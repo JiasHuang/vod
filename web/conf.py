@@ -7,6 +7,6 @@ vod  = vodpath+'vod.py'
 src  = vodpath+'src.py'
 run  = vodpath+'run.py'
 act  = vodpath+'act.py'
+cmd  = vodpath+'cmd.py'
 log  = workdir+'view.log'
 json = workdir+'view.json'
-

@@ -19,8 +19,12 @@ function setAct(key) {
         val = "jav";
     }
     else if (val == "*0000") {
-        act = "update";
+        act = "cmd";
         val = "update";
+    }
+    else if (val == "*1111") {
+        act = "cmd";
+        val = "showInfo";
     }
     else if (key == "pause" && val != "") {
         act = "percent"
