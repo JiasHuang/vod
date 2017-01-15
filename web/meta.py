@@ -26,13 +26,17 @@ def saveLocal(text, local):
     fd.close()
     return
 
-def load(url, local=None):
+def load(url, local=None, headers=None):
     if not local:
         local = conf.workdir+'vod_load_'+hashlib.md5(url).hexdigest()
     if os.path.exists(local):
         return readLocal(local)
     opener = urllib2.build_opener()
     opener.addheaders = [('User-agent', 'Mozilla/5.0 (X11; Linux i686; rv:10.0) Gecko/20100101 Firefox/33.0')]
+
+    if headers:
+        opener.addheaders += headers
+
     try:
         f = opener.open(url)
         if f.info().get('Content-Encoding') == 'gzip':

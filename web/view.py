@@ -102,7 +102,7 @@ def index(req):
             page.render(req, val, None)
         elif act == 'cmd':
             runCmd(val)
-            page.render(req, act, None)
+            page.render(req, 'success', None)
         else:
             sendACT(act, val)
             page.render(req, 'panel', '<br><br><br><h1>%s %s</h1>' %(act, val or ''))

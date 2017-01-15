@@ -22,10 +22,6 @@ function setAct(key) {
         act = "cmd";
         val = "update";
     }
-    else if (val == "*1111") {
-        act = "cmd";
-        val = "showInfo";
-    }
     else if (key == "pause" && val != "") {
         act = "percent"
     }

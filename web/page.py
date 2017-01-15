@@ -30,17 +30,17 @@ def render(req, filename, result):
 def renderDIR(req, d):
     html = re.split('<!--result-->', loadFile('list.html'))
     req.write(html[0])
-    req.write('<h1>Index of %s</h1>' %(d))
-    req.write('<div style="line-height:200%;font-size:20">')
+    req.write('<h1>Index of %s</h1>\n' %(d))
+    req.write('<div style="line-height:200%;font-size:20">\n')
     for dirName, subdirList, fileList in os.walk(d):
         for subdir in sorted(subdirList):
             if subdir[0] != '.':
-                req.write('<li><img src="/icons/folder.gif"> <a href="view.py?d=%s/%s">%s</a>' %(dirName, subdir, subdir))
+                req.write('<li><img src="/icons/folder.gif"> <a href="view.py?d=%s/%s">%s</a>\n' %(dirName, subdir, subdir))
         for fname in sorted(fileList):
             if fname.lower().endswith(('.mkv', '.mp4', '.avi', '.flv', '.rmvb', '.rm', '.f4v', '.wmv', '.m3u', '.m3u8', '.ts')):
-                req.write('<li><img src="/icons/movie.gif"> <a href="view.py?f=%s/%s">%s</a>' %(dirName, fname, fname))
+                req.write('<li><img src="/icons/movie.gif"> <a href="view.py?f=%s/%s">%s</a>\n' %(dirName, fname, fname))
         break
-    req.write('</div>')
+    req.write('</div>\n')
     req.write(html[1])
 
 def load(url):
@@ -197,27 +197,22 @@ def listURL_bilibili(req, url):
         else:
             addVideo(req, url, url)
 
-def listURL_litv_getProgramInfo(req, txt, url, _contentId):
-    Found = False
-    for m in re.finditer(r'{"contentId":"([^"]*)",.*?}', txt, re.DOTALL):
-        contentId = m.group(1)
-        imageLink = None
-        subtitle = re.search(r'"subtitle":"([^"]*)"', m.group())
-        imageFile = re.search(r'"imageFile":"([^"]*)"', m.group())
-        if imageFile:
-            imageLink = imageFile.group(1)
-        if subtitle:
-            addVideo(req, re.sub(_contentId, contentId, url), subtitle.group(1), imageLink)
-            Found = True
-    return Found
-
 def listURL_litv(req, url):
     m = re.search(r'(\?|&)id=([a-zA-Z0-9]*)', url)
     if m:
         _contentId = m.group(2)
-        if not listURL_litv_getProgramInfo(req, load(url), url, _contentId):
-            url2 = 'https://www.litv.tv/vod/ajax/getProgramInfo?contentId='+_contentId
-            listURL_litv_getProgramInfo(req, load(url2), url, _contentId)
+        _url = 'https://www.litv.tv/vod/ajax/getProgramInfo?contentId='+_contentId
+        headers = [('Accept', 'application/json, text/javascript, */*; q=0.01')]
+        programInfo = meta.load(_url, None, headers)
+        for m in re.finditer(r'{"contentId":"([^"]*)",.*?}', programInfo, re.DOTALL):
+            contentId = m.group(1)
+            imageLink = None
+            subtitle = re.search(r'"subtitle":"([^"]*)"', m.group())
+            imageFile = re.search(r'"imageFile":"([^"]*)"', m.group())
+            if imageFile:
+                imageLink = imageFile.group(1)
+            if subtitle:
+                addVideo(req, re.sub(_contentId, contentId, url), subtitle.group(1), imageLink)
     else:
         meta.findVideoLink(req, url, True, True, True)
 
@@ -249,12 +244,18 @@ def listURL_dodova(req, url):
         meta.findLink(req, url)
 
 def listURL_youtube(req, url):
-    if re.search(r'playlists($)', url):
+    if re.search(r'/playlists($)', url):
         playlist = None
         for m in re.finditer(r'href="/playlist\?list=([^"]*)"*?>([^<]*)</a>', load(url)):
             if playlist != m.group(1):
                 playlist, title = m.group(1), m.group(2)
                 addPlayList(req, playlist, title)
+    elif re.search(r'/channels($)', url):
+        for m in re.finditer(r'class="yt-uix-sessionlink yt-uix-tile-link ([^>]*)', load(url)):
+                link = re.search(r'href="([^"]*)"', m.group())
+                title = re.search(r'title="([^"]*)"', m.group())
+                if link and title:
+                    addPage(req, 'https://www.youtube.com'+link.group(1), title.group(1))
     elif re.search(r'playlist\?', url):
         for m in re.finditer(r'pl-video yt-uix-tile ([^>]*)', load(url)):
             vid = re.search(r'data-video-id="([^"]*)"', m.group())

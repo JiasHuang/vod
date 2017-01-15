@@ -32,10 +32,6 @@
 - vo/rpi Could not create EGL surface
 	echo "gpu_mem=192" >> /boot/config.txt
 
-- autostart
-    /home/pi/.config/lxsession/LXDE-pi/autostart
-    @lxterminal -e "/opt/vod/cmd.py showInfo" --geometry=80x60
-
 - disable screen sleep
 	/etc/lightdm/lightdm.conf
 	SeatDefaults
