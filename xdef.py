@@ -21,4 +21,4 @@ smp      = 'smplayer -fullscreen'
 mpv      = 'mpv --fs --ontop --cache=16384 --cache-secs=10'
 mpv_ytdl = '--ytdl=no --cookies --cookies-file=%s' %(cookies)
 mpv_rpi  = 'mpv --vo=rpi --fs --ontop --cookies --cookies-file=%s' %(cookies)
-omxp     = 'omxplayer -b -o hdmi -I'
+omxp     = 'omxplayer -b -o both -I'
