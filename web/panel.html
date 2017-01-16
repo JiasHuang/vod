@@ -7,6 +7,7 @@
 
 <script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
 <script type="text/javascript" src="panel.js"></script>
+<script type="text/javascript" src="speech.js"></script>
 
 <body>
 
@@ -46,8 +47,11 @@
 </form>
 
 <br>
-<form action="view.py" method="get">
-<input type="text" name="url" value="" class="input"\>
+<form action="view.py" method="get" id="xform">
+<div class="speech">
+    <input type="text" name="url" value="" class="input" id="xinput" />
+    <img onclick="startDictation();" src="mic.png" id="ximage" />
+</div>
 </form>
 
 <br>

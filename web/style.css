@@ -20,6 +20,10 @@
     margin: 16px 0;
 }
 
+.speech {border: 4px solid; width: 500px; padding: 0; margin: 0}
+.speech input {border: 0; width: 400px; display: inline-block; height: 64px; font-size: 48px;}
+.speech img {float: right;}
+
 #keypad {margin:auto; margin-top:8px;}
 
 #keypad tr td {

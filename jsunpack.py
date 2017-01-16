@@ -48,12 +48,9 @@ def unpack(txt):
         code = m.group()
         func, args = parseCode(code)
         local = xdef.workdir+'vod_code_'+str(os.getuid())
-        if os.path.exists('/usr/bin/rhino'):
-            txt = 'function unpack(p,a,c,k,e,d)%s\nprint(unpack%s);\n' %(func, args)
-        else:
-            txt = 'function unpack(p,a,c,k,e,d)%s\nconsole.log(unpack%s);\n' %(func, args)
+        txt = 'function unpack(p,a,c,k,e,d)%s\nconsole.log(unpack%s);\n' %(func, args)
         xurl.saveLocal(txt, local)
-        output = subprocess.check_output('js '+local, shell=True).rstrip('\n')
+        output = subprocess.check_output('nodejs '+local, shell=True).rstrip('\n')
         output = output.replace("\/", "/")
         showAll(code, output)
         return output

@@ -56,3 +56,30 @@ function setAct(key) {
     document.forms[0].val.value = val;
 }
 
+function startDictation() {
+
+    if (window.hasOwnProperty('webkitSpeechRecognition')) {
+
+      console.log("AAA111")
+      var recognition = new webkitSpeechRecognition();
+
+      recognition.continuous = false;
+      recognition.interimResults = false;
+
+      recognition.lang = "cmn-Hant-TW";
+      recognition.start();
+
+      recognition.onresult = function(e) {
+        console.log("AAA")
+        document.getElementById('myinput').value = e.results[0][0].transcript;
+        recognition.stop();
+        document.getElementById('myform').submit();
+      };
+
+      recognition.onerror = function(e) {
+        recognition.stop();
+      };
+
+    }
+}
+

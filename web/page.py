@@ -132,9 +132,12 @@ def search(req, q, s):
 
     req.write('<br>')
 
-    req.write('<form action="view.py" method="get">')
-    req.write('<input type="text" name="q" value="%s" class="input"\>' %(q))
+    req.write('<form action="view.py" method="get" id="xform">')
+    req.write('<div class="speech">')
+    req.write('<input type="text" name="q" value="%s" class="input" id="xinput"\>' %(q))
     req.write('<input type="hidden" name="s" value="%s" class="input"\>' %(s))
+    req.write('<img onclick="startDictation();" src="mic.png" id="ximage" />')
+    req.write('</div>')
     req.write('</form>')
 
     req.write('<br>')
