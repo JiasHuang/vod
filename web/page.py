@@ -122,22 +122,20 @@ def search(req, q, s):
 
     q1 = re.sub(' ', '+', q)
 
+    req.write('<img onclick="startDictation();" src="mic.png" id="ximage" class="topright" />')
+
     req.write('<h1><pre>')
     req.write('<a href=view.py>Home</a>    ')
     req.write('<a href=view.py?s=yt&q='+q1+'>YouTube</a>    ')
     req.write('<a href=view.py?s=pl&q='+q1+'>PlayList</a>    ')
     req.write('<a href=view.py?s=dm&q='+q1+'>DailyMotion</a>    ')
-    #req.write('<a href=view.py?s=bi&q='+q1+'>Bilibili</a>    ')
     req.write('</pre></h1>')
 
     req.write('<br>')
 
     req.write('<form action="view.py" method="get" id="xform">')
-    req.write('<div class="speech">')
     req.write('<input type="text" name="q" value="%s" class="input" id="xinput"\>' %(q))
     req.write('<input type="hidden" name="s" value="%s" class="input"\>' %(s))
-    req.write('<img onclick="startDictation();" src="mic.png" id="ximage" />')
-    req.write('</div>')
     req.write('</form>')
 
     req.write('<br>')

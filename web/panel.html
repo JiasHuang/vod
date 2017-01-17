@@ -11,6 +11,8 @@
 
 <body>
 
+<img src="mic.png" onclick="startDictation();" id="ximage" class="topright" />
+
 <center>
 
 <table id="keypad" cellpadding="5" cellspacing="3">
@@ -48,10 +50,7 @@
 
 <br>
 <form action="view.py" method="get" id="xform">
-<div class="speech">
-    <input type="text" name="url" value="" class="input" id="xinput" />
-    <img onclick="startDictation();" src="mic.png" id="ximage" />
-</div>
+<input type="text" name="url" value="" class="input" id="xinput" />
 </form>
 
 <br>

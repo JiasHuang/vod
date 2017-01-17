@@ -4,27 +4,23 @@
 
 1. sudo apt-get install apache2 libapache2-mod-python
 
-2. sudo vi /etc/apache2/sites-available/default
+2. sudo vi /etc/apache2/apache2.conf
 
-	<Directory /var/www/html/vod>
-		AddHandler mod_python .py
-		PythonHandler mod_python.publisher
-		PythonDebug On
-	</Directory>
+    <Directory /var/www/>
+        AddHandler mod_python .py
+        PythonHandler mod_python.publisher
+        PythonDebug On
+    </Directory>
 
-3. sudo vi /etc/apache2/apache2.conf
+3. sudo vi /etc/apache2/envvars
 
 4. sudo service apache2 restart
 
 -----------------------------------------------------------
-[javascript]
-
-1. sudo apt-get install nodejs xterm
-
------------------------------------------------------------
 [vod]
 
-1. sudo /opt/vod/install.sh
+1. sudo apt-get install nodejs xterm
+2. sudo /opt/vod/install.sh
 
 -----------------------------------------------------------
 [option] pi
