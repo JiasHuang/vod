@@ -31,6 +31,12 @@ if (window.hasOwnProperty('webkitSpeechRecognition')) {
 
 }
 
+function loadImage() {
+    if (!window.hasOwnProperty('webkitSpeechRecognition')) {
+        document.getElementById("ximage").src="";
+    }
+}
+
 function startDictation() {
 
     if (window.hasOwnProperty('webkitSpeechRecognition')) {

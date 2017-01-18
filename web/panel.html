@@ -11,7 +11,7 @@
 
 <body>
 
-<img src="mic.png" onclick="startDictation();" id="ximage" class="topright" />
+<img src="mic.png" onload="loadImage()" onclick="startDictation()" id="ximage" class="topright" />
 
 <center>
 
@@ -40,10 +40,10 @@
 
 <br>
 <form action="view.py" method="get">
-<input type="image" src="Actions-media-skip-backward-icon.png"  onclick="setAct('backward');">
-<input type="image" src="Actions-media-playback-stop-icon.png"  onclick="setAct('stop');">
-<input type="image" src="Actions-media-playback-start-icon.png" onclick="setAct('pause');">
-<input type="image" src="Actions-media-skip-forward-icon.png"   onclick="setAct('forward');">
+<button type="submit" onclick="setAct('backward')" class="actbtn"><img src="Actions-media-skip-backward-icon.png" /></button>
+<button type="submit" onclick="setAct('stop')" class="actbtn"><img src="Actions-media-playback-stop-icon.png" /></button>
+<button type="submit" onclick="setAct('pause')" class="actbtn"><img src="Actions-media-playback-start-icon.png" /></button>
+<button type="submit" onclick="setAct('forward')" class="actbtn"><img src="Actions-media-skip-forward-icon.png" /></button>
 <input type="hidden" name="val" value="" maxlength="4" class="display" readonly="readonly" />
 <input type="hidden" name="act" value="" maxlength="4" class="display" readonly="readonly" />
 </form>
@@ -54,9 +54,12 @@
 </form>
 
 <br>
-<pre><span STYLE="font-size: 16pt">
-<a href=view.py>Home</a>   <a href=bookmark.html>Bookmark</a>   <a href="language.html">Language</a>   <a href="radio.html">Radio</a>
-</span></pre>
+<span STYLE="font-size:24px">
+<a href=view.py>Home</a>&nbsp;&nbsp;&nbsp;
+<a href=bookmark.html>Bookmark</a>&nbsp;&nbsp;&nbsp;
+<a href="language.html">Language</a>&nbsp;&nbsp;&nbsp;
+<a href="radio.html">Radio</a>&nbsp;&nbsp;&nbsp;
+</span>
 
 </center>
 

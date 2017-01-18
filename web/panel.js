@@ -22,6 +22,10 @@ function setAct(key) {
         act = "cmd";
         val = "update";
     }
+    else if (val == "*1234") {
+        act = "cmd";
+        val = "reset";
+    }
     else if (key == "pause" && val != "") {
         act = "percent"
     }

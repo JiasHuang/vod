@@ -28,6 +28,13 @@
     right: 16px;
 }
 
+.actbtn {
+    background-color: Transparent;
+    border: none;
+    outline: none;
+    padding: 0px;
+}
+
 #keypad {margin:auto; margin-top:8px;}
 
 #keypad tr td {

@@ -12,6 +12,10 @@ def update():
     os.system('sudo ./sync.sh')
     return
 
+def reset():
+    os.system('sudo rm /tmp/vod*')
+    update()
+
 def showInfo():
     for i in range(1, 30):
         print('Retry: '+str(i))
@@ -30,6 +34,8 @@ def main():
         update()
     elif cmd == 'showInfo':
         showInfo()
+    elif cmd == 'reset':
+        reset()
 
     return
 

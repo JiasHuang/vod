@@ -38,7 +38,7 @@ def load(url, local=None, headers=None):
         opener.addheaders += headers
 
     try:
-        f = opener.open(url)
+        f = opener.open(url, None, 3) # timeout=3
         if f.info().get('Content-Encoding') == 'gzip':
             buf = StringIO(f.read())
             return gzip.GzipFile(fileobj=buf).read()

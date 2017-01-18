@@ -47,25 +47,19 @@ def load(url):
     return meta.load(url)
 
 def addEntry(req, link, title, image=None):
-    req.write('<a href=%s>\n' %(link))
+    req.write('\n<a href=%s>\n' %(link))
     req.write('<h2>%s</h2>\n' %(title))
     if image:
         req.write('<img src=%s class=img />\n' %(image))
     req.write('</a>\n')
 
 def addPage(req, link, title, image=None):
-    if re.search(r'&', link):
-        addEntry(req, 'view.py?P='+urllib.quote(link), title, image)
-    else:
-        addEntry(req, 'view.py?p='+link, title, image)
+    addEntry(req, 'view.py?p='+link, title, image)
 
 def addVideo(req, link, title=None, image=None):
     if re.search(r'^//', link):
         link = re.sub('//', 'http://', link)
-    if re.search(r'&', link):
-        addEntry(req, 'view.py?V='+urllib.quote(link), title or link, image or meta.getImage(link))
-    else:
-        addEntry(req, 'view.py?v='+link, title or link, image or meta.getImage(link))
+    addEntry(req, 'view.py?v='+link, title or link, image or meta.getImage(link))
 
 def addAudio(req, url):
     req.write('<hr>\n')
@@ -122,23 +116,23 @@ def search(req, q, s):
 
     q1 = re.sub(' ', '+', q)
 
-    req.write('<img onclick="startDictation();" src="mic.png" id="ximage" class="topright" />')
+    req.write('<img onload="loadImage()" onclick="startDictation()" src="mic.png" id="ximage" class="topright" />\n')
 
-    req.write('<h1><pre>')
-    req.write('<a href=view.py>Home</a>    ')
-    req.write('<a href=view.py?s=yt&q='+q1+'>YouTube</a>    ')
-    req.write('<a href=view.py?s=pl&q='+q1+'>PlayList</a>    ')
-    req.write('<a href=view.py?s=dm&q='+q1+'>DailyMotion</a>    ')
-    req.write('</pre></h1>')
+    req.write('<h1>\n')
+    req.write('<a href=view.py>Home</a>&nbsp;&nbsp;&nbsp;\n')
+    req.write('<a href=view.py?s=yt&q='+q1+'>YouTube</a>&nbsp;&nbsp;&nbsp;\n')
+    req.write('<a href=view.py?s=pl&q='+q1+'>PlayList</a>&nbsp;&nbsp;&nbsp;\n')
+    req.write('<a href=view.py?s=dm&q='+q1+'>DailyMotion</a>&nbsp;&nbsp;&nbsp;\n')
+    req.write('</h1>\n')
 
-    req.write('<br>')
+    req.write('<br>\n')
 
-    req.write('<form action="view.py" method="get" id="xform">')
-    req.write('<input type="text" name="q" value="%s" class="input" id="xinput"\>' %(q))
-    req.write('<input type="hidden" name="s" value="%s" class="input"\>' %(s))
-    req.write('</form>')
+    req.write('<form action="view.py" method="get" id="xform">\n')
+    req.write('<input type="text" name="q" value="%s" class="input" id="xinput"\>\n' %(q))
+    req.write('<input type="hidden" name="s" value="%s" class="input"\>\n' %(s))
+    req.write('</form>\n')
 
-    req.write('<br>')
+    req.write('<br>\n')
 
     if s == 'yt':
         search_yt(req, q1)
