@@ -14,7 +14,7 @@ def runCmd(val):
         return
     cmd = 'python %s %s' %(conf.cmd, val or '')
     if os.path.exists('/usr/bin/xterm'):
-        subprocess.Popen(['/usr/bin/xterm', '-geometry', '80x24-0+0', '-display', ':0', '-e', cmd])
+        subprocess.Popen(['/usr/bin/xterm', '-geometry', '80x24-50+50', '-display', ':0', '-e', cmd])
     else:
         subprocess.Popen(cmd, shell=True).communicate()
 
@@ -23,7 +23,7 @@ def playURL(url):
         return
     cmd = 'python -u %s \'%s\' | tee -a %s' %(conf.vod, url, conf.log)
     if os.path.exists('/usr/bin/xterm'):
-        subprocess.Popen(['/usr/bin/xterm', '-geometry', '80x24-0+0', '-display', ':0', '-e', cmd])
+        subprocess.Popen(['/usr/bin/xterm', '-geometry', '80x24-50+50', '-display', ':0', '-e', cmd])
     else:
         subprocess.Popen(cmd, shell=True)
 
@@ -32,6 +32,12 @@ def sendACT(act, val):
         return
     cmd = 'python -u %s \'%s\' \'%s\' | tee -a %s' %(conf.act, act, val, conf.log)
     subprocess.Popen(cmd, shell=True).communicate()
+
+def getUnparsedURL(req):
+    m = re.search(r'=(.*)$', req.unparsed_uri, re.DOTALL)
+    if m:
+        return urllib.unquote(m.group(1))
+    return None
 
 def index(req):
 
@@ -49,15 +55,6 @@ def index(req):
     f    = arg.get('f', None)
     w    = arg.get('w', None)
 
-    match = re.search(r'(url|p|v)=(.*)$', req.unparsed_uri, re.DOTALL)
-    if match:
-        if url:
-            url = match.group(2)
-        elif p:
-            p = match.group(2)
-        elif v:
-            v = match.group(2)
-
     if url:
         if re.search(r'^http', url):
             v = url
@@ -69,6 +66,7 @@ def index(req):
             q = url
 
     if p:
+        p = getUnparsedURL(req) or p
         page.listURL(req, p)
 
     elif q:
@@ -82,6 +80,7 @@ def index(req):
         page.render(req, 'panel', '<br><br><br><h1>playURL %s</h1>' %(f))
 
     elif v:
+        v = getUnparsedURL(req) or v
         playURL(v)
         page.render(req, 'panel', '<br><br><br><h1>playURL <a target=_blank href=%s>%s</a><h1>' %(v, v))
 

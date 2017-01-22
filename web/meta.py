@@ -15,6 +15,12 @@ import gzip
 import conf
 import page
 
+def search(patten, txt):
+    m = re.search(patten, txt)
+    if m:
+        return m.group(1)
+    return None
+
 def readLocal(local):
     with open(local, 'r') as fd:
         return fd.read()
@@ -86,40 +92,36 @@ def findVideoLink(req, url, showPage=False, showImage=False, DataImage=False):
     domain = '{uri.scheme}://{uri.netloc}'.format(uri=parsed_uri)
     txt = load(url)
     for m in re.finditer(r'<a .*?</a>', txt, re.DOTALL):
-        link = re.search(r'href="([^"]*)"', m.group(0))
-        title = re.search(r'title="([^"]*)"', m.group(0))
+        link = search(r'href="([^"]*)"', m.group(0))
+        title = search(r'title="([^"]*)"', m.group(0))
         if DataImage:
-            image = re.search(r'data-img="([^"]*)"', m.group(0))
+            image = search(r'data-img="([^"]*)"', m.group(0))
         else:
-            image = re.search(r'src="([^"]*)"', m.group(0))
+            image = search(r'src="([^"]*)"', m.group(0))
         if link and title and image:
-            link1 = absURL(domain, link.group(1))
-            title1 = title.group(1)
-            image1 = absURL(domain, image.group(1))
+            link = absURL(domain, link)
+            image = absURL(domain, image)
             if showPage == False:
-                page.addVideo(req, link1, title1, image1)
+                page.addVideo(req, link, title, image)
             elif showImage == True:
-                page.addPage(req, link1, title1, image1)
+                page.addPage(req, link, title, image)
             else:
-                page.addPage(req, link1, title1)
+                page.addPage(req, link, title)
 
 def findImageLink(req, url, unquote=False, showPage=False):
     txt = load(url)
     for m in re.finditer(r'<a .*?</a>', txt, re.DOTALL):
-        link = re.search(r'href="([^"]*)"', m.group(0))
-        image = re.search(r'src="([^"]*)"', m.group(0))
+        link = search(r'href="([^"]*)"', m.group(0))
+        image = search(r'src="([^"]*)"', m.group(0))
         if link and image:
             if unquote == True:
-                link1 = urllib.unquote(link.group(1))
-            else:
-                link1 = link.group(1)
-            image1 = image.group(1)
-            if urlparse.urlparse(link1).path.rstrip('/') == '':
+                link = urllib.unquote(link)
+            if urlparse.urlparse(link).path.rstrip('/') == '':
                 continue
             if showPage == False:
-                page.addVideo(req, link1, link1, image1)
+                page.addVideo(req, link, link, image)
             else:
-                page.addPage(req, link1, link1, image1)
+                page.addPage(req, link, link, image)
 
 def findVideo(req, url):
     return findVideoLink(req, url)

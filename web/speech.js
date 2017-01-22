@@ -15,7 +15,7 @@ if (window.hasOwnProperty('webkitSpeechRecognition')) {
 
     recognition.onend = function() {
         recognizing = false;
-        document.getElementById("ximage").src="mic.png";
+        document.getElementById("ximage").src="mic-icon.png";
     };
 
     recognition.onresult = function(event) {
@@ -43,7 +43,7 @@ function startDictation() {
 
         if (recognizing == true) {
             recognizing = false;
-            document.getElementById("ximage").src="mic.png";
+            document.getElementById("ximage").src="mic-icon.png";
             recognition.stop();
         }
 

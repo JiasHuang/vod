@@ -46,11 +46,14 @@ def renderDIR(req, d):
 def load(url):
     return meta.load(url)
 
+def loadLocal(url):
+    return meta.load('http://127.0.0.1/vod/'+url)
+
 def addEntry(req, link, title, image=None):
-    req.write('\n<a href=%s>\n' %(link))
+    req.write('\n<a href="%s">\n' %(link))
     req.write('<h2>%s</h2>\n' %(title))
     if image:
-        req.write('<img src=%s class=img />\n' %(image))
+        req.write('<img src="%s" class="img" />\n' %(image))
     req.write('</a>\n')
 
 def addPage(req, link, title, image=None):
@@ -108,6 +111,18 @@ def search_bi(req, q):
     url = 'http://search.bilibili.com/video?keyword=%s&order=click' %(urllib.quote(q))
     meta.findPage(req, url, True)
 
+def search_dbEntry(req, url, title0, q):
+    for m in re.finditer(r'<a href="([^"]*)">(.*?)</a>', loadLocal(url), re.DOTALL|re.MULTILINE):
+        link = m.group(1)
+        title = meta.search(r'<h2>(.*?)</h2>', m.group(2))
+        image = meta.search(r'src="([^"]*)"', m.group(2)) or 'Movies-icon.png'
+        if re.search(q, title, re.IGNORECASE):
+            addEntry(req, link, title0+'/'+title, image)
+
+def search_db(req, q):
+    for m in re.finditer(r'<a href=([^>]*)>(.*?)</a>', loadLocal('bookmark.html')):
+        search_dbEntry(req, m.group(1), m.group(2), q)
+
 def search(req, q, s):
     html = re.split('<!--result-->', loadFile('list.html'))
     req.write(html[0])
@@ -116,7 +131,7 @@ def search(req, q, s):
 
     q1 = re.sub(' ', '+', q)
 
-    req.write('<img onload="loadImage()" onclick="startDictation()" src="mic.png" id="ximage" class="topright" />\n')
+    req.write('<img onload="loadImage()" onclick="startDictation()" src="mic-icon.png" id="ximage" class="topright" />\n')
 
     req.write('<h1>\n')
     req.write('<a href=view.py>Home</a>&nbsp;&nbsp;&nbsp;\n')
@@ -133,6 +148,8 @@ def search(req, q, s):
     req.write('</form>\n')
 
     req.write('<br>\n')
+
+    search_db(req, q1)
 
     if s == 'yt':
         search_yt(req, q1)
