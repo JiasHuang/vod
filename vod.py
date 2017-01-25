@@ -24,11 +24,6 @@ def processURL1(url):
         xplay.playURL(url, url)
         return 0
 
-    if re.search('xuite.net', url):
-        src = xuite.getSource(url)
-        xplay.playURL(src, url)
-        return 0
-
     if re.search('goodtv.org', url):
         src = goodtv.getSource(url)
         xplay.playURL(src, url)
@@ -76,6 +71,10 @@ def processURL2(url):
     txt = xurl.load(url)
 
     m = re.search(r'"http(s|)://(www.|)(redirector.googlevideo|dailymotion|videomega|videowood|youtube|openload)(.com|.tv|.co)([^"]*)', txt)
+    if m:
+        return processURL1(m.group())
+
+    m = re.search(r'http(s|)://([a-zA-Z-0-9]*).googlevideo.com/([^"]*)', txt)
     if m:
         return processURL1(m.group())
 

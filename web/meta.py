@@ -56,9 +56,11 @@ def load(url, local=None, headers=None):
 
 def absURL(domain, url):
     if re.search(r'^//', url):
-	return 'http:'+url
+        return 'http:'+url
     if re.search(r'^/', url):
         return domain+url
+    if not re.search(r'^http', url):
+        return domain+'/'+url
     return url
 
 def findPoster(link):
@@ -95,9 +97,9 @@ def findVideoLink(req, url, showPage=False, showImage=False, DataImage=False):
         link = search(r'href="([^"]*)"', m.group(0))
         title = search(r'title="([^"]*)"', m.group(0))
         if DataImage:
-            image = search(r'data-img="([^"]*)"', m.group(0))
+            image = search(re.escape(DataImage)+r'="(.*?\.jpg)"', m.group(0))
         else:
-            image = search(r'src="([^"]*)"', m.group(0))
+            image = search(r'src="(.*?\.jpg)"', m.group(0))
         if link and title and image:
             link = absURL(domain, link)
             image = absURL(domain, image)
@@ -109,13 +111,16 @@ def findVideoLink(req, url, showPage=False, showImage=False, DataImage=False):
                 page.addPage(req, link, title)
 
 def findImageLink(req, url, unquote=False, showPage=False):
+    parsed_uri = urlparse.urlparse(url)
+    domain = '{uri.scheme}://{uri.netloc}'.format(uri=parsed_uri)
     txt = load(url)
     for m in re.finditer(r'<a .*?</a>', txt, re.DOTALL):
         link = search(r'href="([^"]*)"', m.group(0))
-        image = search(r'src="([^"]*)"', m.group(0))
+        image = search(r'src="(.*?\.jpg)"', m.group(0))
         if link and image:
             if unquote == True:
                 link = urllib.unquote(link)
+            link = absURL(domain, link)
             if urlparse.urlparse(link).path.rstrip('/') == '':
                 continue
             if showPage == False:

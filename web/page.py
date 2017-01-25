@@ -166,7 +166,10 @@ def listURL_def(req, url):
     meta.findLink(req, url)
 
 def listURL_xuite(req, url):
-    meta.findVideo(req, url)
+    if re.search(r'xuite.net/([a-zA-Z0-9]*)($)', url):
+        listURL_xuiteDIR(req, url)
+    else:
+        meta.findVideo(req, url)
 
 def listURL_xuiteDIR(req, url):
 
@@ -226,7 +229,7 @@ def listURL_litv(req, url):
             if subtitle:
                 addVideo(req, re.sub(_contentId, contentId, url), subtitle.group(1), imageLink)
     else:
-        meta.findVideoLink(req, url, True, True, True)
+        meta.findVideoLink(req, url, True, True, 'data-img')
 
 def listURL_dramaq(req, url):
     if re.search(r'php', url):
@@ -323,9 +326,6 @@ def listURL_nbahd(req):
         for m in re.finditer(r'<h2 class="entry-title"><a href="([^"]*)"', load('http://nbahd.com/page/'+str(i))):
             addVideo(req, m.group(1), m.group(1))
 
-def listURL_porn2tube(req, url):
-    meta.findImageLink(req, url, True, False)
-
 def listURL(req, url):
 
     html = re.split('<!--result-->', loadFile('list.html'))
@@ -356,10 +356,7 @@ def listURL(req, url):
         listURL_dailyesl(req, url)
 
     elif re.search(r'xuite', url):
-        if re.search(r'xuite.net/([a-zA-Z0-9]*)($)', url):
-            listURL_xuiteDIR(req, url)
-        else:
-            listURL_xuite(req, url)
+        listURL_xuite(req, url)
 
     elif re.search(r'mangareader', url):
         mangareader.loadImage(req, url)
@@ -367,8 +364,8 @@ def listURL(req, url):
     elif re.search(r'imovie.dodova', url):
         listURL_dodova(req, url)
 
-    elif re.search('porn2tube',url):
-        listURL_porn2tube(req, url)
+    elif re.search('(porn|jav)',url):
+        meta.findImageLink(req, url, True, False)
 
     else:
         listURL_def(req, url)
