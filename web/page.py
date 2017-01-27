@@ -111,17 +111,13 @@ def search_bi(req, q):
     url = 'http://search.bilibili.com/video?keyword=%s&order=click' %(urllib.quote(q))
     meta.findPage(req, url, True)
 
-def search_dbEntry(req, url, title0, q):
-    for m in re.finditer(r'<a href="([^"]*)">(.*?)</a>', loadLocal(url), re.DOTALL|re.MULTILINE):
+def search_db(req, q):
+    for m in re.finditer(r'<a href=([^>]*)>(.*?)</a>', loadLocal('database')):
         link = m.group(1)
         title = meta.search(r'<h2>(.*?)</h2>', m.group(2))
         image = meta.search(r'src="([^"]*)"', m.group(2)) or 'Movies-icon.png'
         if re.search(q, title, re.IGNORECASE):
-            addEntry(req, link, title0+'/'+title, image)
-
-def search_db(req, q):
-    for m in re.finditer(r'<a href=([^>]*)>(.*?)</a>', loadLocal('bookmark.html')):
-        search_dbEntry(req, m.group(1), m.group(2), q)
+            addEntry(req, link, title, image)
 
 def search(req, q, s):
     html = re.split('<!--result-->', loadFile('list.html'))
