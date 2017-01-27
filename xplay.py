@@ -22,8 +22,8 @@ def getPlayer():
     if os.path.exists('/usr/bin/mpv') or os.path.exists('/usr/local/bin/mpv'):
         return 'mpv'
 
-    if os.path.exists('/usr/bin/smplayer'):
-        return 'smp'
+    if os.path.exists('/usr/bin/ffplay'):
+        return 'ffplay'
 
     return 'err'
 
@@ -35,27 +35,15 @@ def checkProcessRunning(process):
     except:
         return False
 
-def runIdle():
-    subprocess.Popen('smplayer -send-action stop', shell=True)
-    subprocess.Popen('xbmc-send -a Stop', shell=True)
-    return
-
-def runXBMC(url, ref):
-     # start xbmc if necessary
-    if not checkProcessRunning('kodi.bin'):
-        subprocess.Popen('kodi', shell=True)
-        time.sleep(8)
-    cmd = 'PlayMedia(%s|Referer=%s)' %(url, ref)
-    subprocess.Popen('xbmc-send -a %s' %(cmd), shell=True)
-    return 0
-
-def runSMP(url, ref):
+def runMPLAYER(url, ref):
     if youtubedl.checkURL(url):
         url = youtubedl.extractURL(url)
     if not url:
         print('[xplay] invalid url')
         return 0
-    subprocess.Popen('%s \'%s\'' %(xdef.smp, url), shell=True)
+    p = subprocess.Popen('%s \'%s\'' %(xdef.mp, url), shell=True)
+    if p:
+        p.communicate()
     return 0
 
 def runMPV(url, ref):
@@ -63,12 +51,9 @@ def runMPV(url, ref):
     p = None
     xargs = ''
 
-    if url[0] == '/':
-        xargs = xdef.mpv_ytdl
-
     if ref != 'x' and youtubedl.checkURL(url):
         url = youtubedl.extractURL(url)
-        xargs = xdef.mpv_ytdl
+        xargs = '--ytdl=no'
 
     if not url:
         print('[xplay] invalid url')
@@ -112,10 +97,20 @@ def runOMXP(url, ref):
         return 0
     if checkProcessRunning('omxplayer.bin'):
         omxp.setAct('stop', None)
-    if re.search(r'.m3u($)', url):
-        url = xurl.readLocal(url).rstrip()
-        print('\n[omxp][play] '+url)
     p = subprocess.Popen('%s \'%s\' 2>&1 | tee %s' %(xdef.omxp, url, xdef.log), shell=True)
+    if p:
+        p.communicate()
+    return 0
+
+def runFFPLAY(url, ref):
+    if youtubedl.checkURL(url):
+        url = youtubedl.extractURL(url)
+    if not url:
+        print('[xplay] invalid url')
+        return 0
+    if checkProcessRunning('ffplay'):
+        ffplay.setAct('stop', None)
+    p = subprocess.Popen('%s \'%s\' 2>&1 | tee %s' %(xdef.ffplay, url, xdef.log), shell=True)
     if p:
         p.communicate()
     return 0
@@ -136,20 +131,17 @@ def playURL(url, ref):
     if url == None or url == '':
         return 0
 
-    if player == 'smp':
-        return runSMP(url, ref)
-
     if player == 'mpv':
         return runMPV(url, ref)
-
-    if player == 'xbmc':
-        return runXBMC(url, ref)
 
     if player == 'pipe':
         return runPIPE(url, ref)
 
     if player == 'omxp':
         return runOMXP(url, ref)
+
+    if player == 'ffplay':
+        return runFFPLAY(url, ref)
 
     return runDBG(url, ref)
 
@@ -163,4 +155,7 @@ def setAct(act, val):
 
     if player == 'omxp' and checkProcessRunning('omxplayer.bin'):
         return omxp.setAct(act, val)
+
+    if player == 'ffplay' and checkProcessRunning('ffplay'):
+        return ffplay.setAct(act, val)
 

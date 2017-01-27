@@ -24,6 +24,11 @@ def processURL1(url):
         xplay.playURL(url, url)
         return 0
 
+    if re.search('xuite.net', url):
+        src = xuite.getSource(url)
+        xplay.playURL(src, url)
+        return 0
+
     if re.search('goodtv.org', url):
         src = goodtv.getSource(url)
         xplay.playURL(src, url)
@@ -44,9 +49,9 @@ def processURL1(url):
         xplay.playURL(src, url)
         return 0
 
-    if re.search('nbahd.net', url):
+    if re.search('nba([a-z]*).(com|net)', url):
         src = nbahd.getSource(url)
-        xplay.playURL(src, '')
+        xplay.playURL(src, src)
         return 0
 
     if re.search(r'porn2tube', url):

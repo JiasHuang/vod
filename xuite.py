@@ -36,15 +36,12 @@ def getSource(url):
         txt = xurl.load(url)
     m = re.search(r'data-original="([^"]*)"', txt)
     if m:
-        print('\n[xuite][src]\n\n\t%s' %(m.group(1)))
-        src_sd = m.group(1)
-        src_hd = re.sub('q=360', 'q=720', m.group(1))
-        m3u = 'xuite.m3u'
-        fd = open(m3u, 'w')
-        fd.write(src_hd+'\n')
-        fd.write(src_sd+'\n')
-        fd.close()
-        return '%s%s' %(xdef.workdir, m3u)
+        src = m.group(1)
+        hd = re.search(r'<button id="page-video-quality" data-hdsize="([^"]*)">', txt)
+        if hd:
+            src = re.sub('q=360', 'q='+hd.group(1), src)
+        print('\n[xuite][src]\n\n\t'+src)
+        return src
     return ''
 
 def findKey(url):

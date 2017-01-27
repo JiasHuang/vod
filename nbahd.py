@@ -19,11 +19,12 @@ def addEntry(m3u, part, link):
 
 def listPart(m3u, url):
     txt = xurl.load2(url)
-    for m in re.finditer(r'<a href="([^"]*)" target="_blank"><img src=', txt):
-        part = m.group(1)
-        if re.search('nbahd.net', part):
-            for link in xsrc.findLink(part):
-                addEntry(m3u, part, link)
+    for m in re.finditer(r'<a .*?</a>', txt):
+        if re.search(r'Part ([1-9])', m.group()):
+            part = xsrc.search(r'href="([^"]*)"', m.group())
+            if part:
+                for link in xsrc.findLink(part):
+                    addEntry(m3u, part, link)
     return
 
 def lookup(m3u):

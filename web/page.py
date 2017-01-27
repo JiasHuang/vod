@@ -317,10 +317,9 @@ def listURL_mangareader(req):
         title = m.group(2)+m.group(3)
         addPage(req, link, title)
 
-def listURL_nbahd(req):
-    for i in range(1, 3):
-        for m in re.finditer(r'<h2 class="entry-title"><a href="([^"]*)"', load('http://nbahd.com/page/'+str(i))):
-            addVideo(req, m.group(1), m.group(1))
+def listURL_nbahd(req, url):
+    for m in re.finditer(r'<h2 class="entry-title"><a href="([^"]*)"', load(url)):
+        addVideo(req, m.group(1), m.group(1))
 
 def listURL(req, url):
 
@@ -330,8 +329,8 @@ def listURL(req, url):
     if url == 'mangareader':
         listURL_mangareader(req)
 
-    elif url == 'nbahd':
-        listURL_nbahd(req)
+    elif re.search(r'nba([a-z]*).(com|net)', url):
+        listURL_nbahd(req, url)
 
     elif re.search(r'bilibili', url):
         listURL_bilibili(req, url)

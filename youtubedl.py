@@ -11,7 +11,7 @@ import xurl
 
 def checkURL(url):
     site = xurl.findSite(url)
-    return re.compile('(youtube|dailymotion|facebook|bilibili|vimeo|youku|openload|litv|xuite)').search(site)
+    return re.compile('(youtube|dailymotion|facebook|bilibili|vimeo|youku|openload|litv)').search(site)
 
 def redirectURL(url):
     if re.search(r'youku', url):
@@ -60,8 +60,15 @@ def extractURL(url):
         print('\tret: none')
         return None
 
+    if len(result) == 1 and re.search(r'm3u(8)$', result[0]):
+        xurl.load2(result[0], m3u)
+        return m3u
+
     fd = open(m3u, 'w')
+    fd.write('#EXTM3U\n')
+    fd.write('#EXT-X-TARGETDURATION:0\n')
     for vid in result:
+        fd.write('#EXTINF:0,0\n')
         fd.write(vid+'\n')
     fd.close()
 
