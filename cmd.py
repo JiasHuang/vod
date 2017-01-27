@@ -4,6 +4,8 @@
 import os
 import re
 import sys
+
+import xdef
 import xurl
 
 def search(patten, txt):
@@ -35,11 +37,12 @@ def updateDataBaseEntry(fd, url, title0):
         fd.write('</a>\n')
 
 def updateDataBase():
-    fd = open('/var/www/html/vod/database', 'w')
+    local = xdef.workdir+'database_'+str(os.getuid())
+    fd = open(local, 'w')
     for m in re.finditer(r'<a href=([^>]*)>(.*?)</a>', loadLocal('bookmark.html')):
-        print(m.group(2))
         updateDataBaseEntry(fd, m.group(1), m.group(2))
     fd.close()
+    os.system('sudo cp %s /var/www/html/vod/database' %(local))
 
 def reset():
     os.system('sudo rm /tmp/vod*')

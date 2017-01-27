@@ -112,7 +112,7 @@ def search_bi(req, q):
     meta.findPage(req, url, True)
 
 def search_db(req, q):
-    for m in re.finditer(r'<a href=([^>]*)>(.*?)</a>', loadLocal('database')):
+    for m in re.finditer(r'<a href="([^"]*)">(.*?)</a>', loadLocal('database'), re.DOTALL|re.MULTILINE):
         link = m.group(1)
         title = meta.search(r'<h2>(.*?)</h2>', m.group(2))
         image = meta.search(r'src="([^"]*)"', m.group(2)) or 'Movies-icon.png'
