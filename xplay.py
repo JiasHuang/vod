@@ -3,13 +3,13 @@
 
 import os
 import re
-import time
 import subprocess
+
 import xdef
-import xurl
-import youtubedl
+import xproc
 import mpv
 import omxp
+import ffplay
 
 def getPlayer():
 
@@ -27,99 +27,11 @@ def getPlayer():
 
     return 'err'
 
-def checkProcessRunning(process):
-    cmd = 'pidof %s' %(process)
-    try:
-        result = subprocess.check_output(cmd, shell=True)
-        return True
-    except:
-        return False
-
-def runMPLAYER(url, ref):
-    if youtubedl.checkURL(url):
-        url = youtubedl.extractURL(url)
-    if not url:
-        print('[xplay] invalid url')
-        return 0
-    p = subprocess.Popen('%s \'%s\'' %(xdef.mp, url), shell=True)
-    if p:
-        p.communicate()
-    return 0
-
-def runMPV(url, ref):
-
-    p = None
-    xargs = ''
-
-    if ref != 'x' and youtubedl.checkURL(url):
-        url = youtubedl.extractURL(url)
-        xargs = '--ytdl=no'
-
-    if not url:
-        print('[xplay] invalid url')
-        return 0
-
-    if not checkProcessRunning('mpv'):
-
-        if os.path.exists('/etc/alternatives/x86_64-linux-gnu_libvdpau_nvidia.so'):
-            xargs = xargs + ' --hwdec=vdpau'
-
-        xargs = xargs + ' --user-agent=\'%s\'' %(xdef.ua)
-        xargs = xargs + ' --referrer=\'%s\'' %(ref)
-        xargs = xargs + ' --input-file=\'%s\'' %(xdef.fifo)
-
-        p = subprocess.Popen('%s %s \'%s\'' %(xdef.mpv, xargs, url), shell=True)
-
-    else:
-        os.system('echo loadfile \"%s\" > %s' %(url, xdef.fifo))
-        os.system('echo sub-remove > %s' %(xdef.fifo))
-
-    sub = youtubedl.extractSUB(ref)
-    if sub:
-        os.system('echo sub-add \"%s\" select > %s' %(sub, xdef.fifo))
-
-    if p:
-        p.communicate()
-
-    return 0
-
-def runPIPE(url, ref):
-    subprocess.Popen(['wget', '-q', '-O', xdef.fifo_bs, url])
-    setAct('stop', None)
-    os.system('%s \'%s\' --input-file=%s' %(xdef.mpv, xdef.fifo_bs, xdef.fifo))
-    return 0
-
-def runOMXP(url, ref):
-    if youtubedl.checkURL(url):
-        url = youtubedl.extractURL(url)
-    if not url:
-        print('[xplay] invalid url')
-        return 0
-    if checkProcessRunning('omxplayer.bin'):
-        omxp.setAct('stop', None)
-    p = subprocess.Popen('%s \'%s\' 2>&1 | tee %s' %(xdef.omxp, url, xdef.log), shell=True)
-    if p:
-        p.communicate()
-    return 0
-
-def runFFPLAY(url, ref):
-    if youtubedl.checkURL(url):
-        url = youtubedl.extractURL(url)
-    if not url:
-        print('[xplay] invalid url')
-        return 0
-    if checkProcessRunning('ffplay'):
-        ffplay.setAct('stop', None)
-    p = subprocess.Popen('%s \'%s\' 2>&1 | tee %s' %(xdef.ffplay, url, xdef.log), shell=True)
-    if p:
-        p.communicate()
-    return 0
-
 def runDBG(url, ref):
     if youtubedl.checkURL(url):
         youtubedl.extractURL(url)
     youtubedl.extractSUB(url)
-    return 0
+    return
 
 def playURL(url, ref):
 
@@ -129,19 +41,16 @@ def playURL(url, ref):
     print('\n[xplay][%s][ref]\n\n\t%s' %(player, ref))
 
     if url == None or url == '':
-        return 0
+        return
 
     if player == 'mpv':
-        return runMPV(url, ref)
-
-    if player == 'pipe':
-        return runPIPE(url, ref)
+        return mpv.play(url, ref)
 
     if player == 'omxp':
-        return runOMXP(url, ref)
+        return omxp.play(url, ref)
 
     if player == 'ffplay':
-        return runFFPLAY(url, ref)
+        return ffplay.play(url, ref)
 
     return runDBG(url, ref)
 
@@ -150,12 +59,12 @@ def setAct(act, val):
     player = getPlayer()
     print('\n[xplay]\n\n\t'+ '%s,%s,%s' %(player, act, val))
 
-    if player == 'mpv' and checkProcessRunning('mpv'):
+    if player == 'mpv' and xproc.checkProcessRunning('mpv'):
         return mpv.setAct(act, val)
 
-    if player == 'omxp' and checkProcessRunning('omxplayer.bin'):
+    if player == 'omxp' and xproc.checkProcessRunning('omxplayer.bin'):
         return omxp.setAct(act, val)
 
-    if player == 'ffplay' and checkProcessRunning('ffplay'):
+    if player == 'ffplay' and xproc.checkProcessRunning('ffplay'):
         return ffplay.setAct(act, val)
 

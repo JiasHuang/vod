@@ -1,14 +1,33 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import os, sys
+import xdef
 import xplay
 
+from optparse import OptionParser
+
 def main():
-    if len(sys.argv) >= 3:
-        return xplay.setAct(sys.argv[1], sys.argv[2])
-    if len(sys.argv) >= 2:
-        return xplay.setAct(sys.argv[1], None)
+
+    act = None
+    val = None
+
+    parser = OptionParser()
+    parser.add_option("-p", "--player", dest="player")
+    (options, args) = parser.parse_args()
+
+    if options.player:
+        xdef.player = options.player
+
+    if len(args) >= 1:
+        act = args[0]
+
+    if len(args) >= 2:
+        val = args[1]
+
+    if act:
+        xplay.setAct(act, val)
+
+    return
 
 if __name__ == '__main__':
     main()

@@ -4,6 +4,7 @@
 import os
 import re
 import urllib
+
 import xdef
 import xurl
 import xplay
@@ -136,10 +137,6 @@ def main():
 
     if options.player:
         xdef.player = options.player
-
-    if len(args) == 0:
-        xplay.runIdle()
-        return
 
     if len(args) >= 1:
         url = args[0]

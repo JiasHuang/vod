@@ -3,7 +3,10 @@
 
 import re
 import subprocess
+
 import xdef
+import xproc
+import youtubedl
 
 def setAct(act, val):
 
@@ -30,3 +33,18 @@ def setAct(act, val):
     print('\n[omxp][act]\n\n\t%s%s %s' %(xdef.codedir, 'dbuscontrol.sh', cmd))
     result = subprocess.check_output('%s%s %s' %(xdef.codedir, 'dbuscontrol.sh', cmd), shell=True)
     print('\n[omxp][result]\n\n\t%s' %(result))
+    return
+
+def play(url, ref):
+    if youtubedl.checkURL(url):
+        url = youtubedl.extractURL(url)
+    if not url:
+        print('\n[omxp][play] invalid url\n')
+        return
+    if xproc.checkProcessRunning('omxplayer.bin'):
+        setAct('stop', None)
+    p = subprocess.Popen('%s \'%s\' 2>&1 | tee %s' %(xdef.omxp, url, xdef.log), shell=True)
+    if p:
+        p.communicate()
+    return
+
