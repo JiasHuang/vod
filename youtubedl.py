@@ -33,9 +33,13 @@ def extractURL(url):
     url = redirectURL(url)
     arg = parseParameters(url)
     m3u = xdef.workdir+'vod_list_'+hashlib.md5(url).hexdigest()+'.m3u'
+    txt = xdef.workdir+'vod_list_'+hashlib.md5(url).hexdigest()+'.txt'
 
     if arg:
         print('\targ: '+arg)
+
+    if os.path.exists(txt):
+        return xurl.readLocal(txt).rstrip('\n')
 
     if os.path.exists(m3u):
         print('\tret: '+m3u)
@@ -60,9 +64,9 @@ def extractURL(url):
         print('\tret: none')
         return None
 
-    if len(result) == 1 and re.search(r'm3u(8)$', result[0]):
-        xurl.load2(result[0], m3u)
-        return m3u
+    if len(result) == 1:
+        xurl.saveLocal(result[0], txt)
+        return result[0]
 
     fd = open(m3u, 'w')
     fd.write('#EXTM3U\n')
