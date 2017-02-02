@@ -16,28 +16,33 @@ def setAct(act, val):
         print('\n[ffplay][secAct] no pid')
         return
 
-    wid = xproc.checkOutput('xdotool search ffplay', r'([0-9]*)$')
+    wid = xproc.checkOutput('xdotool search --name ffplay', r'([0-9]*)$')
     if not wid:
         print('\n[ffplay][secAct] no wid')
         return
 
+    os.system('xdotool windowactivate --sync %s' %(wid))
+
     if act == 'stop':
-        os.system('xdotool key --window %s q' %(wid))
+        os.system('xdotool key q')
     elif act == 'pause':
-        os.system('xdotool key --window %s p'%(wid))
+        os.system('xdotool key p')
     elif act == 'forward':
-        os.system('xdotool key --window %s Up' %(wid))
+        os.system('xdotool key Up')
     elif act == 'backward':
-        os.system('xdotool key --window %s Down' %(wid))
+        os.system('xdotool key Down')
     elif act == 'percent' and val:
-        w = xproc.checkOutput('xdotool getwindowgeometry '+wid, r'Geometry: ([0-9]*)x')
-        if not w:
-            print('\n[ffplay][secAct] no width')
+        geometry = xproc.checkOutput('xdotool getwindowgeometry %s' %(wid), r'Geometry: ([0-9x]*)')
+        if not geometry:
+            print('\n[ffplay][setAct] no geometry')
             return
-        x = str(int(w) * int(val) / 100)
-        os.system('xdotool mousemove --window %s %s 1 click --window %s 1' %(wid, x, wid))
+        w = int(geometry.split('x')[0])
+        h = int(geometry.split('x')[1])
+        x = str(w * int(val) / 100)
+        y = str(h / 2)
+        os.system('xdotool mousemove --sync --window %s %s %s click 1' %(wid, x, y))
     else:
-        print('unsupported: %s %s' %(act, val))
+        print('\n[ffplay][setAct] unsupported: %s %s' %(act, val))
     return
 
 def play(url, ref):
