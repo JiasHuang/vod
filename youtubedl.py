@@ -46,12 +46,12 @@ def extractURL(url):
     if arg:
         print('\targ: '+arg)
 
-    if os.path.exists(txt):
+    if os.path.exists(txt) and not xurl.checkExpire(txt):
         src = xurl.readLocal(txt).rstrip('\n')
         print('\tret: '+src)
         return src
 
-    if os.path.exists(m3u):
+    if os.path.exists(m3u) and not xurl.checkExpire(m3u):
         print('\tret: '+m3u)
         return m3u
 

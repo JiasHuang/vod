@@ -8,6 +8,7 @@ import urllib
 import urllib2
 import hashlib
 import urlparse
+import time
 
 import xdef
 
@@ -31,6 +32,13 @@ def saveLocal(text, local):
     fd.write(text)
     fd.close()
     return
+
+def checkExpire(local):
+    t0 = int(os.path.getmtime(local))
+    t1 = int(time.time())
+    if (t1 - t0) > 14400:
+        return True
+    return False
 
 def dict2str(adict):
     return ''.join('{}{}'.format(key, val) for key, val in adict.items())

@@ -8,6 +8,7 @@ import urllib2
 import json
 import urlparse
 import hashlib
+import time
 
 from StringIO import StringIO
 import gzip
@@ -32,10 +33,17 @@ def saveLocal(text, local):
     fd.close()
     return
 
+def checkExpire(local):
+    t0 = int(os.path.getmtime(local))
+    t1 = int(time.time())
+    if (t1 - t0) > 14400:
+        return True
+    return False
+
 def load(url, local=None, headers=None):
     if not local:
         local = conf.workdir+'vod_load_'+hashlib.md5(url).hexdigest()
-    if os.path.exists(local):
+    if os.path.exists(local) and not checkExpire(local):
         return readLocal(local)
     opener = urllib2.build_opener()
     opener.addheaders = [('User-agent', 'Mozilla/5.0 (X11; Linux i686; rv:10.0) Gecko/20100101 Firefox/33.0')]
