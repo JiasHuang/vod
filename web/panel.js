@@ -26,10 +26,6 @@ function setAct(key) {
         act = "cmd";
         val = "updateDataBase";
     }
-    else if (val == "*1234") {
-        act = "cmd";
-        val = "reset";
-    }
     else if (key == "pause" && val != "") {
         act = "percent"
     }

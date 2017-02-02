@@ -25,6 +25,14 @@ def parseParameters(url):
         return '--video-password ' + match.group(2)
     return None
 
+def getFmt(url):
+    for s in ['all', 'litv', 'youtube']:
+        fmt = xdef.getConf(s)
+        if fmt:
+            if s == 'all' or re.search(s, url):
+                return fmt
+    return 'mp4'
+
 def extractURL(url):
 
     print('\n[ytdl][extracURL]\n')
@@ -39,14 +47,20 @@ def extractURL(url):
         print('\targ: '+arg)
 
     if os.path.exists(txt):
-        return xurl.readLocal(txt).rstrip('\n')
+        src = xurl.readLocal(txt).rstrip('\n')
+        print('\tret: '+src)
+        return src
 
     if os.path.exists(m3u):
         print('\tret: '+m3u)
         return m3u
 
+    fmt = getFmt(url)
+    print('\tfmt: '+fmt)
+
+    cmd = '%s -f \"%s\" -g --no-playlist --cookies %s %s \'%s\'' %(xdef.ytdl, fmt, xdef.cookies, arg or '', url)
+
     try:
-        cmd = '%s -f mp4 -g --no-playlist --cookies %s %s \'%s\'' %(xdef.ytdl, xdef.cookies, arg or '', url)
         start_time = timeit.default_timer()
         output = subprocess.check_output(cmd, shell=True)
         elapsed = timeit.default_timer() - start_time
@@ -66,6 +80,7 @@ def extractURL(url):
 
     if len(result) == 1:
         xurl.saveLocal(result[0], txt)
+        print('\tret: '+result[0])
         return result[0]
 
     fd = open(m3u, 'w')
@@ -92,7 +107,7 @@ def extractURL2(url):
 
 def extractSUB(url):
 
-    if not re.search(r'youtube.com', url):
+    if not url or not re.search(r'youtube.com', url):
         return None
 
     print('\n[ytdl][extracSUB]\n')

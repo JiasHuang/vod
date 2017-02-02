@@ -11,19 +11,31 @@ import youtubedl
 
 def setAct(act, val):
 
-    output = subprocess.check_output('xdotool search ffplay', shell=True)
-    wid = re.search(r'([0-9]*)$', output)
-    if wid:
-        os.system('xdotool windowactivate '+wid.group(1))
+    pid = xproc.checkProcessRunning('ffplay')
+    if not pid:
+        print('\n[ffplay][secAct] no pid')
+        return
+
+    wid = xproc.checkOutput('xdotool search ffplay', r'([0-9]*)$')
+    if not wid:
+        print('\n[ffplay][secAct] no wid')
+        return
 
     if act == 'stop':
-        os.system('xdotool key q')
+        os.system('xdotool key --window %s q' %(wid))
     elif act == 'pause':
-        os.system('xdotool key p')
+        os.system('xdotool key --window %s p'%(wid))
     elif act == 'forward':
-        os.system('xdotool key Up')
+        os.system('xdotool key --window %s Up' %(wid))
     elif act == 'backward':
-        os.system('xdotool key Down')
+        os.system('xdotool key --window %s Down' %(wid))
+    elif act == 'percent' and val:
+        w = xproc.checkOutput('xdotool getwindowgeometry '+wid, r'Geometry: ([0-9]*)x')
+        if not w:
+            print('\n[ffplay][secAct] no width')
+            return
+        x = str(int(w) * int(val) / 100)
+        os.system('xdotool mousemove --window %s %s 1 click --window %s 1' %(wid, x, wid))
     else:
         print('unsupported: %s %s' %(act, val))
     return
