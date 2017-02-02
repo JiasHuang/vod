@@ -31,7 +31,10 @@ def sendACT(act, val):
     if not os.path.exists(conf.act):
         return
     cmd = 'python -u %s \'%s\' \'%s\' | tee -a %s' %(conf.act, act, val, conf.log)
-    subprocess.Popen(cmd, shell=True).communicate()
+    if os.path.exists('/usr/bin/xterm'):
+        subprocess.Popen(['/usr/bin/xterm', '-geometry', '80x24-50+50', '-display', ':0', '-e', cmd]).communicate()
+    else:
+        subprocess.Popen(cmd, shell=True).communicate()
 
 def getUnparsedURL(req):
     m = re.search(r'=(.*)$', req.unparsed_uri, re.DOTALL)

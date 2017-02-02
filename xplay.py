@@ -14,8 +14,9 @@ import youtubedl
 
 def getPlayer():
 
-    if xdef.player != 'def':
-        return xdef.player
+    conf = xdef.getConf('player')
+    if conf:
+        return conf
 
     if re.search(r'raspberrypi', subprocess.check_output('uname -a', shell=True)):
         return 'omxp'
