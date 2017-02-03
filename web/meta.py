@@ -40,6 +40,9 @@ def checkExpire(local):
         return True
     return False
 
+def dict2str(adict):
+    return ''.join('{}{}'.format(key, val) for key, val in adict.items())
+
 def load(url, local=None, headers=None):
     if not local:
         local = conf.workdir+'vod_load_'+hashlib.md5(url).hexdigest()
@@ -56,6 +59,22 @@ def load(url, local=None, headers=None):
         if f.info().get('Content-Encoding') == 'gzip':
             buf = StringIO(f.read())
             return gzip.GzipFile(fileobj=buf).read()
+        txt = f.read()
+        saveLocal(txt, local)
+        return txt
+    except:
+        return ''
+
+def post(url, payload, local=None):
+    if not local:
+        local = conf.workdir+'vod_post_'+hashlib.md5(dict2str(payload)).hexdigest()
+    if os.path.exists(local):
+        return readLocal(local)
+    opener = urllib2.build_opener()
+    opener.addheaders = [('User-agent', 'Mozilla/5.0 (X11; Linux i686; rv:10.0) Gecko/20100101 Firefox/33.0')]
+    data = urllib.urlencode(payload)
+    try:
+        f = opener.open(url, data)
         txt = f.read()
         saveLocal(txt, local)
         return txt

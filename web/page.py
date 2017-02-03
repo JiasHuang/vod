@@ -254,6 +254,23 @@ def listURL_dodova(req, url):
     elif re.search(r'video.imovie.dodova.com/', url):
         meta.findLink(req, url)
 
+def listURL_imovie(req, url):
+    if url == 'http://i-movie.co/':
+        for i in range(1, 5):
+            data = json.loads(meta.post('http://i-movie.co/sql.php?tag=getMovie', {'page':str(i), 'type':'all', 'sort':'time'}))
+            if 'json' in data:
+                for d in data['json']:
+                    vid, title, image  = d['id'].encode('utf8'), d['name'].encode('utf8'), d['image'].encode('utf8')
+                    addPage(req, 'http://i-movie.co/view.php?id='+vid, title, image)
+    else:
+        vid = meta.search(r'view.php\?id=([0-9]*)', url)
+        if vid:
+            data = json.loads(meta.post('http://i-movie.co/sql.php?tag=getOneMovie', {'id':vid}))
+            for d in data:
+                url = d['url'].encode('utf8')
+                src = meta.search(r'src="([^"]*)"', url) or url
+                addVideo(req, src)
+ 
 def listURL_youtube(req, url):
     if re.search(r'/playlists($)', url):
         playlist = None
@@ -358,6 +375,9 @@ def listURL(req, url):
 
     elif re.search(r'imovie.dodova', url):
         listURL_dodova(req, url)
+
+    elif re.search(r'i-movie', url):
+        listURL_imovie(req, url)
 
     elif re.search('(porn|jav)',url):
         meta.findImageLink(req, url, True, False)
