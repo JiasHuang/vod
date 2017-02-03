@@ -14,7 +14,7 @@ ytdl     = 'youtube-dl'
 fifo     = '/opt/vod/vod.fifo'
 fifo_bs  = '/opt/vod/vod.bs.fifo'
 sub      = 'on'
-log      = workdir+'vod.log'
+log      = workdir+'vod_%s.log' %(getpass.getuser())
 
 wget     = 'wget -w 10 -T 10 -q -c '
 ua       = 'Mozilla/5.0 (X11; Linux x86_64; rv:10.0) Gecko/20150101 Firefox/20.0 (Chrome)'

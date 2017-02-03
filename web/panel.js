@@ -14,19 +14,7 @@ function setAct(key) {
 
     act = key;
 
-    if (val == "*0413") {
-        act = "load";
-        val = "jav";
-    }
-    else if (val == "*0000") {
-        act = "cmd";
-        val = "update";
-    }
-    else if (val == "*1111") {
-        act = "cmd";
-        val = "updateDataBase";
-    }
-    else if (key == "pause" && val != "") {
+    if (key == "pause" && val != "") {
         act = "percent"
     }
     else if (key == "forward" && val == "") {

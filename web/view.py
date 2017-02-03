@@ -42,6 +42,17 @@ def getUnparsedURL(req):
         return urllib.unquote(m.group(1))
     return None
 
+def handleCode(code):
+    if code == '0413':
+        return 'jav'
+    elif code == '0000':
+        runCmd('update')
+    elif code == '1111':
+        runCmd('updateDataBase')
+    elif code == '2222':
+        os.system('rm -f '+conf.workdir+'vod_*')
+    return 'success'
+ 
 def index(req):
 
     req.content_type = 'text/html; charset=utf-8'
@@ -57,9 +68,12 @@ def index(req):
     d    = arg.get('d', None)
     f    = arg.get('f', None)
     w    = arg.get('w', None)
+    x    = arg.get('x', None)
 
     if url:
-        if re.search(r'^http', url):
+        if re.search(r'^#[0-9]{4}', url):
+            x = url[1:5]
+        elif re.search(r'^http', url):
             v = url
         elif re.search(r'^/', url) and os.path.isdir(url):
             d = url
@@ -91,14 +105,12 @@ def index(req):
         page.loadword(req, w)
 
     elif act:
-        if act == 'load' and val:
-            page.render(req, val, None)
-        elif act == 'cmd':
-            runCmd(val)
-            page.render(req, 'success', None)
-        else:
-            sendACT(act, val)
-            page.render(req, 'panel', '<br><br><br><h1>%s %s</h1>' %(act, val or ''))
+        sendACT(act, val)
+        page.render(req, 'panel', '<br><br><br><h1>%s %s</h1>' %(act, val or ''))
+
+    elif x:
+        page.render(req, handleCode(x), None)
+
     else:
         page.render(req, 'panel', None)
 

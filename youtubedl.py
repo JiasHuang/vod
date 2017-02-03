@@ -35,7 +35,7 @@ def getFmt(url):
 
 def extractURL(url):
 
-    print('\n[ytdl][extracURL]\n')
+    print('\n[ytdl][extractURL]\n')
     print('\turl: '+url)
 
     url = redirectURL(url)
@@ -48,11 +48,11 @@ def extractURL(url):
 
     if os.path.exists(txt) and not xurl.checkExpire(txt):
         src = xurl.readLocal(txt).rstrip('\n')
-        print('\tret: '+src)
+        print('\n[ytdl][extractURL][src]\n\n\t'+src)
         return src
 
     if os.path.exists(m3u) and not xurl.checkExpire(m3u):
-        print('\tret: '+m3u)
+        print('\n[ytdl][extractURL][src]\n\n\t'+m3u)
         return m3u
 
     fmt = getFmt(url)
@@ -80,7 +80,7 @@ def extractURL(url):
 
     if len(result) == 1:
         xurl.saveLocal(result[0], txt)
-        print('\tret: '+result[0])
+        print('\n[ytdl][extractURL][src]\n\n\t'+result[0])
         return result[0]
 
     fd = open(m3u, 'w')
@@ -91,7 +91,7 @@ def extractURL(url):
         fd.write(vid+'\n')
     fd.close()
 
-    print('\tret: '+m3u)
+    print('\n[ytdl][extractURL][src]\n\n\t'+m3u)
     return m3u
 
 def extractURL2(url):

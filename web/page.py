@@ -62,7 +62,7 @@ def addPage(req, link, title, image=None):
 def addVideo(req, link, title=None, image=None):
     if re.search(r'^//', link):
         link = re.sub('//', 'http://', link)
-    addEntry(req, 'view.py?v='+link, title or link, image or meta.getImage(link))
+    addEntry(req, 'view.py?v='+link, title or link, image or meta.getImage(link) or 'Movies-icon.png')
 
 def addAudio(req, url):
     req.write('<hr>\n')

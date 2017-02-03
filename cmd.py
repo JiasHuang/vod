@@ -22,7 +22,6 @@ def update():
     os.system('sudo git pull')
     os.system('sudo ./install.sh')
     os.system('sudo ./sync.sh')
-    os.system('sudo rm /tmp/vod*')
     return
 
 def updateDataBaseEntry(fd, url, title0):
@@ -45,13 +44,6 @@ def updateDataBase():
     fd.close()
     os.system('sudo cp %s /var/www/html/vod/database' %(local))
 
-def showInfo():
-    for i in range(1, 30):
-        print('Retry: '+str(i))
-        os.system('ifconfig')
-        os.system('sleep 10')
-    return
-
 def main():
 
     if len(sys.argv) < 2:
@@ -63,8 +55,6 @@ def main():
         update()
     elif cmd == 'updateDataBase':
         updateDataBase()
-    elif cmd == 'showInfo':
-        showInfo()
 
     return
 
