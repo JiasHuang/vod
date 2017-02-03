@@ -5,6 +5,8 @@ import re
 import os
 import urllib
 import json
+import base64
+
 import mangareader
 import esl
 import meta
@@ -60,6 +62,8 @@ def addPage(req, link, title, image=None):
     addEntry(req, 'view.py?p='+link, title, image)
 
 def addVideo(req, link, title=None, image=None):
+    if not link:
+        return
     if re.search(r'^//', link):
         link = re.sub('//', 'http://', link)
     addEntry(req, 'view.py?v='+link, title or link, image or meta.getImage(link) or 'Movies-icon.png')
@@ -241,6 +245,41 @@ def listURL_dramaq(req, url):
                 link, title = url+m.group(1)+'.php', m.group(1)
                 addPage(req, link, title)
 
+def listURL_bigdramas_FindVideo(req, url):
+    for m in re.finditer(r'data-data="([^"]*)"', load(url)):
+        data = base64.b64decode(m.group(1)[::-1])
+        meta.comment(req, data)
+        try:
+            d = json.loads(data)
+            source, ids = d['source'], d['ids']
+            for vid in ids:
+                if source == 'Bigdramas':
+                    txt = meta.load('http://bigdramas.net/view/?ref='+vid, None, [('Referer', url)])
+                    src = meta.search(r'source src="([^"]*)"', txt)
+                    addVideo(req, src)
+                elif source == 'Dailymotion':
+                    addDailyMotion(req, vid, None)
+                elif source == 'OpenLoad':
+                    addVideo(req, 'https://openload.co/embed/'+vid)
+                elif source == 'Youtube':
+                    addYouTube(req, vid, None)
+        except:
+            src = meta.search(r'src="([^"]*)"', data)
+            addVideo(req, src)
+
+def listURL_bigdramas_FindList(req, url):
+    for m in re.finditer(r'<a href="http://bigdramas.net/([^/]*)/" target="_blank">([^<]*)', load(url)):
+        path, title = m.group(1), m.group(2)
+        addPage(req, 'http://bigdramas.net/'+path+'/', title)
+
+def listURL_bigdramas(req, url):
+    if re.search(r'/video/', url):
+        listURL_bigdramas_FindVideo(req, url)
+    elif re.search(r'列表/$', url):
+        listURL_bigdramas_FindList(req, url)
+    else:
+        meta.findVideoLink(req, url, True, True)
+
 def listURL_dodova(req, url):
     if re.search(r'imovie.dodova.com/category/', url):
         for i in range(1, 5):
@@ -280,10 +319,10 @@ def listURL_youtube(req, url):
                 addPlayList(req, playlist, title)
     elif re.search(r'/channels($)', url):
         for m in re.finditer(r'class="yt-uix-sessionlink yt-uix-tile-link ([^>]*)', load(url)):
-                link = re.search(r'href="([^"]*)"', m.group())
-                title = re.search(r'title="([^"]*)"', m.group())
+                link = meta.search(r'href="([^"]*)"', m.group())
+                title = meta.search(r'title="([^"]*)"', m.group())
                 if link and title:
-                    addPage(req, 'https://www.youtube.com'+link.group(1), title.group(1))
+                    addPage(req, 'https://www.youtube.com'+link, title)
     elif re.search(r'playlist\?', url):
         for m in re.finditer(r'pl-video yt-uix-tile ([^>]*)', load(url)):
             vid = re.search(r'data-video-id="([^"]*)"', m.group())
@@ -357,6 +396,9 @@ def listURL(req, url):
 
     elif re.search(r'dramaq', url):
         listURL_dramaq(req, url)
+
+    elif re.search(r'bigdramas', url):
+        listURL_bigdramas(req, url)
 
     elif re.search(r'youtube', url):
         listURL_youtube(req, url)

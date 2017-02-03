@@ -55,7 +55,7 @@ def load(url, local=None, headers=None):
         opener.addheaders += headers
 
     try:
-        f = opener.open(url, None, 3) # timeout=3
+        f = opener.open(url, None, 10) # timeout=10
         if f.info().get('Content-Encoding') == 'gzip':
             buf = StringIO(f.read())
             return gzip.GzipFile(fileobj=buf).read()
@@ -116,6 +116,10 @@ def getImage(link):
 
     return None
 
+def comment(req, msg):
+    req.write('<!-- %s -->' %(msg))
+    return
+
 def findVideoLink(req, url, showPage=False, showImage=False, DataImage=False):
     parsed_uri = urlparse.urlparse(url)
     domain = '{uri.scheme}://{uri.netloc}'.format(uri=parsed_uri)
@@ -164,7 +168,7 @@ def findPage(req, url, showImage=False):
 def findLink(req, url):
     link = ''
     txt = load(url)
-    for m in re.finditer(r'"http(s|)://(www.|)(dailymotion|videomega|videowood|youtube|openload)(.com|.tv|.co)([^"]*)', txt):
+    for m in re.finditer(r'"http(s|)://(www.|)(redirector.googlevideo|dailymotion|videomega|videowood|youtube|openload)(.com|.tv|.co)([^"]*)', txt):
         if m.group()[1:-1] != link:
             link = m.group()[1:-1]
             image = getImage(link)
