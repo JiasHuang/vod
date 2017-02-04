@@ -3,6 +3,7 @@
 import os
 import re
 import subprocess
+
 import page
 import conf
 import urllib
@@ -42,15 +43,14 @@ def getUnparsedURL(req):
         return urllib.unquote(m.group(1))
     return None
 
-def handleCode(code):
-    if code == '0413':
-        return 'jav'
-    elif code == '0000':
-        runCmd('update')
-    elif code == '1111':
-        runCmd('updateDataBase')
-    elif code == '2222':
-        os.system('rm -f '+conf.workdir+'vod_*')
+def handleCmd(cmd):
+    os.system('rm -f '+conf.workdir+'vod_*')
+    if cmd in ['update', 'updatedb']:
+        runCmd(cmd)
+    elif cmd in ['def', 'low']:
+        conf.loadConf(conf.vodpath+'config/vodconf_'+cmd)
+    else:
+        return 'error'
     return 'success'
  
 def index(req):
@@ -68,11 +68,11 @@ def index(req):
     d    = arg.get('d', None)
     f    = arg.get('f', None)
     w    = arg.get('w', None)
-    x    = arg.get('x', None)
+    c    = arg.get('c', None)
 
     if url:
-        if re.search(r'^#[0-9]{4}', url):
-            x = url[1:5]
+        if re.search(r'^#', url):
+            c = url[1:]
         elif re.search(r'^http', url):
             v = url
         elif re.search(r'^/', url) and os.path.isdir(url):
@@ -94,22 +94,22 @@ def index(req):
 
     elif f:
         playURL(f)
-        page.render(req, 'panel', '<br><br><br><h1>playURL %s</h1>' %(f))
+        page.render(req, 'panel', '<h1>playURL %s</h1>' %(f))
 
     elif v:
         v = getUnparsedURL(req) or v
         playURL(v)
-        page.render(req, 'panel', '<br><br><br><h1>playURL <a target=_blank href=%s>%s</a><h1>' %(v, v))
+        page.render(req, 'panel', '<h1>playURL <a target=_blank href=%s>%s</a><h1>' %(v, v))
 
     elif w:
         page.loadword(req, w)
 
     elif act:
         sendACT(act, val)
-        page.render(req, 'panel', '<br><br><br><h1>%s %s</h1>' %(act, val or ''))
+        page.render(req, 'panel', '<h1>%s %s</h1>' %(act, val or ''))
 
-    elif x:
-        page.render(req, handleCode(x), None)
+    elif c:
+        page.render(req, handleCmd(c), None)
 
     else:
         page.render(req, 'panel', None)

@@ -36,7 +36,7 @@ def updateDataBaseEntry(fd, url, title0):
             fd.write('<img src="%s" />\n' %(image))
         fd.write('</a>\n')
 
-def updateDataBase():
+def updatedb():
     local = xdef.workdir+'database_'+str(os.getuid())
     fd = open(local, 'w')
     for m in re.finditer(r'<a href=([^>]*)>(.*?)</a>', loadLocal('bookmark.html')):
@@ -53,8 +53,8 @@ def main():
 
     if cmd == 'update':
         update()
-    elif cmd == 'updateDataBase':
-        updateDataBase()
+    elif cmd == 'updatedb':
+        updatedb()
 
     return
 
