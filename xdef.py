@@ -5,6 +5,7 @@ import re
 import os
 import getpass
 
+player   = 'def'
 workdir  = '/tmp/'
 codedir  = '/opt/vod/'
 dldir    = '/var/tmp/'

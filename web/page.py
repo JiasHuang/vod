@@ -377,6 +377,13 @@ def listURL_nbahd(req, url):
     for m in re.finditer(r'<h2 class="entry-title"><a href="([^"]*)"', load(url)):
         addVideo(req, m.group(1), m.group(1))
 
+def listURL_18av(req, url):
+    if re.search(r'/18av/', url):
+        for m in re.finditer(r'https://www.youjizz.com/videos/embed/([0-9]*)', load(url)):
+            addVideo(req, m.group())
+    else:
+        meta.findImageLink(req, url, True, True)
+
 def listURL(req, url):
 
     html = re.split('<!--result-->', loadFile('list.html'))
@@ -423,6 +430,9 @@ def listURL(req, url):
 
     elif re.search('(porn|jav)',url):
         meta.findImageLink(req, url, True, False)
+
+    elif re.search('18av', url):
+        listURL_18av(req, url)
 
     else:
         listURL_def(req, url)

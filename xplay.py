@@ -18,6 +18,9 @@ def getPlayer():
     if conf:
         return conf
 
+    if xdef.player != 'def':
+        return xdef.player
+
     if re.search(r'raspberrypi', subprocess.check_output('uname -a', shell=True)):
         return 'omxp'
 

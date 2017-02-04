@@ -84,6 +84,12 @@ def processURL2(url):
     if m:
         return processURL1(m.group())
 
+    m = re.search('source src="([^"]*)"', txt)
+    if m:
+        src = xurl.absURL(m.group(1))
+        xplay.playURL(src, url)
+        return 0
+
     print('\n[vod] Not Found')
     return -1
 

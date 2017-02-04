@@ -148,6 +148,7 @@ def findImageLink(req, url, unquote=False, showPage=False):
     for m in re.finditer(r'<a .*?</a>', txt, re.DOTALL):
         link = search(r'href="([^"]*)"', m.group(0))
         image = search(r'src="(.*?\.jpg)"', m.group(0))
+        title = search(r'alt="([^"]*)"', m.group(0))
         if link and image:
             if unquote == True:
                 link = urllib.unquote(link)
@@ -155,9 +156,9 @@ def findImageLink(req, url, unquote=False, showPage=False):
             if urlparse.urlparse(link).path.rstrip('/') == '':
                 continue
             if showPage == False:
-                page.addVideo(req, link, link, image)
+                page.addVideo(req, link, title or link, image)
             else:
-                page.addPage(req, link, link, image)
+                page.addPage(req, link, title or link, image)
 
 def findVideo(req, url):
     return findVideoLink(req, url)
