@@ -10,10 +10,10 @@ import urllib
 
 from mod_python import util
 
-def runCmd(val):
+def runCmd(cmd):
     if not os.path.exists(conf.vod):
         return
-    cmd = 'python %s %s' %(conf.cmd, val or '')
+    cmd = 'python %s %s' %(conf.cmd, cmd or '')
     if os.path.exists('/usr/bin/xterm'):
         subprocess.Popen(['/usr/bin/xterm', '-geometry', '80x24-50+50', '-display', ':0', '-e', cmd])
     else:
@@ -28,10 +28,10 @@ def playURL(url):
     else:
         subprocess.Popen(cmd, shell=True)
 
-def sendACT(act, val):
+def sendACT(act, num):
     if not os.path.exists(conf.act):
         return
-    cmd = 'python -u %s \'%s\' \'%s\' | tee -a %s' %(conf.act, act, val, conf.log)
+    cmd = 'python -u %s \'%s\' \'%s\' | tee -a %s' %(conf.act, act, num, conf.log)
     if os.path.exists('/usr/bin/xterm'):
         subprocess.Popen(['/usr/bin/xterm', '-geometry', '80x24-50+50', '-display', ':0', '-e', cmd]).communicate()
     else:
@@ -58,29 +58,29 @@ def index(req):
     req.content_type = 'text/html; charset=utf-8'
 
     arg  = util.FieldStorage(req)
-    act  = arg.get('act', None)
-    val  = arg.get('val', None)
-    url  = arg.get('url', None)
-    p    = arg.get('p', None)
-    v    = arg.get('v', None)
-    q    = arg.get('q', None)
-    s    = arg.get('s', None)
-    d    = arg.get('d', None)
-    f    = arg.get('f', None)
-    w    = arg.get('w', None)
-    c    = arg.get('c', None)
+    a    = arg.get('a', None) # action
+    n    = arg.get('n', None) # number
+    i    = arg.get('i', None) # input
+    p    = arg.get('p', None) # page
+    v    = arg.get('v', None) # video
+    q    = arg.get('q', None) # query
+    s    = arg.get('s', None) # search
+    d    = arg.get('d', None) # directory
+    f    = arg.get('f', None) # file
+    w    = arg.get('w', None) # word
+    c    = arg.get('c', None) # command
 
-    if url:
-        if re.search(r'^#', url):
-            c = url[1:]
-        elif re.search(r'^http', url):
-            v = url
-        elif re.search(r'^/', url) and os.path.isdir(url):
-            d = url
-        elif re.search(r'^/', url) and os.path.exists(url):
-            f = url
+    if i:
+        if re.search(r'^#', i):
+            c = i[1:]
+        elif re.search(r'^http', i):
+            v = i
+        elif re.search(r'^/', i) and os.path.isdir(i):
+            d = i
+        elif re.search(r'^/', i) and os.path.exists(i):
+            f = i
         else:
-            q = url
+            q = i
 
     if p:
         p = getUnparsedURL(req) or p
@@ -104,9 +104,9 @@ def index(req):
     elif w:
         page.loadword(req, w)
 
-    elif act:
-        sendACT(act, val)
-        page.render(req, 'panel', '<h1>%s %s</h1>' %(act, val or ''))
+    elif a:
+        sendACT(a, n)
+        page.render(req, 'panel', '<h1>%s %s</h1>' %(a, n or ''))
 
     elif c:
         page.render(req, handleCmd(c), None)

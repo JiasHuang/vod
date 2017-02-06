@@ -278,7 +278,7 @@ def listURL_bigdramas(req, url):
     elif re.search(r'列表/$', url):
         listURL_bigdramas_FindList(req, url)
     else:
-        meta.findVideoLink(req, url, True, True)
+        meta.findVideoLink(req, url, True, True, 'src', None)
 
 def listURL_dodova(req, url):
     if re.search(r'imovie.dodova.com/category/', url):

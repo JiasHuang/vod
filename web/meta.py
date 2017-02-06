@@ -43,11 +43,12 @@ def checkExpire(local):
 def dict2str(adict):
     return ''.join('{}{}'.format(key, val) for key, val in adict.items())
 
-def load(url, local=None, headers=None):
-    if not local:
-        local = conf.workdir+'vod_load_'+hashlib.md5(url).hexdigest()
-    if os.path.exists(local) and not checkExpire(local):
+def load(url, local=None, headers=None, cache=True):
+
+    local = local or conf.workdir+'vod_load_'+hashlib.md5(url).hexdigest()
+    if cache and os.path.exists(local) and not checkExpire(local):
         return readLocal(local)
+
     opener = urllib2.build_opener()
     opener.addheaders = [('User-agent', 'Mozilla/5.0 (X11; Linux i686; rv:10.0) Gecko/20100101 Firefox/33.0')]
 
@@ -58,18 +59,20 @@ def load(url, local=None, headers=None):
         f = opener.open(url, None, 10) # timeout=10
         if f.info().get('Content-Encoding') == 'gzip':
             buf = StringIO(f.read())
-            return gzip.GzipFile(fileobj=buf).read()
-        txt = f.read()
+            txt = gzip.GzipFile(fileobj=buf).read()
+        else:
+            txt = f.read()
         saveLocal(txt, local)
         return txt
     except:
         return ''
 
-def post(url, payload, local=None):
-    if not local:
-        local = conf.workdir+'vod_post_'+hashlib.md5(dict2str(payload)).hexdigest()
-    if os.path.exists(local):
+def post(url, payload, local=None, cache=True):
+
+    local = local or conf.workdir+'vod_post_'+hashlib.md5(dict2str(payload)).hexdigest()
+    if cache and os.path.exists(local) and not checkExpire(local):
         return readLocal(local)
+
     opener = urllib2.build_opener()
     opener.addheaders = [('User-agent', 'Mozilla/5.0 (X11; Linux i686; rv:10.0) Gecko/20100101 Firefox/33.0')]
     data = urllib.urlencode(payload)
@@ -117,20 +120,21 @@ def getImage(link):
     return None
 
 def comment(req, msg):
-    req.write('<!-- %s -->' %(msg))
+    req.write('\n<!--\n')
+    req.write(msg)
+    req.write('\n-->\n')
     return
 
-def findVideoLink(req, url, showPage=False, showImage=False, DataImage=False):
+def findVideoLink(req, url, showPage=False, showImage=False, ImageSrc='src', ImageExt='jpg'):
     parsed_uri = urlparse.urlparse(url)
     domain = '{uri.scheme}://{uri.netloc}'.format(uri=parsed_uri)
     txt = load(url)
     for m in re.finditer(r'<a .*?</a>', txt, re.DOTALL):
         link = search(r'href="([^"]*)"', m.group(0))
         title = search(r'title="([^"]*)"', m.group(0))
-        if DataImage:
-            image = search(re.escape(DataImage)+r'="(.*?\.jpg)"', m.group(0))
-        else:
-            image = search(r'src="(.*?\.jpg)"', m.group(0))
+        image = search(re.escape(ImageSrc)+r'="([^"]*)"', m.group(0))
+        if image and ImageExt and not image.endswith(ImageExt):
+            continue
         if link and title and image:
             link = absURL(domain, link)
             image = absURL(domain, image)

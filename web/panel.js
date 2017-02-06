@@ -1,50 +1,50 @@
 
 var act = ''
-var val = ''
+var num = ''
 
 function addCode(key) {
-	val = val + key;
+	num = num + key;
 }
 
 function resetCode() {
-	val = '';
+	num = '';
 }
 
 function setAct(key) {
 
     act = key;
 
-    if (key == "pause" && val != "") {
+    if (key == "pause" && num != "") {
         act = "percent"
     }
-    else if (key == "forward" && val == "") {
-        val = "150";
+    else if (key == "forward" && num == "") {
+        num = "150";
     }
-    else if (key == "backward" && val == "") {
-        val = "150";
+    else if (key == "backward" && num == "") {
+        num = "150";
     }
-    else if (key == "forward" && val == "#") {
+    else if (key == "forward" && num == "#") {
         act = "playlist-next";
-        val = "";
+        num = "";
     }
-    else if (key == "backward" && val == "#") {
+    else if (key == "backward" && num == "#") {
         act = "playlist-prev";
-        val = "";
+        num = "";
     }
-    else if (key == "forward" && val == "*") {
+    else if (key == "forward" && num == "*") {
         act = "sub-next";
-        val = "";
+        num = "";
     }
-    else if (key == "backward" && val == "*") {
+    else if (key == "backward" && num == "*") {
         act = "sub-prev";
-        val = "";
+        num = "";
     }
-    else if (key == "stop" && val == "*") {
+    else if (key == "stop" && num == "*") {
         act = "sub-remove";
-        val = "";
+        num = "";
     }
 
-    document.forms[0].act.value = act;
-    document.forms[0].val.value = val;
+    document.forms[0].a.value = act;
+    document.forms[0].n.value = num;
 }
 

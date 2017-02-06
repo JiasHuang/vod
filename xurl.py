@@ -107,17 +107,17 @@ def urlretrieve(url, local):
 
 def load(url, local=None):
     url = absURL(url)
-    if not local:
-        local = xdef.workdir+'vod_load_'+hashlib.md5(url).hexdigest()
+    local = local or xdef.workdir+'vod_load_'+hashlib.md5(url).hexdigest()
     get(url, local)
     return readLocal(local)
 
 def post(url, payload, local=None):
-    if not local:
-        local = xdef.workdir+'vod_post_'+hashlib.md5(dict2str(payload)).hexdigest()
+
+    local = local or xdef.workdir+'vod_post_'+hashlib.md5(dict2str(payload)).hexdigest()
     if os.path.exists(local):
         verbose_status('already exist')
         return readLocal(local)
+
     opener = urllib2.build_opener()
     opener.addheaders = [('User-agent', 'Mozilla/5.0 (X11; Linux i686; rv:10.0) Gecko/20100101 Firefox/33.0')]
     data = urllib.urlencode(payload)
@@ -131,8 +131,7 @@ def post(url, payload, local=None):
 
 def load2(url, local=None, options=None):
     url = absURL(url)
-    if not local:
-        local = xdef.workdir+'vod_load_'+hashlib.md5(url).hexdigest()
+    local = local or xdef.workdir+'vod_load_'+hashlib.md5(url).hexdigest()
     wget(url, local, options)
     return readLocal(local)
 

@@ -7,11 +7,6 @@ import random
 
 from optparse import OptionParser
 
-try:
-    from mod_python import util
-except:
-    print('no mod_python')
-
 import page
 import meta
 
@@ -66,13 +61,6 @@ def outDB(out, key=None):
             print(link)
             page.listURL(out, link)
 
-    return
-
-def index(req):
-    req.content_type = 'text/html; charset=utf-8'
-    arg  = util.FieldStorage(req)
-    k    = arg.get('k', None)
-    outDB(req, k)
     return
 
 def main():
