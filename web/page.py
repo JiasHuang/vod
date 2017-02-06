@@ -6,6 +6,7 @@ import os
 import urllib
 import json
 import base64
+import urlparse
 
 import mangareader
 import esl
@@ -280,6 +281,33 @@ def listURL_bigdramas(req, url):
     else:
         meta.findVideoLink(req, url, True, True, 'src', None)
 
+def listURL_lovetv(req, url):
+    parsed_uri = urlparse.urlparse(url)
+    domain = '{uri.scheme}://{uri.netloc}'.format(uri=parsed_uri)
+    if re.search(r'special-drama-list.html$', url):
+        for m in re.finditer(r'<a href="([^"]*)">([^<]*)</a>', load(url)):
+            meta.comment(req, m.group())
+            if re.search(r'special-drama-([0-9-]+).html$', m.group(1)):
+                addPage(req, meta.absURL(domain, m.group(1)), m.group(2))
+    elif re.search(r'drama-list.html$', url):
+        for m in re.finditer(r'<a href="([^"]*)">([^<]*)</a>', load(url)):
+            meta.comment(req, m.group())
+            if re.search(r'-list.html$', m.group(1)):
+                addPage(req, meta.absURL(domain, m.group(1)), m.group(2))
+    elif re.search(r'-list.html$', url):
+        for m in re.finditer(r'<a href="([^"]*)">([^<]*)</a>', load(url)):
+            meta.comment(req, m.group())
+            if re.search(r'-ep([0-9]+).html$', m.group(1)):
+                addPage(req, meta.absURL(domain, m.group(1)), m.group(2))
+    elif re.search(r'-ep([0-9]+).html$', url):
+        for m in re.finditer(r'<div id="video_ids(|_s[0-9])" style="display:none;">([^<]*)</div>', load(url)):
+            meta.comment(req, m.group())
+            for vid in m.group(2).split(','):
+                if len(vid) == 11:
+                    addVideo(req, 'https://openload.co/embed/'+vid)
+                elif len(vid) == 19:
+                    addVideo(req, 'http://www.dailymotion.com/embed/video/'+vid)
+
 def listURL_dodova(req, url):
     if re.search(r'imovie.dodova.com/category/', url):
         for i in range(1, 5):
@@ -406,6 +434,9 @@ def listURL(req, url):
 
     elif re.search(r'bigdramas', url):
         listURL_bigdramas(req, url)
+
+    elif re.search(r'lovetv', url):
+        listURL_lovetv(req, url);
 
     elif re.search(r'youtube', url):
         listURL_youtube(req, url)
