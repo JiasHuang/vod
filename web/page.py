@@ -8,15 +8,7 @@ import json
 import base64
 import urlparse
 
-import mangareader
-import esl
 import meta
-
-class Entry:
-    def __init__(self, link=None, title=None, image=None):
-        self.link = link
-        self.title = title
-        self.image = image
 
 def loadFile(filename):
     path = os.path.dirname(os.path.abspath(__file__))+'/'+filename
@@ -69,11 +61,6 @@ def addVideo(req, link, title=None, image=None):
         link = re.sub('//', 'http://', link)
     addEntry(req, 'view.py?v='+link, title or link, image or meta.getImage(link) or 'Movies-icon.png')
 
-def addAudio(req, url):
-    req.write('<hr>\n')
-    req.write('<audio controls preload=none style="width:800px;"><source src="%s" type="audio/mpeg"></audio>\n' %(url))
-    req.write('<hr>\n')
-
 def addYouTube(req, vid, title=None):
     link = 'https://www.youtube.com/watch?v='+vid
     addVideo(req, link, title)
@@ -113,10 +100,6 @@ def search_dm(req, q):
             vid = d['id'].encode('utf8')
             title = d['title'].encode('utf8')
             addDailyMotion(req, vid, title)
-
-def search_bi(req, q):
-    url = 'http://search.bilibili.com/video?keyword=%s&order=click' %(urllib.quote(q))
-    meta.findPage(req, url, True)
 
 def search_db(req, q):
     for m in re.finditer(r'<a href="([^"]*)">(.*?)</a>', loadLocal('database'), re.DOTALL|re.MULTILINE):
@@ -160,8 +143,6 @@ def search(req, q, s):
         search_pl(req, q1)
     elif s == 'dm':
         search_dm(req, q1)
-    elif s == 'bi':
-        search_bi(req, q1)
 
     req.write(html[1])
 
@@ -198,22 +179,6 @@ def listURL_xuiteDIR(req, url):
         l = 'http://vlog.xuite.net/%s?t=cat&p=%s&dir_num=0' %(user, p)
         addPage(req, l, t)
     return
-
-def listURL_bilibili(req, url):
-    if re.search(r'page=', url):
-        meta.findPage(req, url)
-        return
-    txt = load(url)
-    match = re.search(r'<select id=\'dedepagetitles\' .*?</select>', txt, re.DOTALL)
-    if match:
-        for m in re.finditer(r'<option value=\'([^\']*)\'>([^<]*)</option>', match.group(0)):
-            addVideo(req, 'http://www.bilibili.com'+m.group(1), m.group(2))
-    else:
-        image = re.search(r'<img src="([^"]*)"', txt)
-        if image:
-            addVideo(req, url, url, image.group(1))
-        else:
-            addVideo(req, url, url)
 
 def listURL_litv(req, url):
     m = re.search(r'(\?|&)id=([a-zA-Z0-9]*)', url)
@@ -321,64 +286,12 @@ def listURL_youtube(req, url):
             vid = m.group(1)
             addYouTube(req, m.group(1), m.group(2))
 
-def listURL_eslpod(req, url):
-    txt = load(url)
-    if re.search(r'/podcast/', url):
-        req.write('<h1><a href=%s>%s</a></h1>' %(url, url))
-        m = re.search(r'podcast-([0-9]*)', url)
-        if m:
-            audio = 'https://traffic.libsyn.com/preview/secure/eslpod/DE%s.mp3' %(m.group(1))
-            addAudio(req, audio)
-        m = re.search(r'<div id="home" class="tab-pane fade in active">(.*?)</div>', txt, re.DOTALL|re.MULTILINE)
-        if m:
-            req.write('<font size=5><p>%s</p></font>' %(m.group(1)))
-            esl.parseWord(req, m.group(1))
-    elif re.search(r'/library/', url):
-        for m in re.finditer(r'<a href="([^"]*)">([^<]*)</a>', txt):
-            link, title = m.group(1), m.group(2)
-            if re.search(r'/podcast/', link):
-                addPage(req, link, title)
-
-def listURL_dailyesl(req, url):
-    txt = load(url)
-    if url == 'http://www.dailyesl.com/':
-        for m in re.finditer(r'<a href="(.*?)">(.*?)</a>', txt):
-            addPage(req, 'http://www.dailyesl.com/'+m.group(1), m.group(2))
-        return
-    req.write('<h1><a href=%s>%s</a></h1>' %(url, url))
-    for m in re.finditer(r'file: "([^"]*)"', txt):
-        audio = 'http://www.dailyesl.com/'+m.group(1)
-        addAudio(req, audio)
-    for m in re.finditer(r'(</script>\n|</script>)</td></tr></table>(.*?)<p>', txt, re.DOTALL|re.MULTILINE):
-        req.write('<font size=5><p>%s</p></font>' %(m.group(2)))
-        esl.parseWord(req, m.group(2))
-
-def listURL_mangareader(req):
-    txt = load('http://www.mangareader.net/one-piece')
-    for m in re.finditer(r'<a href="/one-piece/([^"]*)">([^"]*)</a>([^<]*)<', txt):
-        link = 'http://www.mangareader.net/one-piece/'+m.group(1)
-        title = m.group(2)+m.group(3)
-        addPage(req, link, title)
-
-def listURL_nbahd(req, url):
-    for m in re.finditer(r'<h2 class="entry-title"><a href="([^"]*)"', load(url)):
-        addVideo(req, m.group(1), m.group(1))
-
 def listURL(req, url):
 
     html = re.split('<!--result-->', loadFile('list.html'))
     req.write(html[0])
 
-    if url == 'mangareader':
-        listURL_mangareader(req)
-
-    elif re.search(r'nba([a-z]*).(com|net)', url):
-        listURL_nbahd(req, url)
-
-    elif re.search(r'bilibili', url):
-        listURL_bilibili(req, url)
-
-    elif re.search(r'litv', url):
+    if re.search(r'litv', url):
         listURL_litv(req, url);
 
     elif re.search(r'lovetv', url):
@@ -386,12 +299,6 @@ def listURL(req, url):
 
     elif re.search(r'youtube', url):
         listURL_youtube(req, url)
-
-    elif re.search(r'eslpod', url):
-        listURL_eslpod(req, url)
-
-    elif re.search(r'dailyesl', url):
-        listURL_dailyesl(req, url)
 
     elif re.search(r'xuite', url):
         listURL_xuite(req, url)

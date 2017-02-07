@@ -67,7 +67,6 @@ def index(req):
     s    = arg.get('s', None) # search
     d    = arg.get('d', None) # directory
     f    = arg.get('f', None) # file
-    w    = arg.get('w', None) # word
     c    = arg.get('c', None) # command
 
     if i:
@@ -100,9 +99,6 @@ def index(req):
         v = getUnparsedURL(req) or v
         playURL(v)
         page.render(req, 'panel', '<h1>playURL <a target=_blank href=%s>%s</a><h1>' %(v, v))
-
-    elif w:
-        page.loadword(req, w)
 
     elif a:
         sendACT(a, n)
