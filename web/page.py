@@ -74,10 +74,9 @@ def addAudio(req, url):
     req.write('<audio controls preload=none style="width:800px;"><source src="%s" type="audio/mpeg"></audio>\n' %(url))
     req.write('<hr>\n')
 
-def addYouTube(req, vid, title):
+def addYouTube(req, vid, title=None):
     link = 'https://www.youtube.com/watch?v='+vid
-    image = 'http://img.youtube.com/vi/'+vid+'/0.jpg'
-    addVideo(req, link, title, image)
+    addVideo(req, link, title)
 
 def addPlayList(req, playlist, title, video=None):
     link = 'https://www.youtube.com/playlist?list='+playlist
@@ -86,10 +85,13 @@ def addPlayList(req, playlist, title, video=None):
         image = 'http://img.youtube.com/vi/'+video+'/0.jpg'
     addPage(req, link, title, image)
 
-def addDailyMotion(req, vid, title):
+def addDailyMotion(req, vid, title=None):
     link = 'http://www.dailymotion.com/video/'+vid
-    image = 'http://www.dailymotion.com/thumbnail/video/'+vid
-    addVideo(req, link, title, image)
+    addVideo(req, link, title)
+
+def addOpenLoad(req, vid, title=None):
+    link = 'https://openload.co/embed/'+vid
+    addVideo(req, link, title)
 
 def search_yt(req, q):
     url = 'https://www.youtube.com/results?sp=CAISAiAB&q='+q
@@ -232,55 +234,6 @@ def listURL_litv(req, url):
     else:
         meta.findVideoLink(req, url, True, True, 'data-img')
 
-def listURL_dramaq(req, url):
-    if re.search(r'php', url):
-        meta.findFrame(req, url)
-    elif re.search(r'(biz|jp/|us/|cn/)$', url):
-        meta.findPage(req, url)
-        for m in re.finditer(r'<a class="mod-articles-category-title " href="([^"]*)">([^"]*)</a>', load(url)):
-            if m.group(1)[-1] == '/':
-                addPage(req, 'http://www.dramaq.biz'+m.group(1), m.group(2))
-    else:
-        for m in re.finditer(r'<li class="item-751"><a href="([^.]*).php"', load(url)):
-            if re.search(r'ep', m.group(1)):
-                link, title = url+m.group(1)+'.php', m.group(1)
-                addPage(req, link, title)
-
-def listURL_bigdramas_FindVideo(req, url):
-    for m in re.finditer(r'data-data="([^"]*)"', load(url)):
-        data = base64.b64decode(m.group(1)[::-1])
-        meta.comment(req, data)
-        try:
-            d = json.loads(data)
-            source, ids = d['source'], d['ids']
-            for vid in ids:
-                if source == 'Bigdramas':
-                    txt = meta.load('http://bigdramas.net/view/?ref='+vid, None, [('Referer', url)])
-                    src = meta.search(r'source src="([^"]*)"', txt)
-                    addVideo(req, src)
-                elif source == 'Dailymotion':
-                    addDailyMotion(req, vid, None)
-                elif source == 'OpenLoad':
-                    addVideo(req, 'https://openload.co/embed/'+vid)
-                elif source == 'Youtube':
-                    addYouTube(req, vid, None)
-        except:
-            src = meta.search(r'src="([^"]*)"', data)
-            addVideo(req, src)
-
-def listURL_bigdramas_FindList(req, url):
-    for m in re.finditer(r'<a href="http://bigdramas.net/([^/]*)/" target="_blank">([^<]*)', load(url)):
-        path, title = m.group(1), m.group(2)
-        addPage(req, 'http://bigdramas.net/'+path+'/', title)
-
-def listURL_bigdramas(req, url):
-    if re.search(r'/video/', url):
-        listURL_bigdramas_FindVideo(req, url)
-    elif re.search(r'列表/$', url):
-        listURL_bigdramas_FindList(req, url)
-    else:
-        meta.findVideoLink(req, url, True, True, 'src', None)
-
 def listURL_lovetv(req, url):
     parsed_uri = urlparse.urlparse(url)
     domain = '{uri.scheme}://{uri.netloc}'.format(uri=parsed_uri)
@@ -300,13 +253,19 @@ def listURL_lovetv(req, url):
             if re.search(r'-ep([0-9]+).html$', m.group(1)):
                 addPage(req, meta.absURL(domain, m.group(1)), m.group(2))
     elif re.search(r'-ep([0-9]+).html$', url):
-        for m in re.finditer(r'<div id="video_ids(|_s[0-9])" style="display:none;">([^<]*)</div>', load(url)):
+        for m in re.finditer(r'<div id="video_div(|_s[0-9])">.*?\n</div>', load(url), re.DOTALL|re.MULTILINE):
             meta.comment(req, m.group())
-            for vid in m.group(2).split(','):
-                if len(vid) == 11:
-                    addVideo(req, 'https://openload.co/embed/'+vid)
-                elif len(vid) == 19:
-                    addVideo(req, 'http://www.dailymotion.com/embed/video/'+vid)
+            video_ids  = meta.search(r'video_ids.*?>([^<]*)</div>', m.group())
+            video_type = meta.search(r'video_type.*?>([^<]*)</div>', m.group())
+            if not video_type or not video_ids:
+                continue
+            for vid in video_ids.split(','):
+                if video_type == '1':
+                    addYouTube(req, vid)
+                elif video_type == '2':
+                    addDailyMotion(req, vid)
+                elif video_type == '3':
+                    addOpenLoad(req, vid)
 
 def listURL_dodova(req, url):
     if re.search(r'imovie.dodova.com/category/', url):
@@ -405,13 +364,6 @@ def listURL_nbahd(req, url):
     for m in re.finditer(r'<h2 class="entry-title"><a href="([^"]*)"', load(url)):
         addVideo(req, m.group(1), m.group(1))
 
-def listURL_18av(req, url):
-    if re.search(r'/18av/', url):
-        for m in re.finditer(r'https://www.youjizz.com/videos/embed/([0-9]*)', load(url)):
-            addVideo(req, m.group())
-    else:
-        meta.findImageLink(req, url, True, True)
-
 def listURL(req, url):
 
     html = re.split('<!--result-->', loadFile('list.html'))
@@ -428,12 +380,6 @@ def listURL(req, url):
 
     elif re.search(r'litv', url):
         listURL_litv(req, url);
-
-    elif re.search(r'dramaq', url):
-        listURL_dramaq(req, url)
-
-    elif re.search(r'bigdramas', url):
-        listURL_bigdramas(req, url)
 
     elif re.search(r'lovetv', url):
         listURL_lovetv(req, url);
@@ -461,9 +407,6 @@ def listURL(req, url):
 
     elif re.search('(porn|jav)',url):
         meta.findImageLink(req, url, True, False)
-
-    elif re.search('18av', url):
-        listURL_18av(req, url)
 
     else:
         listURL_def(req, url)
