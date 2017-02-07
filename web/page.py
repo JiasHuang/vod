@@ -252,7 +252,7 @@ def listURL_lovetv(req, url):
             meta.comment(req, m.group())
             if re.search(r'-ep([0-9]+).html$', m.group(1)):
                 addPage(req, meta.absURL(domain, m.group(1)), m.group(2))
-    elif re.search(r'-ep([0-9]+).html$', url):
+    else:
         for m in re.finditer(r'<div id="video_div(|_s[0-9])">.*?\n</div>', load(url), re.DOTALL|re.MULTILINE):
             meta.comment(req, m.group())
             video_ids  = meta.search(r'video_ids.*?>([^<]*)</div>', m.group())
