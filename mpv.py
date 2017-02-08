@@ -47,7 +47,7 @@ def play(url, ref):
         xargs = xargs + ' --input-file=\'%s\'' %(xdef.fifo)
 
         if os.path.exists(xdef.cookies):
-            xargs = xargs + ' --cookies-file=\'%s\'' %(xdef.cookies)
+            xargs = xargs + ' --cookies --cookies-file=\'%s\'' %(xdef.cookies)
 
         cmd = '%s %s \'%s\'' %(xdef.mpv, xargs, url)
         print('\n[mpv][cmd]\n\n\t'+cmd+'\n')
