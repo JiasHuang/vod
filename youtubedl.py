@@ -7,7 +7,6 @@ import subprocess
 import hashlib
 import json
 import urlparse
-import Cookie
 import time
 
 import timeit
@@ -43,11 +42,11 @@ def saveCookies(url, rawdata):
     parsed_uri = urlparse.urlparse(url)
     domain = '{uri.netloc}'.format(uri=parsed_uri)
     expire = str(int(time.time())+20000)
-    c = Cookie.SimpleCookie()
-    c.load(rawdata)
     fd = open(local, 'w')
-    for k, v in c.items():
-        fd.write('%s\t%s\t%s\t%s\t%s\t%s\t%s\n' %(domain, 'TRUE', '/', 'FALSE', expire, k, v.value))
+    for r in rawdata.split(';'):
+        m = re.search(r'\s*([^=]*)=(.*?)$', r)
+        if m:
+            fd.write('%s\t%s\t%s\t%s\t%s\t%s\t%s\n' %(domain, 'TRUE', '/', 'FALSE', expire, m.group(1), m.group(2)))
     fd.close()
     xurl.saveLocal(rawdata, xdef.cookiex)
 
