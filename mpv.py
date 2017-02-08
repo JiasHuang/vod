@@ -21,15 +21,15 @@ def setAct(act, val):
     else:
         print('unsupported: %s %s' %(act, val))
         return
- 
+
     os.system('echo %s > %s' %(cmd, xdef.fifo))
     return
 
 def play(url, ref):
-    p = None
+
     xargs = ''
 
-    if ref != 'x' and youtubedl.checkURL(url):
+    if youtubedl.checkURL(url):
         url = youtubedl.extractURL(url)
         xargs = '--ytdl=no'
 
@@ -46,7 +46,12 @@ def play(url, ref):
         xargs = xargs + ' --referrer=\'%s\'' %(ref)
         xargs = xargs + ' --input-file=\'%s\'' %(xdef.fifo)
 
-        p = subprocess.Popen('%s %s \'%s\'' %(xdef.mpv, xargs, url), shell=True)
+        if os.path.exists(xdef.cookies):
+            xargs = xargs + ' --cookies-file=\'%s\'' %(xdef.cookies)
+
+        cmd = '%s %s \'%s\'' %(xdef.mpv, xargs, url)
+        print('\n[mpv][cmd]\n\n\t'+cmd+'\n')
+        subprocess.Popen(cmd, shell=True).communicate()
 
     else:
         os.system('echo loadfile \"%s\" > %s' %(url, xdef.fifo))
@@ -56,6 +61,4 @@ def play(url, ref):
     if sub:
         os.system('echo sub-add \"%s\" select > %s' %(sub, xdef.fifo))
 
-    if p:
-        p.communicate()
     return

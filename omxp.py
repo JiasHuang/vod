@@ -5,6 +5,7 @@ import re
 import subprocess
 
 import xdef
+import xurl
 import xproc
 import youtubedl
 
@@ -36,6 +37,9 @@ def setAct(act, val):
     return
 
 def play(url, ref):
+
+    xargs = ''
+
     if youtubedl.checkURL(url):
         url = youtubedl.extractURL(url)
     if not url:
@@ -43,8 +47,14 @@ def play(url, ref):
         return
     if xproc.checkProcessRunning('omxplayer.bin'):
         setAct('stop', None)
-    p = subprocess.Popen('%s \'%s\' 2>&1 | tee %s' %(xdef.omxp, url, xdef.log), shell=True)
-    if p:
-        p.communicate()
+
+    cookies = xurl.readLocal(xdef.cookiex)
+    if cookies != '':
+        xargs += ' --cookies \'%s\'' %(cookies)
+
+    cmd = '%s %s \'%s\' 2>&1 | tee %s' %(xdef.omxp, xargs, url, xdef.log)
+    print('\n[omx][cmd]\n\n\t'+cmd+'\n')
+    subprocess.Popen(cmd, shell=True).communicate()
+
     return
 

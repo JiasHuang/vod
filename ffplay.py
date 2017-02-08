@@ -53,8 +53,10 @@ def play(url, ref):
         return 0
     if xproc.checkProcessRunning('ffplay'):
         setAct('stop', None)
-    p = subprocess.Popen('%s \'%s\' 2>&1 | tee %s' %(xdef.ffplay, url, xdef.log), shell=True)
-    if p:
-        p.communicate()
+
+    cmd = '%s \'%s\'' %(xdef.ffplay, url)
+    print('\n[ffplay][cmd]\n\n\t'+cmd+'\n')
+    subprocess.Popen(cmd, shell=True).communicate()
+
     return
 

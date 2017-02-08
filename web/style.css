@@ -28,21 +28,15 @@
     right: 16px;
 }
 
-.topright2 {
+.botright {
     position: fixed;
-    top: 200px;
+    bottom: 16px;
     right: 16px;
 }
 
-.topright3 {
+.botright2 {
     position: fixed;
-    top: 300px;
-    right: 16px;
-}
-
-.topright4 {
-    position: fixed;
-    top: 400px;
+    bottom: 200px;
     right: 16px;
 }
 

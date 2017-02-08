@@ -5,7 +5,6 @@ import os
 import re
 import urllib
 import urllib2
-import json
 import urlparse
 import hashlib
 import time
@@ -83,6 +82,12 @@ def post(url, payload, local=None, cache=True):
         return txt
     except:
         return ''
+
+def getContentType(url):
+    res = urllib.urlopen(url)
+    info = res.info()
+    res.close()
+    return info.type
 
 def absURL(domain, url):
     if re.search(r'^//', url):

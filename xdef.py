@@ -10,6 +10,7 @@ workdir  = '/tmp/'
 codedir  = '/opt/vod/'
 dldir    = '/var/tmp/'
 cookies  = workdir+'vod_%s.cookies' %(getpass.getuser())
+cookiex  = workdir+'vod_%s.cookiex' %(getpass.getuser())
 json     = workdir+'vod_%s.json' %(getpass.getuser())
 ytdl     = 'youtube-dl'
 fifo     = '/opt/vod/vod.fifo'

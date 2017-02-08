@@ -5,20 +5,25 @@ import os
 import re
 import subprocess
 import hashlib
+import json
+import urlparse
+import Cookie
+import time
+
 import timeit
 import xdef
 import xurl
 
 def checkURL(url):
     site = xurl.findSite(url)
-    return re.compile('(youtube|dailymotion|facebook|bilibili|vimeo|youku|openload|litv)').search(site)
+    return re.compile('(youtube|dailymotion|facebook|bilibili|vimeo|youku|openload|litv|drive)').search(site)
 
 def redirectURL(url):
     if re.search(r'youku', url):
         url = re.sub('player.youku.com/embed/', 'v.youku.com/v_show/id_', url)
     return url
 
-def parseParameters(url): 
+def parseParameters(url):
     match = re.search(r'(.*?)&ytdl_password=(.*?)$', url)
     if match:
         url = match.group(1)
@@ -33,6 +38,59 @@ def getFmt(url):
                 return fmt
     return 'mp4'
 
+def saveCookies(url, rawdata):
+    local = xdef.cookies
+    parsed_uri = urlparse.urlparse(url)
+    domain = '{uri.netloc}'.format(uri=parsed_uri)
+    expire = str(int(time.time())+20000)
+    c = Cookie.SimpleCookie()
+    c.load(rawdata)
+    fd = open(local, 'w')
+    for k, v in c.items():
+        fd.write('%s\t%s\t%s\t%s\t%s\t%s\t%s\n' %(domain, 'TRUE', '/', 'FALSE', expire, k, v.value))
+    fd.close()
+    xurl.saveLocal(rawdata, xdef.cookiex)
+
+def genM3U(url, result):
+    local = xdef.workdir+'vod_list_'+hashlib.md5(url).hexdigest()+'.m3u'
+    fd = open(local, 'w')
+    fd.write('#EXTM3U\n')
+    fd.write('#EXT-X-TARGETDURATION:0\n')
+    for r in result:
+        fd.write('#EXTINF:0,0\n')
+        fd.write(r+'\n')
+    local.close()
+    return local
+
+def parseJson(path):
+
+    data = json.loads(xurl.readLocal(path))
+
+    print('\n[ytdl][parseJson]\n')
+    print('\tpath: '+path)
+
+    try:
+        result = data['url']
+    except:
+        print('\tret: no url')
+        return None
+
+    try:
+        cookies = data['http_headers']['Cookie'].encode('utf8')
+        print('\tcookies: '+cookies+'\n')
+    except:
+        cookies = None
+        print('\tret: no cookies')
+
+    if isinstance(result, basestring):
+        saveCookies(result, cookies)
+        print('\tsrc: '+result+'\n')
+        return result
+
+    m3u = genM3U(url, result)
+    print('\tsrc: '+m3u+'\n\n')
+    return m3u
+
 def extractURL(url):
 
     print('\n[ytdl][extractURL]\n')
@@ -40,25 +98,19 @@ def extractURL(url):
 
     url = redirectURL(url)
     arg = parseParameters(url)
-    m3u = xdef.workdir+'vod_list_'+hashlib.md5(url).hexdigest()+'.m3u'
-    txt = xdef.workdir+'vod_list_'+hashlib.md5(url).hexdigest()+'.txt'
+    ret = xdef.workdir+'vod_list_'+hashlib.md5(url).hexdigest()+'.json'
 
     if arg:
         print('\targ: '+arg)
 
-    if os.path.exists(txt) and not xurl.checkExpire(txt):
-        src = xurl.readLocal(txt).rstrip('\n')
-        print('\n[ytdl][extractURL][src]\n\n\t'+src)
-        return src
-
-    if os.path.exists(m3u) and not xurl.checkExpire(m3u):
-        print('\n[ytdl][extractURL][src]\n\n\t'+m3u)
-        return m3u
+    if os.path.exists(ret) and not xurl.checkExpire(ret):
+        print('\tret: '+ret)
+        return parseJson(ret)
 
     fmt = getFmt(url)
     print('\tfmt: '+fmt)
 
-    cmd = '%s -f \"%s\" -g --no-playlist --cookies %s %s \'%s\'' %(xdef.ytdl, fmt, xdef.cookies, arg or '', url)
+    cmd = '%s -f \"%s\" -j --no-playlist %s \'%s\'' %(xdef.ytdl, fmt, arg or '', url)
 
     try:
         start_time = timeit.default_timer()
@@ -69,30 +121,9 @@ def extractURL(url):
         print('\tret: exception')
         return None
 
-    result = []
-    match = re.finditer(r'^http.*', output, re.MULTILINE)
-    for m in match:
-        result.append(m.group(0))
-
-    if len(result) == 0:
-        print('\tret: none')
-        return None
-
-    if len(result) == 1:
-        xurl.saveLocal(result[0], txt)
-        print('\n[ytdl][extractURL][src]\n\n\t'+result[0])
-        return result[0]
-
-    fd = open(m3u, 'w')
-    fd.write('#EXTM3U\n')
-    fd.write('#EXT-X-TARGETDURATION:0\n')
-    for vid in result:
-        fd.write('#EXTINF:0,0\n')
-        fd.write(vid+'\n')
-    fd.close()
-
-    print('\n[ytdl][extractURL][src]\n\n\t'+m3u)
-    return m3u
+    xurl.saveLocal(output, ret)
+    print('\tret: '+ret)
+    return parseJson(ret)
 
 def extractURL2(url):
     lists = []

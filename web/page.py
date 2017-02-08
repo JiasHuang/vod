@@ -80,6 +80,10 @@ def addOpenLoad(req, vid, title=None):
     link = 'https://openload.co/embed/'+vid
     addVideo(req, link, title)
 
+def addGoogleDrive(req, vid, title=None):
+    link = 'https://drive.google.com/file/d/'+vid
+    addVideo(req, link, title)
+
 def search_yt(req, q):
     url = 'https://www.youtube.com/results?sp=CAISAiAB&q='+q
     for m in re.finditer(r'<a href="/watch\?v=(.{11})".*?>([^<]*)</a>', load(url)):
@@ -231,6 +235,8 @@ def listURL_lovetv(req, url):
                     addDailyMotion(req, vid)
                 elif video_type == '3':
                     addOpenLoad(req, vid)
+                elif video_type == '21':
+                    addGoogleDrive(req, vid)
 
 def listURL_dodova(req, url):
     if re.search(r'imovie.dodova.com/category/', url):
