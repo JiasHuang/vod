@@ -82,8 +82,10 @@ def parseJson(path):
         cookies = None
         print('\tret: no cookies')
 
-    if isinstance(result, basestring):
+    if cookies:
         saveCookies(result, cookies)
+
+    if isinstance(result, basestring):
         print('\tsrc: '+result+'\n')
         return result
 

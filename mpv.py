@@ -35,7 +35,7 @@ def play(url, ref):
 
     if not url:
         print('\n[mpv][play] invalid url\n')
-        return 0
+        return
 
     if not xproc.checkProcessRunning('mpv'):
 
@@ -45,9 +45,7 @@ def play(url, ref):
         xargs = xargs + ' --user-agent=\'%s\'' %(xdef.ua)
         xargs = xargs + ' --referrer=\'%s\'' %(ref)
         xargs = xargs + ' --input-file=\'%s\'' %(xdef.fifo)
-
-        if os.path.exists(xdef.cookies):
-            xargs = xargs + ' --cookies --cookies-file=\'%s\'' %(xdef.cookies)
+        xargs = xargs + ' --cookies --cookies-file=\'%s\'' %(xdef.cookies)
 
         cmd = '%s %s \'%s\'' %(xdef.mpv, xargs, url)
         print('\n[mpv][cmd]\n\n\t'+cmd+'\n')

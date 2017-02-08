@@ -46,11 +46,14 @@ def setAct(act, val):
     return
 
 def play(url, ref):
+
     if youtubedl.checkURL(url):
         url = youtubedl.extractURL(url)
+
     if not url:
         print('\n[ffplay][play] invalid url')
-        return 0
+        return
+
     if xproc.checkProcessRunning('ffplay'):
         setAct('stop', None)
 

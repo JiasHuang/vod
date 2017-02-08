@@ -42,9 +42,11 @@ def play(url, ref):
 
     if youtubedl.checkURL(url):
         url = youtubedl.extractURL(url)
+
     if not url:
         print('\n[omxp][play] invalid url\n')
         return
+
     if xproc.checkProcessRunning('omxplayer.bin'):
         setAct('stop', None)
 
