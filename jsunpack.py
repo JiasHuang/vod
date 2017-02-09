@@ -43,13 +43,13 @@ def showAll(code, output):
     print('\n----------------------------------------------------------------------------------------------------------------------------\n\n')
 
 def unpack(txt):
-    m = re.search('(eval\(function\(p,a,c,k,e,d\)\{.+\))', txt)
+    m = re.search('(eval\s*\(function\(p,a,c,k,e,d\)\{.+\))', txt)
     if m:
         code = m.group()
         func, args = parseCode(code)
         local = xdef.workdir+'vod_code_'+str(os.getuid())
         txt = 'function unpack(p,a,c,k,e,d)%s\nconsole.log(unpack%s);\n' %(func, args)
-        xurl.saveLocal(txt, local)
+        xurl.saveLocal(local, txt)
         output = subprocess.check_output('nodejs '+local, shell=True).rstrip('\n')
         output = output.replace("\/", "/")
         showAll(code, output)

@@ -1,16 +1,23 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import re
 import sys
 
 import xdef
-import xsrc
 import vod
 
 def main():
+
     if len(sys.argv) < 2:
         return
-    url = xsrc.search(r'view.py\?v=(.*)', sys.argv[1]) or sys.argv[1]
+
+    m = re.search(r'view.py\?v=(.*)', sys.argv[1])
+    if m:
+        url = m.group(1)
+    else:
+        url = sys.argv[1]
+
     xdef.player = 'dbg'
     vod.playURL(url, None)
     return

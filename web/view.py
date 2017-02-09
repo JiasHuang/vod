@@ -3,10 +3,10 @@
 import os
 import re
 import subprocess
+import urllib
 
 import page
 import conf
-import urllib
 
 from mod_python import util
 
@@ -83,7 +83,7 @@ def index(req):
 
     if p:
         p = getUnparsedURL(req) or p
-        page.listURL(req, p)
+        page.page(req, p)
 
     elif q:
         page.search(req, q, s)

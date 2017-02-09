@@ -45,19 +45,24 @@ def setAct(act, val):
         print('\n[ffplay][setAct] unsupported: %s %s' %(act, val))
     return
 
-def play(url, ref):
+def play(url, ref, cookies=None):
+
+    xargs = ''
 
     if youtubedl.checkURL(url):
-        url = youtubedl.extractURL(url)
+        url, cookies = youtubedl.extractURL(url)
 
     if not url:
         print('\n[ffplay][play] invalid url')
         return
 
+    if cookies:
+        xargs += ' -cookies \'%s\'' %(cookies)
+
     if xproc.checkProcessRunning('ffplay'):
         setAct('stop', None)
 
-    cmd = '%s \'%s\'' %(xdef.ffplay, url)
+    cmd = '%s %s \'%s\'' %(xdef.ffplay, xargs, url)
     print('\n[ffplay][cmd]\n\n\t'+cmd+'\n')
     subprocess.Popen(cmd, shell=True).communicate()
 

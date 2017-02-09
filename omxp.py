@@ -36,12 +36,12 @@ def setAct(act, val):
     print('\n[omxp][result]\n\n\t%s' %(result))
     return
 
-def play(url, ref):
+def play(url, ref, cookies=None):
 
     xargs = ''
 
     if youtubedl.checkURL(url):
-        url = youtubedl.extractURL(url)
+        url, cookies = youtubedl.extractURL(url)
 
     if not url:
         print('\n[omxp][play] invalid url\n')
@@ -50,8 +50,7 @@ def play(url, ref):
     if xproc.checkProcessRunning('omxplayer.bin'):
         setAct('stop', None)
 
-    cookies = xurl.readLocal(xdef.cookiex)
-    if cookies != '':
+    if cookies:
         xargs += ' --cookies \'%s\'' %(cookies)
 
     cmd = '%s %s \'%s\' 2>&1 | tee %s' %(xdef.omxp, xargs, url, xdef.log)

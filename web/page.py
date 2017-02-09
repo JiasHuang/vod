@@ -3,9 +3,7 @@
 
 import re
 import os
-import urllib
 import json
-import base64
 import urlparse
 
 import meta
@@ -97,14 +95,6 @@ def search_pl(req, q):
             video, playlist, title = m.group(1), m.group(2), m.group(3)
             addPlayList(req, playlist, title, video)
 
-def search_dm(req, q):
-    data = json.loads(load('https://api.dailymotion.com/videos?search=%s&page=1' %(q)))
-    if 'list' in data:
-        for d in data['list']:
-            vid = d['id'].encode('utf8')
-            title = d['title'].encode('utf8')
-            addDailyMotion(req, vid, title)
-
 def search_db(req, q):
     for m in re.finditer(r'<a href="([^"]*)">(.*?)</a>', loadLocal('database'), re.DOTALL|re.MULTILINE):
         link = m.group(1)
@@ -145,21 +135,19 @@ def search(req, q, s):
         search_yt(req, q1)
     elif s == 'pl':
         search_pl(req, q1)
-    elif s == 'dm':
-        search_dm(req, q1)
 
     req.write(html[1])
 
-def listURL_def(req, url):
+def page_def(req, url):
     meta.findLink(req, url)
 
-def listURL_xuite(req, url):
+def page_xuite(req, url):
     if re.search(r'xuite.net/([a-zA-Z0-9]*)($)', url):
-        listURL_xuiteDIR(req, url)
+        page_xuiteDIR(req, url)
     else:
         meta.findVideo(req, url)
 
-def listURL_xuiteDIR(req, url):
+def page_xuiteDIR(req, url):
 
     m = re.search(r'xuite.net/([a-z0-9A-Z]*)($)', url)
     if not m:
@@ -184,7 +172,7 @@ def listURL_xuiteDIR(req, url):
         addPage(req, l, t)
     return
 
-def listURL_litv(req, url):
+def page_litv(req, url):
     m = re.search(r'(\?|&)id=([a-zA-Z0-9]*)', url)
     if m:
         _contentId = m.group(2)
@@ -203,7 +191,7 @@ def listURL_litv(req, url):
     else:
         meta.findVideoLink(req, url, True, True, 'data-img')
 
-def listURL_lovetv(req, url):
+def page_lovetv(req, url):
     parsed_uri = urlparse.urlparse(url)
     domain = '{uri.scheme}://{uri.netloc}'.format(uri=parsed_uri)
     if re.search(r'special-drama-list.html$', url):
@@ -238,7 +226,7 @@ def listURL_lovetv(req, url):
                 elif video_type == '21':
                     addGoogleDrive(req, vid)
 
-def listURL_dodova(req, url):
+def page_dodova(req, url):
     if re.search(r'imovie.dodova.com/category/', url):
         for i in range(1, 5):
             for m in re.finditer(r'<div class="mh-excerpt">([^<]*)<a href="([^"]*)" title="([^"]*)">', load(url+'/page/'+str(i))):
@@ -251,7 +239,7 @@ def listURL_dodova(req, url):
     elif re.search(r'video.imovie.dodova.com/', url):
         meta.findLink(req, url)
 
-def listURL_imovie(req, url):
+def page_imovie(req, url):
     if url == 'http://i-movie.co/':
         for i in range(1, 5):
             data = json.loads(meta.post('http://i-movie.co/sql.php?tag=getMovie', {'page':str(i), 'type':'all', 'sort':'time'}))
@@ -268,7 +256,7 @@ def listURL_imovie(req, url):
                 src = meta.search(r'src="([^"]*)"', url) or url
                 addVideo(req, src)
  
-def listURL_youtube(req, url):
+def page_youtube(req, url):
     if re.search(r'/playlists($)', url):
         playlist = None
         for m in re.finditer(r'href="/playlist\?list=([^"]*)"*?>([^<]*)</a>', load(url)):
@@ -292,37 +280,37 @@ def listURL_youtube(req, url):
             vid = m.group(1)
             addYouTube(req, m.group(1), m.group(2))
 
-def listURL(req, url):
+def page(req, url):
 
     html = re.split('<!--result-->', loadFile('list.html'))
     req.write(html[0])
 
     if re.search(r'litv', url):
-        listURL_litv(req, url);
+        page_litv(req, url);
 
     elif re.search(r'lovetv', url):
-        listURL_lovetv(req, url);
+        page_lovetv(req, url);
 
     elif re.search(r'youtube', url):
-        listURL_youtube(req, url)
+        page_youtube(req, url)
 
     elif re.search(r'xuite', url):
-        listURL_xuite(req, url)
+        page_xuite(req, url)
 
     elif re.search(r'mangareader', url):
         mangareader.loadImage(req, url)
 
     elif re.search(r'imovie.dodova', url):
-        listURL_dodova(req, url)
+        page_dodova(req, url)
 
     elif re.search(r'i-movie', url):
-        listURL_imovie(req, url)
+        page_imovie(req, url)
 
     elif re.search('(porn|jav)',url):
         meta.findImageLink(req, url, True, False)
 
     else:
-        listURL_def(req, url)
+        page_def(req, url)
 
     req.write(html[1])
 

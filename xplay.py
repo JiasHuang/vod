@@ -32,32 +32,33 @@ def getPlayer():
 
     return 'err'
 
-def runDBG(url, ref):
+def runDBG(url, ref, cookies=None):
     if youtubedl.checkURL(url):
-        youtubedl.extractURL(url)
+        url, cookies = youtubedl.extractURL(url)
     youtubedl.extractSUB(url)
     return
 
-def playURL(url, ref):
+def playURL(url, ref, cookies=None):
 
     player = getPlayer()
 
-    print('\n[xplay][%s][url]\n\n\t%s' %(player, url))
-    print('\n[xplay][%s][ref]\n\n\t%s' %(player, ref))
+    print('\n[xplay][%s]\n' %(player))
+    print('\turl : %s' %(url or ''))
+    print('\tref : %s' %(ref or ''))
 
     if url == None or url == '':
         return
 
     if player == 'mpv':
-        return mpv.play(url, ref)
+        return mpv.play(url, ref, cookies)
 
     if player == 'omxp':
-        return omxp.play(url, ref)
+        return omxp.play(url, ref, cookies)
 
     if player == 'ffplay':
-        return ffplay.play(url, ref)
+        return ffplay.play(url, ref, cookies)
 
-    return runDBG(url, ref)
+    return runDBG(url, ref, cookies)
 
 def checkActVal(act, val):
 

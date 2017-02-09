@@ -6,6 +6,7 @@ import subprocess
 
 import xdef
 import xproc
+import xurl
 import youtubedl
 
 def setAct(act, val):
@@ -25,17 +26,20 @@ def setAct(act, val):
     os.system('echo %s > %s' %(cmd, xdef.fifo))
     return
 
-def play(url, ref):
+def play(url, ref, cookies=None):
 
     xargs = ''
 
     if youtubedl.checkURL(url):
-        url = youtubedl.extractURL(url)
+        url, cookies = youtubedl.extractURL(url)
         xargs = '--ytdl=no'
 
     if not url:
         print('\n[mpv][play] invalid url\n')
         return
+
+    if cookies:
+        xurl.saveCookies(xdef.cookies, url, cookies)
 
     if not xproc.checkProcessRunning('mpv'):
 

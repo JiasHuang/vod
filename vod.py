@@ -13,7 +13,6 @@ import videowood
 import up2stream
 import xuite
 import jav
-import nbahd
 import goodtv
 import youtubedl
 
@@ -48,11 +47,6 @@ def processURL1(url):
     if re.search('up2stream.com', url):
         src = up2stream.getSource(url)
         xplay.playURL(src, url)
-        return 0
-
-    if re.search('nba([a-z]*).(com|net)', url):
-        src = nbahd.getSource(url)
-        xplay.playURL(src, src)
         return 0
 
     if re.search(r'porn2tube', url):
@@ -125,10 +119,9 @@ def playURL(url, ref):
     if processURL2(url) != -1:
         return
 
-    src = youtubedl.extractURL(url) or ''
-    xplay.playURL(src, url)
+    src, cookies = youtubedl.extractURL(url)
+    xplay.playURL(src, url, cookies)
     return
-
 
 def main():
 

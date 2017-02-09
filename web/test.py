@@ -9,7 +9,7 @@ def main():
     if len(sys.argv) < 2:
         return
     fd = open('output.html', 'w')
-    page.listURL(fd, sys.argv[1])
+    page.page(fd, sys.argv[1])
     fd.close()
     return
 

@@ -27,7 +27,7 @@ def readLocal(local):
         return fd.read()
     return ''
 
-def saveLocal(text, local):
+def saveLocal(local, text):
     fd = open(local, 'w')
     fd.write(text)
     fd.close()
@@ -88,9 +88,9 @@ def get(url, local):
         f = opener.open(url)
         if f.info().get('Content-Encoding') == 'gzip':
             buf = StringIO(f.read())
-            saveLocal(gzip.GzipFile(fileobj=buf).read(), local)
+            saveLocal(local, gzip.GzipFile(fileobj=buf).read())
         else:
-            saveLocal(f.read(), local)
+            saveLocal(local, f.read())
         verbose_status('done')
     except:
         verbose_status('fail')
@@ -124,7 +124,7 @@ def post(url, payload, local=None):
     try:
         f = opener.open(url, data)
         txt = f.read()
-        saveLocal(txt, local)
+        saveLocal(local, txt)
         return txt
     except:
         return ''
@@ -152,3 +152,14 @@ def getContentType(url):
     res.close()
     return info.type
 
+def saveCookies(local, url, rawdata):
+    parsed_uri = urlparse.urlparse(url)
+    domain = '{uri.netloc}'.format(uri=parsed_uri)
+    expire = str(int(time.time())+20000)
+    fd = open(local, 'w')
+    for pair in rawdata.split(';'):
+        m = re.search(r'([^=]*)=(.*)$', pair)
+        if m:
+            fd.write('%s\t%s\t%s\t%s\t%s\t%s\t%s\n' %(domain, 'TRUE', '/', 'FALSE', expire, m.group(1), m.group(2)))
+    fd.close()
+    return
