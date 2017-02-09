@@ -79,18 +79,27 @@ def addGoogleDrive(req, vid, title=None):
     link = 'https://drive.google.com/file/d/'+vid
     addVideo(req, link, title)
 
-def search_yt(req, q):
+def search_youtube(req, q):
     url = 'https://www.youtube.com/results?sp=CAISAiAB&q='+q
     for m in re.finditer(r'<a href="/watch\?v=(.{11})".*?>([^<]*)</a>', load(url)):
         addYouTube(req, m.group(1), m.group(2))
 
-def search_pl(req, q):
+def search_playlist(req, q):
     url = 'https://www.youtube.com/results?sp=EgIQAw%3D%3D&q='+q
     playlist = None
     for m in re.finditer(r'href="/watch\?v=(.{11})&amp;list=([^"]*)".*?>([^<]*)</a>', load(url)):
         if playlist != m.group(2):
             video, playlist, title = m.group(1), m.group(2), m.group(3)
             addPlayList(req, playlist, title, video)
+
+def search_bing(req, q):
+    url = 'https://www.bing.com/search?q=site:drive.google.com+(mp4+OR+mkv+OR+avi+OR+flv)+'+q
+    txt = re.sub('(<strong>|</strong>)', '', load(url))
+    for m in re.finditer(r'<h2><a href="([^"]*)".*?>(.*?)</a></h2>', txt):
+        link, title = m.group(1), m.group(2)
+        vid = meta.search(r'drive.google.com/file/d/(\w*)', link)
+        if vid:
+            addGoogleDrive(req, vid, title)
 
 def search_db(req, q):
     local = os.path.expanduser('~')+'/.voddatabase'
@@ -115,13 +124,14 @@ def search(req, q, s):
     req.write('<a href=view.py>Home</a>&nbsp;&nbsp;&nbsp;\n')
     req.write('<a href=view.py?s=yt&q='+q1+'>YouTube</a>&nbsp;&nbsp;&nbsp;\n')
     req.write('<a href=view.py?s=pl&q='+q1+'>PlayList</a>&nbsp;&nbsp;&nbsp;\n')
+    req.write('<a href=view.py?s=bi&q='+q1+'>Bing</a>&nbsp;&nbsp;&nbsp;\n')
     req.write('</h1>\n')
 
     req.write('<br>\n')
 
     req.write('<form action="view.py" method="get" id="xform">\n')
-    req.write('<input type="text" name="q" value="%s" class="input" id="xinput"\>\n' %(q))
     req.write('<input type="hidden" name="s" value="%s" class="input"\>\n' %(s))
+    req.write('<input type="text" name="q" value="%s" class="input" id="xinput"\>\n' %(q))
     req.write('</form>\n')
 
     req.write('<br>\n')
@@ -129,9 +139,11 @@ def search(req, q, s):
     search_db(req, q1)
 
     if s == 'yt':
-        search_yt(req, q1)
+        search_youtube(req, q1)
     elif s == 'pl':
-        search_pl(req, q1)
+        search_playlist(req, q1)
+    elif s == 'bi':
+        search_bing(req, q1)
 
     req.write(html[1])
 

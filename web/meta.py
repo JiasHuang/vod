@@ -102,10 +102,7 @@ def absURL(domain, url):
     return url
 
 def findPoster(link):
-    poster = re.search(r'poster="([^"]*)"', load(link))
-    if poster:
-        return poster.group(1)
-    return None
+    return search(r'poster="([^"]*)"', load(link))
 
 def getImage(link):
 
@@ -124,6 +121,10 @@ def getImage(link):
     m = re.search(r'(openload.co|videomega.tv|up2stream.com)', link)
     if m:
         return findPoster(link)
+
+    m = re.search(r'https://drive.google.com/file/d/(\w*)', link)
+    if m:
+        return search(r'<meta property="og:image" content="([^"]*)">', load(m.group()))
 
     return None
 
