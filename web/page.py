@@ -94,7 +94,7 @@ def search_pl(req, q):
 
 def search_db(req, q):
     local = os.path.expanduser('~')+'/.voddatabase'
-    for m in re.finditer(r'<a href="([^"]*)">(.*?)</a>', readLocal(local), re.DOTALL|re.MULTILINE):
+    for m in re.finditer(r'<a href="([^"]*)">(.*?)</a>', meta.readLocal(local), re.DOTALL|re.MULTILINE):
         link = m.group(1)
         title = meta.search(r'<h2>(.*?)</h2>', m.group(2))
         image = meta.search(r'src="([^"]*)"', m.group(2)) or 'Movies-icon.png'

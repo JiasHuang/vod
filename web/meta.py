@@ -22,8 +22,11 @@ def search(patten, txt):
     return None
 
 def readLocal(local):
-    with open(local, 'r') as fd:
-        return fd.read()
+    if os.path.exists(local):
+        fd = open(local, 'r')
+        txt = fd.read()
+        fd.close()
+        return txt
     return ''
 
 def saveLocal(text, local):
