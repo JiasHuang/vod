@@ -32,6 +32,8 @@ def updateDataBaseEntry(fd, url, title0):
         link = m.group(1)
         title = search(r'<h2>(.*?)</h2>', m.group(2))
         image = search(r'src="([^"]*)"', m.group(2))
+        if not title:
+            continue
         fd.write('<a href="%s">\n' %(link))
         fd.write('<h2>%s</h2>\n' %(title0+'/'+title))
         if image:
