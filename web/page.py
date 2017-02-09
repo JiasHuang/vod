@@ -39,9 +39,6 @@ def renderDIR(req, d):
 def load(url):
     return meta.load(url)
 
-def loadLocal(url):
-    return meta.load('http://127.0.0.1/vod/'+url)
-
 def addEntry(req, link, title, image=None):
     req.write('\n<a href="%s">\n' %(link))
     req.write('<h2>%s</h2>\n' %(title))
@@ -96,7 +93,8 @@ def search_pl(req, q):
             addPlayList(req, playlist, title, video)
 
 def search_db(req, q):
-    for m in re.finditer(r'<a href="([^"]*)">(.*?)</a>', loadLocal('database'), re.DOTALL|re.MULTILINE):
+    local = os.path.expanduser('~')+'/.voddatabase'
+    for m in re.finditer(r'<a href="([^"]*)">(.*?)</a>', readLocal(local), re.DOTALL|re.MULTILINE):
         link = m.group(1)
         title = meta.search(r'<h2>(.*?)</h2>', m.group(2))
         image = meta.search(r'src="([^"]*)"', m.group(2)) or 'Movies-icon.png'
@@ -117,7 +115,6 @@ def search(req, q, s):
     req.write('<a href=view.py>Home</a>&nbsp;&nbsp;&nbsp;\n')
     req.write('<a href=view.py?s=yt&q='+q1+'>YouTube</a>&nbsp;&nbsp;&nbsp;\n')
     req.write('<a href=view.py?s=pl&q='+q1+'>PlayList</a>&nbsp;&nbsp;&nbsp;\n')
-    req.write('<a href=view.py?s=dm&q='+q1+'>DailyMotion</a>&nbsp;&nbsp;&nbsp;\n')
     req.write('</h1>\n')
 
     req.write('<br>\n')
