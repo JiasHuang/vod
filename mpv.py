@@ -28,6 +28,7 @@ def setAct(act, val):
 
 def play(url, ref, cookies=None):
 
+    p = None
     xargs = ''
 
     if youtubedl.checkURL(url):
@@ -53,7 +54,7 @@ def play(url, ref, cookies=None):
 
         cmd = '%s %s \'%s\'' %(xdef.mpv, xargs, url)
         print('\n[mpv][cmd]\n\n\t'+cmd+'\n')
-        subprocess.Popen(cmd, shell=True).communicate()
+        p = subprocess.Popen(cmd, shell=True)
 
     else:
         os.system('echo loadfile \"%s\" > %s' %(url, xdef.fifo))
@@ -62,5 +63,8 @@ def play(url, ref, cookies=None):
     sub = youtubedl.extractSUB(ref)
     if sub:
         os.system('echo sub-add \"%s\" select > %s' %(sub, xdef.fifo))
+
+    if p:
+        p.communicate()
 
     return

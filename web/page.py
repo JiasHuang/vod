@@ -223,19 +223,6 @@ def page_lovetv(req, url):
                 elif video_type == '21':
                     addGoogleDrive(req, vid)
 
-def page_dodova(req, url):
-    if re.search(r'imovie.dodova.com/category/', url):
-        for i in range(1, 5):
-            for m in re.finditer(r'<div class="mh-excerpt">([^<]*)<a href="([^"]*)" title="([^"]*)">', load(url+'/page/'+str(i))):
-                link, title = m.group(2), m.group(3)
-                addPage(req, link, title, None)
-    elif re.search(r'imovie.dodova.com/', url):
-        meta.findFrame(req, url)
-        for m in re.finditer(r'<a href="([^"]*)" title="openload" target="_blank">', load(url)):
-            meta.findLink(req, m.group(1).replace('&#038;', '&'))
-    elif re.search(r'video.imovie.dodova.com/', url):
-        meta.findLink(req, url)
-
 def page_imovie(req, url):
     if url == 'http://i-movie.co/':
         for i in range(1, 5):
@@ -296,9 +283,6 @@ def page(req, url):
 
     elif re.search(r'mangareader', url):
         mangareader.loadImage(req, url)
-
-    elif re.search(r'imovie.dodova', url):
-        page_dodova(req, url)
 
     elif re.search(r'i-movie', url):
         page_imovie(req, url)
