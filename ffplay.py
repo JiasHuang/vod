@@ -57,7 +57,7 @@ def play(url, ref, cookies=None):
         return
 
     if cookies:
-        xargs += ' -cookies \'%s\'' %(cookies)
+        xargs += ' -headers "Cookie: %s"' %(cookies)
 
     if xproc.checkProcessRunning('ffplay'):
         setAct('stop', None)

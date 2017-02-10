@@ -10,15 +10,12 @@ workdir  = '/tmp/'
 codedir  = '/opt/vod/'
 dldir    = '/var/tmp/'
 cookies  = workdir+'vod_%s.cookies' %(getpass.getuser())
-json     = workdir+'vod_%s.json' %(getpass.getuser())
-ytdl     = 'youtube-dl'
-fifo     = '/opt/vod/vod.fifo'
-fifo_bs  = '/opt/vod/vod.bs.fifo'
-sub      = 'on'
+fifo     = codedir+'vod.fifo'
 log      = workdir+'vod_%s.log' %(getpass.getuser())
-
+ytdl     = 'youtube-dl'
+ytdlfmt  = 'best[ext!=webm]'
 wget     = 'wget -w 10 -T 10 -q -c '
-ua       = 'Mozilla/5.0 (X11; Linux x86_64; rv:10.0) Gecko/20150101 Firefox/20.0 (Chrome)'
+ua       = 'Mozilla/5.0 (X11; Linux x86_64; rv:10.0) Gecko/20150101 Firefox/47.0 (Chrome)'
 mpv      = 'mpv --fs --ontop'
 omxp     = 'omxplayer -b -o both -I'
 ffplay   = 'ffplay -fs -window_title ffplay'

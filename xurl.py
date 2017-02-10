@@ -86,7 +86,7 @@ def get(url, local):
         verbose_status('already exist')
         return
     opener = urllib2.build_opener()
-    opener.addheaders = [('User-agent', 'Mozilla/5.0 (X11; Linux i686; rv:10.0) Gecko/20100101 Firefox/33.0')]
+    opener.addheaders = [('User-agent', xdef.ua)]
     try:
         f = opener.open(url)
         if f.info().get('Content-Encoding') == 'gzip':
@@ -122,7 +122,7 @@ def post(url, payload, local=None):
         return readLocal(local)
 
     opener = urllib2.build_opener()
-    opener.addheaders = [('User-agent', 'Mozilla/5.0 (X11; Linux i686; rv:10.0) Gecko/20100101 Firefox/33.0')]
+    opener.addheaders = [('User-agent', xdef.ua)]
     data = urllib.urlencode(payload)
     try:
         f = opener.open(url, data)

@@ -13,8 +13,4 @@ if [ ! -e /opt/vod/vod.fifo ]; then
     sudo mkfifo /opt/vod/vod.fifo
 fi
 
-if [ ! -e /opt/vod/vod.bs.fifo ]; then
-    sudo mkfifo /opt/vod/vod.bs.fifo
-fi
-
 sudo chmod 666 /opt/vod/*.fifo

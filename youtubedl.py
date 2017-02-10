@@ -34,7 +34,7 @@ def getFmt(url):
         if fmt:
             if s == 'all' or re.search(s, url):
                 return fmt
-    return 'mp4'
+    return xdef.ytdlfmt
 
 def genM3U(url, result):
     local = xdef.workdir+'vod_list_'+hashlib.md5(url).hexdigest()+'.m3u'

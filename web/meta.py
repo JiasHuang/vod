@@ -122,7 +122,7 @@ def getImage(link):
     if m:
         return findPoster(link)
 
-    m = re.search(r'https://drive.google.com/file/d/(\w*)', link)
+    m = re.search(r'http(s|)://drive.google.com/file/d/(\w*)', link)
     if m:
         return search(r'<meta property="og:image" content="([^"]*)">', load(m.group()))
 

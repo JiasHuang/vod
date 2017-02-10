@@ -93,13 +93,25 @@ def search_playlist(req, q):
             addPlayList(req, playlist, title, video)
 
 def search_bing(req, q):
-    url = 'https://www.bing.com/search?q=site:drive.google.com+(mp4+OR+mkv+OR+avi+OR+flv)+'+q
+    url = 'https://www.bing.com/search?count=30&q=site:drive.google.com+(mp4+OR+mkv+OR+avi+OR+flv)+'+q
     txt = re.sub('(<strong>|</strong>)', '', load(url))
     for m in re.finditer(r'<h2><a href="([^"]*)".*?>(.*?)</a></h2>', txt):
         link, title = m.group(1), m.group(2)
         vid = meta.search(r'drive.google.com/file/d/(\w*)', link)
         if vid:
             addGoogleDrive(req, vid, title)
+
+def search_yandex(req, q):
+    url = 'https://yandex.com/video/search?text=site%3Adrive.google.com%20'+q
+    txt = load(url)
+    for m in re.finditer(r'data-video="([^"]*)"', txt):
+        unquote = re.sub('&quot;', '\"', m.group(1))
+        meta.comment(req, unquote)
+        title = meta.search(r'"title":"([^"]*)"', unquote)
+        link  = meta.search(r'"url":"([^"]*)"', unquote)
+        image = meta.search(r'"thumbUrl":"([^"]*)"', unquote)
+        if title and url:
+            addVideo(req, link, title, image)
 
 def search_db(req, q):
     local = os.path.expanduser('~')+'/.voddatabase'
@@ -114,7 +126,7 @@ def search(req, q, s):
     html = re.split('<!--result-->', loadFile('list.html'))
     req.write(html[0])
 
-    s = s or 'yt'
+    s = s or 'youtube'
 
     q1 = re.sub(' ', '+', q)
 
@@ -122,9 +134,8 @@ def search(req, q, s):
 
     req.write('<h1>\n')
     req.write('<a href=view.py>Home</a>&nbsp;&nbsp;&nbsp;\n')
-    req.write('<a href=view.py?s=yt&q='+q1+'>YouTube</a>&nbsp;&nbsp;&nbsp;\n')
-    req.write('<a href=view.py?s=pl&q='+q1+'>PlayList</a>&nbsp;&nbsp;&nbsp;\n')
-    req.write('<a href=view.py?s=bi&q='+q1+'>Bing</a>&nbsp;&nbsp;&nbsp;\n')
+    req.write('<a href=view.py?s=youtube&q='+q1+'>YouTube</a>&nbsp;&nbsp;&nbsp;\n')
+    req.write('<a href=view.py?s=playlist&q='+q1+'>PlayList</a>&nbsp;&nbsp;&nbsp;\n')
     req.write('</h1>\n')
 
     req.write('<br>\n')
@@ -138,12 +149,14 @@ def search(req, q, s):
 
     search_db(req, q1)
 
-    if s == 'yt':
+    if s == 'youtube':
         search_youtube(req, q1)
-    elif s == 'pl':
+    elif s == 'playlist':
         search_playlist(req, q1)
-    elif s == 'bi':
+    elif s == 'bing':
         search_bing(req, q1)
+    elif s == 'yandex':
+        search_yandex(req, q1)
 
     req.write(html[1])
 
