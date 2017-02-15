@@ -51,7 +51,7 @@ def play(url, ref, cookies=None):
         setAct('stop', None)
 
     if cookies:
-        xargs += ' --cookies \'%s\'' %(cookies)
+        xargs += ' --cookie \'%s\'' %(cookies)
 
     cmd = '%s %s \'%s\' 2>&1 | tee %s' %(xdef.omxp, xargs, url, xdef.log)
     print('\n[omx][cmd]\n\n\t'+cmd+'\n')
