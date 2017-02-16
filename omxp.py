@@ -51,7 +51,6 @@ def play(url, ref, cookies=None):
         setAct('stop', None)
 
     if cookies:
-        xargs += ' --cookie \'%s\'' %(cookies)
         xargs += ' --avdict headers:\"Cookie: %s\"' %(cookies)
 
     cmd = '%s %s \'%s\' 2>&1 | tee %s' %(xdef.omxp, xargs, url, xdef.log)
