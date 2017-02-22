@@ -8,6 +8,25 @@ import urlparse
 
 import meta
 
+entryCnt = 0
+
+def autoCluster_close(req):
+    global entryCnt
+    req.write('\n</div>\n')
+    entryCnt = 0
+
+def autoCluster_open(req):
+    global entryCnt
+    req.write('\n<div class=entryCluster>\n')
+    entryCnt = 0
+
+def autoCluster(req):
+    global entryCnt
+    entryCnt = entryCnt + 1
+    if entryCnt == 5:
+        autoCluster_close(req)
+        autoCluster_open(req)
+
 def loadFile(filename):
     path = os.path.dirname(os.path.abspath(__file__))+'/'+filename
     with open(path, 'r') as fd:
@@ -45,6 +64,7 @@ def addEntry(req, link, title, image=None):
     if image:
         req.write('<img src="%s" class="img" />\n' %(image))
     req.write('</a>\n')
+    autoCluster(req)
 
 def addPage(req, link, title, image=None):
     addEntry(req, 'view.py?p='+link, title, image)
@@ -294,6 +314,8 @@ def page(req, url):
     html = re.split('<!--result-->', loadFile('list.html'))
     req.write(html[0])
 
+    autoCluster_open(req)
+
     if re.search(r'litv', url):
         page_litv(req, url);
 
@@ -317,6 +339,8 @@ def page(req, url):
 
     else:
         page_def(req, url)
+
+    autoCluster_close(req)
 
     req.write(html[1])
 

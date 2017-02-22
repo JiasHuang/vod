@@ -47,6 +47,11 @@
     padding: 0px;
 }
 
+.entryCluster {
+    max-height: 90vh;
+    overflow:auto;
+}
+
 #keypad {margin:auto; margin-top:8px;}
 
 #keypad tr td {
@@ -67,6 +72,3 @@
     color:#FFFF00;
 }
 
-h2 {
-    font-size: 32px;
-}
