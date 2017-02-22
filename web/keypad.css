@@ -1,0 +1,24 @@
+
+#keypad {
+    margin:auto;
+    margin-top:8px;
+}
+
+#keypad tr td {
+	vertical-align:middle;
+	text-align:center;
+	border:1px solid #000000;
+	font-size:64px;
+	font-weight:bold;
+	width:160px;
+	height:80px;
+	cursor:pointer;
+	background-color:#666666;
+	color:#ffffff;
+}
+
+#keypad tr td:hover {
+    background-color:#999999;
+    color:#FFFF00;
+}
+
