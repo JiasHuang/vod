@@ -31,7 +31,7 @@ ul.bxslider {
   -moz-box-shadow: 0 0 5px #ccc;
   -webkit-box-shadow: 0 0 5px #ccc;
   box-shadow: 0 0 5px #ccc;
-  border: 5px solid #fff;
+  border: 0px solid #fff;
   background: silver;
 }
 .bx-wrapper .bx-pager,

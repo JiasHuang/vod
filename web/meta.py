@@ -38,7 +38,7 @@ def saveLocal(text, local):
 def checkExpire(local):
     t0 = int(os.path.getmtime(local))
     t1 = int(time.time())
-    if (t1 - t0) > 14400:
+    if (t1 - t0) > 3600:
         return True
     return False
 

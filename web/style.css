@@ -28,18 +28,6 @@
     right: 32px;
 }
 
-.botright {
-    position: fixed;
-    bottom: 32px;
-    right: 32px;
-}
-
-.botright2 {
-    position: fixed;
-    bottom: 200px;
-    right: 32px;
-}
-
 .actbtn {
     background-color: Transparent;
     border: none;
@@ -47,13 +35,18 @@
     padding: 0px;
 }
 
+.entryTitle {
+    font-size: 32px;
+}
+
 .entryCluster {
-    max-height: 95vh;
-    overflow:auto;
+    max-height: 100vh;
 }
 
 .image-wrapper {
     position: relative;
+    max-height: 20vh;
+    overflow: hidden;
 }
 
 .image-wrapper a {
@@ -63,11 +56,11 @@
 .image-wrapper a img {
     width:352px;
     height:288px;
-    border: 2px solid white;
+    border: 1px solid white;
     margin: 0px;
 }
 
-.image-wrapper a p {
+.image-wrapper a h2 {
     position: absolute;
     width: 500px;
     left: 400px;

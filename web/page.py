@@ -37,7 +37,7 @@ def autoCluster_cmd(req, cmd):
             req.write('</div>\n')
             entryCnt = 0
 
-def autoCluster(req, entryMax=4):
+def autoCluster(req, entryMax=5):
     global bCluster
     global entryCnt
     if bCluster > 0:
@@ -85,12 +85,12 @@ def addEntry(req, link, title, image=None):
         req.write('<div class="image-wrapper">\n')
         req.write('<a href="%s">\n' %(link))
         req.write('<img src="%s" />\n' %(image))
-        req.write('<p>%s</p>\n' %(title))
+        req.write('<h2>%s</h2>\n' %(title))
         req.write('</a>\n')
         req.write('</div>\n')
     else:
         req.write('<a href="%s">\n' %(link))
-        req.write('<h2>%s</h2>\n' %(title))
+        req.write('<h2 class="entryTitle">%s</h2>\n' %(title))
         req.write('</a>\n')
 
 def addPage(req, link, title, image=None):
