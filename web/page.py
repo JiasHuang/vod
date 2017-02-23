@@ -9,45 +9,28 @@ import urlparse
 import meta
 
 entryCnt = 0
-bCluster = -1
+bCluster = 0
 
 def autoCluster_cmd(req, cmd):
     global bCluster
     global entryCnt
-    if cmd == 'create':
-        bCluster = 0
-    elif cmd == 'destroy':
-        autoCluster_cmd(req, 'close')
-        autoCluster_cmd(req, 'exit')
-        bCluster = -1
-    elif cmd == 'init':
-        if bCluster == 0:
-            req.write('<div class="bxslider">')
-            bCluster = 1
-    elif cmd == 'exit':
-        if bCluster > 0:
-            req.write('</div>\n')
-            bCluster = 0
-    elif cmd == 'open':
-        if entryCnt == 0:
+    if cmd == 'init':
+        bCluster = 1
+    if bCluster:
+        if cmd == 'open':
             req.write('<div class="entryCluster">\n')
-            entryCnt = 1
-    elif cmd == 'close':
-        if entryCnt:
+        if cmd == 'close':
             req.write('</div>\n')
-            entryCnt = 0
 
 def autoCluster(req, entryMax=5):
     global bCluster
     global entryCnt
-    if bCluster > 0:
+    if bCluster:
         entryCnt = entryCnt + 1
         if entryCnt > entryMax:
             autoCluster_cmd(req, 'close')
             autoCluster_cmd(req, 'open')
-    if bCluster == 0:
-        autoCluster_cmd(req, 'init')
-        autoCluster_cmd(req, 'open')
+            entryCnt = 1
 
 def loadFile(filename):
     path = os.path.dirname(os.path.abspath(__file__))+'/'+filename
@@ -82,6 +65,7 @@ def load(url):
 
 def addEntry(req, link, title, image=None):
     if image:
+        autoCluster(req)
         req.write('<div class="image-wrapper">\n')
         req.write('<a href="%s">\n' %(link))
         req.write('<img src="%s" />\n' %(image))
@@ -101,7 +85,6 @@ def addVideo(req, link, title=None, image=None):
         return
     if re.search(r'^//', link):
         link = re.sub('//', 'http://', link)
-    autoCluster(req)
     addEntry(req, 'view.py?v='+link, title or link, image or meta.getImage(link) or 'Movies-icon.png')
 
 def addYouTube(req, vid, title=None):
@@ -342,7 +325,8 @@ def page(req, url):
     html = re.split('<!--result-->', loadFile('list.html'))
     req.write(html[0])
 
-    autoCluster_cmd(req, 'create')
+    autoCluster_cmd(req, 'init')
+    autoCluster_cmd(req, 'open')
 
     if re.search(r'litv', url):
         page_litv(req, url);
@@ -365,7 +349,7 @@ def page(req, url):
     else:
         page_def(req, url)
 
-    autoCluster_cmd(req, 'destroy')
+    autoCluster_cmd(req, 'close')
 
     req.write(html[1])
 

@@ -45,8 +45,6 @@
 
 .image-wrapper {
     position: relative;
-    max-height: 20vh;
-    overflow: hidden;
 }
 
 .image-wrapper a {
@@ -54,9 +52,9 @@
 }
 
 .image-wrapper a img {
-    width:352px;
-    height:288px;
-    border: 1px solid white;
+    width: 352px;
+    height: 18vh;
+    border: 2px solid white;
     margin: 0px;
 }
 
@@ -65,9 +63,8 @@
     width: 500px;
     left: 400px;
     top: 10px;
-    padding: 10px;
     font-size: 32px;
     color: blue;
-    margin: 10px;
+    word-wrap: break-word;
 }
 
