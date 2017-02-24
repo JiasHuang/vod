@@ -7,6 +7,7 @@
 
 <link rel="stylesheet" href="style.css">
 
+<script type="text/javascript" src="list.js"></script>
 <script type="text/javascript" src="speech.js"></script>
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
@@ -14,12 +15,7 @@
 <link href="jquery.bxslider.css" rel="stylesheet" />
 
 <script type="text/javascript">
-    $(document).ready(function(){
-        console.log($('.entryCluster').length)
-        if ($('.entryCluster').length > 1) {
-            $('.bxslider').bxSlider();
-        }
-    });
+    $(document).ready(onReady);
 </script>
 
 </head>
