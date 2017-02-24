@@ -52,7 +52,7 @@
 }
 
 .image-wrapper a img {
-    width: 352px;
+    width: 24vh;
     height: 18vh;
     border: 2px solid white;
     margin: 0px;
@@ -60,8 +60,7 @@
 
 .image-wrapper a h2 {
     position: absolute;
-    width: 500px;
-    left: 400px;
+    left: 25vh;
     top: 10px;
     font-size: 32px;
     color: blue;

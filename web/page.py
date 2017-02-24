@@ -63,17 +63,17 @@ def renderDIR(req, d):
 def load(url):
     return meta.load(url)
 
-def addEntry(req, link, title, image=None):
+def addEntry(req, link, title, image=None, option=None):
     if image:
         autoCluster(req)
         req.write('<div class="image-wrapper">\n')
-        req.write('<a href="%s">\n' %(link))
+        req.write('<a href="%s" %s>\n' %(link, option or ''))
         req.write('<img src="%s" />\n' %(image))
         req.write('<h2>%s</h2>\n' %(title))
         req.write('</a>\n')
         req.write('</div>\n')
     else:
-        req.write('<a href="%s">\n' %(link))
+        req.write('<a href="%s" %s>\n' %(link, option or ''))
         req.write('<h2 class="entryTitle">%s</h2>\n' %(title))
         req.write('</a>\n')
 
@@ -85,7 +85,7 @@ def addVideo(req, link, title=None, image=None):
         return
     if re.search(r'^//', link):
         link = re.sub('//', 'http://', link)
-    addEntry(req, 'view.py?v='+link, title or link, image or meta.getImage(link) or 'Movies-icon.png')
+    addEntry(req, 'view.py?v='+link, title or link, image or meta.getImage(link) or 'Movies-icon.png', 'target="playVideo"')
 
 def addYouTube(req, vid, title=None):
     link = 'https://www.youtube.com/watch?v='+vid
