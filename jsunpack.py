@@ -47,12 +47,17 @@ def unpack(txt):
     if m:
         code = m.group()
         func, args = parseCode(code)
-        local = xdef.workdir+'vod_code_'+str(os.getuid())
         txt = 'function unpack(p,a,c,k,e,d)%s\nconsole.log(unpack%s);\n' %(func, args)
-        xurl.saveLocal(local, txt)
-        output = subprocess.check_output('nodejs '+local, shell=True).rstrip('\n')
-        output = output.replace("\/", "/")
+        output = executeJSCode(txt)
         showAll(code, output)
         return output
     return None
+
+def executeJSCode(code):
+    local = xdef.workdir+'vod_code_'+str(os.getuid())
+    xurl.saveLocal(local, code)
+    output = subprocess.check_output('nodejs '+local, shell=True).rstrip('\n')
+    output = output.replace("\/", "/")
+    showAll(code, output)
+    return output
 

@@ -49,7 +49,7 @@ def processURL1(url):
         xplay.playURL(src, url)
         return 0
 
-    if re.search(r'porn2tube', url):
+    if re.search(r'(javpub|porn2tube)', url):
         src = jav.getSource(url)
         xplay.playURL(src, url)
         return 0
