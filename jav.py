@@ -26,8 +26,8 @@ def parseFileSource(txt):
     best_f = None
     best_l = None
     for m in re.finditer(r'{(.*?)}', txt):
-        f = search(r'"file":"([^"]*)"', m.group())
-        l = search(r'"label":"([^"]*)"', m.group())
+        f = search(r'"file":"([^"]*)"', m.group()) or search(r'file:([^,]*)', m.group())
+        l = search(r'"label":"([^"]*)"', m.group()) or search(r'label:([0-9]*)', m.group())
         if f:
             encoded = re.search(r'window.atob(([^)]*))', f)
             if encoded:
@@ -49,6 +49,19 @@ def decodeJSCode(url):
                 return parseFileSource(jsunpack.unpackURL(src.group(1)))
     return None
 
+def searchFrame(url):
+    txt = load(url)
+    watch = []
+    for m in re.finditer(r'href="([^"]*)"', txt):
+        if re.search(r'/watch/', m.group(1)):
+            if m.group(1) not in watch:
+                watch.append(m.group(1))
+    for w in watch:
+        src = xurl.getFrame(w)
+        if src:
+            return src
+    return None
+
 def getSource(url):
 
     if url == '':
@@ -64,30 +77,15 @@ def getSource(url):
             txt = jsunpack.unpackFILE(local) or ''
         else:
             txt = load(url)
-
-        v = v1 = v2 = v3 = None
-        for m in re.finditer(r'file:(.*?),label:([a-zA-Z0-9\']*)', txt):
-            link, label, = m.group(1), m.group(2)
-            link = re.sub('["\']', '', link)
-            m = re.search(r'window.atob(([^)]*))', link)
-            if m:
-                v = base64.b64decode(m.group(1))
-            else:
-                v = link
-            if not re.search(r'^http', v):
-                continue
-            if re.search(r'1080p', label, re.IGNORECASE):
-                v1 = v
-            elif re.search(r'720p', label, re.IGNORECASE):
-                v2 = v
-            elif re.search(r'480p', label, re.IGNORECASE):
-                v3 = v
-        return v1 or v2 or v3 or v or ''
+        return parseFileSource(txt)
 
     elif re.search(r'javpub', url):
-        for m in re.finditer(r'href="([^"]*)"', load(url)):
-            if re.search(r'/watch/', m.group(1)):
-                return decodeJSCode(m.group(1)) or ''
+        if re.search(r'/movie/', url):
+            for m in re.finditer(r'href="([^"]*)"', load(url)):
+                if re.search(r'/watch/', m.group(1)):
+                    url = m.group(1)
+                    break;
+        return decodeJSCode(url) or xurl.getFrame(url) or searchFrame(url) or ''
 
     return ''
 
