@@ -70,6 +70,7 @@ def index(req):
     c    = arg.get('c', None) # command
 
     if i:
+        i = i.strip()
         if re.search(r'^#', i):
             c = i[1:]
         elif re.search(r'^http', i):
@@ -79,7 +80,7 @@ def index(req):
         elif re.search(r'^/', i) and os.path.exists(i):
             f = i
         else:
-            q = i
+            q = re.sub('\s+', ' ', i)
 
     if p:
         p = getUnparsedURL(req) or p

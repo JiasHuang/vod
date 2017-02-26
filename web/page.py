@@ -188,6 +188,7 @@ def search(req, q, s):
     elif s == 'yandex':
         search_yandex(req, q1)
 
+    onPageEnd(req)
     req.write(html[1])
 
 def page_def(req, url):
@@ -201,6 +202,12 @@ def page_xuite(req, url):
         page_xuiteDIR(req, url)
     else:
         meta.findVideo(req, url)
+        next_page_links = meta.search(r'<!-- Numbered page links -->(.*?)<!-- Next page link -->', load(url), re.DOTALL|re.MULTILINE)
+        if next_page_links:
+            parsed_uri = urlparse.urlparse(url)
+            domain = '{uri.scheme}://{uri.netloc}'.format(uri=parsed_uri)
+            for m in re.finditer('href="([^"]*)">', next_page_links):
+                meta.findVideo(req, meta.absURL(domain, m.group(1)))
 
 def page_xuiteDIR(req, url):
 
@@ -325,6 +332,11 @@ def page_youtube(req, url):
             vid = m.group(1)
             addYouTube(req, m.group(1), m.group(2))
 
+def onPageEnd(req):
+    global entryCnt
+    if entryCnt == 0:
+        req.write('<h2>Oops! Not Found</h2>')
+
 def page(req, url):
 
     html = re.split('<!--result-->', loadFile('list.html'))
@@ -359,9 +371,6 @@ def page(req, url):
 
     autoCluster_cmd(req, 'close')
 
-    global entryCnt
-    if entryCnt == 0:
-        req.write('<h2>Oops! Not Found</h2>')
-
+    onPageEnd(req)
     req.write(html[1])
 

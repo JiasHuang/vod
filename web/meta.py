@@ -15,8 +15,8 @@ import gzip
 import conf
 import page
 
-def search(patten, txt):
-    m = re.search(patten, txt)
+def search(patten, txt, flags=0):
+    m = re.search(patten, txt, flags)
     if m:
         return m.group(1)
     return None
@@ -158,7 +158,7 @@ def findImageLink(req, url, unquote=False, showPage=False):
     parsed_uri = urlparse.urlparse(url)
     domain = '{uri.scheme}://{uri.netloc}'.format(uri=parsed_uri)
     txt = load(url)
-    for m in re.finditer(r'<a .*?</a>', txt, re.DOTALL|re.MULTILINE):
+    for m in re.finditer(r'<a\s.*?</a>', txt, re.DOTALL|re.MULTILINE):
         link = search(r'href\s*=\s*"([^"]*)"', m.group(0))
         image = search(r'src\s*=\s*"(.*?\.jpg)"', m.group(0))
         title = search(r'alt\s*=\s*"([^"]*)"', m.group(0))
