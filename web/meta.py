@@ -158,10 +158,10 @@ def findImageLink(req, url, unquote=False, showPage=False):
     parsed_uri = urlparse.urlparse(url)
     domain = '{uri.scheme}://{uri.netloc}'.format(uri=parsed_uri)
     txt = load(url)
-    for m in re.finditer(r'<a .*?</a>', txt, re.DOTALL):
-        link = search(r'href="([^"]*)"', m.group(0))
-        image = search(r'src="(.*?\.jpg)"', m.group(0))
-        title = search(r'alt="([^"]*)"', m.group(0))
+    for m in re.finditer(r'<a .*?</a>', txt, re.DOTALL|re.MULTILINE):
+        link = search(r'href\s*=\s*"([^"]*)"', m.group(0))
+        image = search(r'src\s*=\s*"(.*?\.jpg)"', m.group(0))
+        title = search(r'alt\s*=\s*"([^"]*)"', m.group(0))
         if link and image:
             if unquote == True:
                 link = urllib.unquote(link)

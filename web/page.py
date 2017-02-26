@@ -13,7 +13,6 @@ bCluster = 0
 
 def autoCluster_cmd(req, cmd):
     global bCluster
-    global entryCnt
     if cmd == 'init':
         bCluster = 1
     if bCluster:
@@ -26,11 +25,9 @@ def autoCluster(req, entryMax=5):
     global bCluster
     global entryCnt
     if bCluster:
-        entryCnt = entryCnt + 1
-        if entryCnt > entryMax:
+        if entryCnt > entryMax and (entryCnt % entryMax) == 1:
             autoCluster_cmd(req, 'close')
             autoCluster_cmd(req, 'open')
-            entryCnt = 1
 
 def loadFile(filename):
     path = os.path.dirname(os.path.abspath(__file__))+'/'+filename
@@ -64,11 +61,13 @@ def load(url):
     return meta.load(url)
 
 def addEntry(req, link, title, image=None, option=None):
+    global entryCnt
+    entryCnt = entryCnt + 1
     if image:
         autoCluster(req)
         req.write('<div class="image-wrapper">\n')
         req.write('<a href="%s" %s>\n' %(link, option or ''))
-        req.write('<img src="%s" />\n' %(image))
+        req.write('<div class="imageContainer"><img src="%s" /></div>\n' %(image))
         req.write('<h2>%s</h2>\n' %(title))
         req.write('</a>\n')
         req.write('</div>\n')
@@ -192,7 +191,10 @@ def search(req, q, s):
     req.write(html[1])
 
 def page_def(req, url):
+    global entryCnt
     meta.findLink(req, url)
+    if entryCnt == 0:
+        meta.findImageLink(req, url, True, False)
 
 def page_xuite(req, url):
     if re.search(r'xuite.net/([a-zA-Z0-9]*)($)', url):
@@ -243,6 +245,9 @@ def page_litv(req, url):
                 addVideo(req, re.sub(_contentId, contentId, url), subtitle.group(1), imageLink)
     else:
         meta.findVideoLink(req, url, True, True, 'data-img')
+
+def page_iqiyi(req, url):
+    meta.findImageLink(req, url, True, False)
 
 def page_lovetv(req, url):
     parsed_uri = urlparse.urlparse(url)
@@ -331,6 +336,9 @@ def page(req, url):
     if re.search(r'litv', url):
         page_litv(req, url);
 
+    elif re.search(r'iqiyi', url):
+        page_iqiyi(req, url)
+
     elif re.search(r'lovetv', url):
         page_lovetv(req, url);
 
@@ -350,6 +358,10 @@ def page(req, url):
         page_def(req, url)
 
     autoCluster_cmd(req, 'close')
+
+    global entryCnt
+    if entryCnt == 0:
+        req.write('<h2>Oops! Not Found</h2>')
 
     req.write(html[1])
 

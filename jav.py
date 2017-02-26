@@ -58,7 +58,7 @@ def searchFrame(url):
                 watch.append(m.group(1))
     for w in watch:
         src = xurl.getFrame(w)
-        if src:
+        if src and not re.search(r'/ads/', src):
             return src
     return None
 

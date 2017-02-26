@@ -51,17 +51,27 @@
     display: inline-table;
 }
 
+.image-wrapper .imageContainer {
+    width: 24vh;
+    height: 18vh;
+    overflow: hidden;
+    text-align:center;
+    border: 2px solid white;
+    background-color: black;
+}
+
 .image-wrapper a img {
+    margin-left: auto;
+    margin-right: auto;
     width: auto;
     height: 18vh;
-    border: 2px solid white;
-    margin: 0px;
+    /*border: 2px solid white;*/
 }
 
 .image-wrapper a h2 {
     position: absolute;
-    width: calc(100vw - 35vh);
-    left: 35vh;
+    width: calc(100vw - 25vh);
+    left: 25vh;
     top: 10px;
     font-size: 32px;
     color: blue;

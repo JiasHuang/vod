@@ -7,6 +7,7 @@ import subprocess
 import hashlib
 import json
 import time
+import base64
 
 import timeit
 import xdef
@@ -14,7 +15,7 @@ import xurl
 
 def checkURL(url):
     site = xurl.findSite(url)
-    return re.compile('(youtube|dailymotion|facebook|bilibili|vimeo|youku|openload|litv|drive)').search(site)
+    return re.compile('(youtube|dailymotion|facebook|bilibili|vimeo|youku|openload|litv|drive|iqiyi|le.com)').search(site)
 
 def redirectURL(url):
     if re.search(r'youku', url):
@@ -66,6 +67,13 @@ def parseJson(path):
 
     if not isinstance(results, basestring):
         results = genM3U(url, results)
+    else:
+        encoded = re.search(r'data:application/vnd.apple.mpegurl;base64,([a-zA-Z0-9+/=]*)', results)
+        if encoded:
+            decoded = base64.b64decode(encoded.group(1))
+            local = xdef.workdir+'vod_list_decoded.m3u'
+            xurl.saveLocal(local, decoded)
+            results = local
 
     print('\tret : %s' %(results or ''))
     print('\thdr : %s' %(cookies or ''))
@@ -108,10 +116,10 @@ def extractURL(url):
 
 def extractSUB(url):
 
-    print('\n[ytdl][extracSUB]\n')
-
     if not url or not re.search(r'youtube.com', url):
         return None
+
+    print('\n[ytdl][extracSUB]\n')
 
     sub = 'vod_sub_'+hashlib.md5(url).hexdigest()
 
