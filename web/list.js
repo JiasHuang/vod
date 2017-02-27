@@ -20,6 +20,10 @@ function setWidthHeight() {
 };
 
 function onReady() {
+    var DisableSlider = localStorage.getItem('DisableSlider');
+    if (DisableSlider && DisableSlider == 'yes') {
+        return;
+    }
     if ($('.entryCluster').length > 1) {
         setWidthHeight();
         slider = $('.bxslider').bxSlider();

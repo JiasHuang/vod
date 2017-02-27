@@ -1,0 +1,45 @@
+
+table {
+    width: 100%;
+}
+
+tr, td {
+    font-size: 32px;
+    width: 50%;
+    color: white;
+}
+
+th {
+    background-color: #4CAF50;
+}
+
+select {
+    font-size: 32px;
+    width: 100%;
+}
+
+.menubar {
+    width: 100%;
+    text-align: center;
+    position: fixed;
+    top: 90%;
+    height: 10%;
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.btn {
+    min-width: 15%;
+    background-color: #4682B4;
+    border: none;
+    border-radius: 25px;
+    color: white;
+    padding: 4px 4px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 64px;
+    margin: 12px 12px;
+    cursor: pointer;
+}
+
+
