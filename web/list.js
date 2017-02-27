@@ -13,8 +13,15 @@ function onKeyDown(e) {
     e.preventDefault(); // prevent the default action
 }
 
+function setWidthHeight() {
+    windowHeight = $(window).innerHeight();
+    $('.imageContainer').css('height', windowHeight * 18 / 100);
+    $('.imageContainer').css('width', windowHeight * 24 / 100);
+};
+
 function onReady() {
     if ($('.entryCluster').length > 1) {
+        setWidthHeight();
         slider = $('.bxslider').bxSlider();
         $(document).keydown(onKeyDown);
     }
