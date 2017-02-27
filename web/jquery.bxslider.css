@@ -38,7 +38,7 @@ ul.bxslider {
 .bx-wrapper .bx-controls-auto {
   position: fixed;
   width: 100%;
-  top: 95vh;
+  top: 85vh;
 }
 /* LOADER */
 .bx-wrapper .bx-loading {
@@ -101,7 +101,7 @@ ul.bxslider {
 }
 .bx-wrapper .bx-controls-direction a {
   position: fixed;
-  top: 95vh;
+  top: 85vh;
   outline: 0;
   width: 32px;
   height: 32px;
