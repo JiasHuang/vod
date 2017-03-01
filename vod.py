@@ -132,10 +132,14 @@ def main():
 
     parser = OptionParser()
     parser.add_option("-p", "--player", dest="player")
+    parser.add_option("-f", "--format", dest="format")
     (options, args) = parser.parse_args()
 
     if options.player:
         xdef.player = options.player
+
+    if options.format:
+        xdef.ytdlfmt = options.format
 
     if len(args) >= 1:
         url = args[0]

@@ -3,19 +3,37 @@ table {
     width: 100%;
 }
 
-tr, td {
-    font-size: 32px;
-    width: 50%;
+td {
+    font-size: 48px;
+    width: 80%;
     color: white;
 }
 
 th {
+    font-size: 48px;
+    text-align: left;
+    width: 20%;
     background-color: #4CAF50;
+    color: white;
 }
 
 select {
-    font-size: 32px;
+    font-size: 48px;
     width: 100%;
+}
+
+input.datatext {
+    font-size: 32px;
+    padding: 10px;
+    margin: 0px;
+    width: 80%;
+}
+
+select.contentselect {
+    font-size: 32px;
+    padding: 10px;
+    margin: 0px;
+    width: 20%;
 }
 
 .menubar {
@@ -37,7 +55,7 @@ select {
     text-align: center;
     text-decoration: none;
     display: inline-block;
-    font-size: 64px;
+    font-size: 48px;
     margin: 12px 12px;
     cursor: pointer;
 }

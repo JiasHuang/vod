@@ -14,10 +14,6 @@ import youtubedl
 
 def getPlayer():
 
-    conf = xdef.getConf('player')
-    if conf:
-        return conf
-
     if xdef.player != 'def':
         return xdef.player
 

@@ -30,11 +30,6 @@ def parseParameters(url):
     return None
 
 def getFmt(url):
-    for s in ['all', 'litv', 'youtube']:
-        fmt = xdef.getConf(s)
-        if fmt:
-            if s == 'all' or re.search(s, url):
-                return fmt
     return xdef.ytdlfmt
 
 def genM3U(url, result):
@@ -85,8 +80,8 @@ def extractURL(url):
 
     url = redirectURL(url)
     arg = parseParameters(url)
-    local = xdef.workdir+'vod_list_'+hashlib.md5(url).hexdigest()+'.json'
     fmt = getFmt(url)
+    local = xdef.workdir+'vod_list_'+hashlib.md5(url+fmt).hexdigest()+'.json'
 
     if arg:
         print('\targ : %s' %(arg or ''))

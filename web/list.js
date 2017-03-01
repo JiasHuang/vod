@@ -20,8 +20,8 @@ function setWidthHeight() {
 };
 
 function onReady() {
-    var DisableSlider = localStorage.getItem('DisableSlider');
-    if (DisableSlider && DisableSlider == 'yes') {
+    var slider = localStorage.getItem('Slider');
+    if (slider && slider == 'no') {
         return;
     }
     if ($('.entryCluster').length > 1) {

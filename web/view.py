@@ -8,7 +8,7 @@ import urllib
 import page
 import conf
 
-from mod_python import util
+from mod_python import util, Cookie
 
 def runCmd(cmd):
     if not os.path.exists(conf.vod):
@@ -19,10 +19,10 @@ def runCmd(cmd):
     else:
         subprocess.Popen(cmd, shell=True).communicate()
 
-def playURL(url):
+def playURL(url, opt=None):
     if not os.path.exists(conf.vod):
         return
-    cmd = 'python -u %s \'%s\' | tee -a %s' %(conf.vod, url, conf.log)
+    cmd = 'python -u %s \'%s\' %s | tee -a %s' %(conf.vod, url, opt or '', conf.log)
     if os.path.exists('/usr/bin/xterm'):
         subprocess.Popen(['/usr/bin/xterm', '-geometry', '80x24-50+50', '-display', ':0', '-e', cmd])
     else:
@@ -43,16 +43,26 @@ def getUnparsedURL(req):
         return urllib.unquote(m.group(1))
     return None
 
+def getCookie(req, key):
+    cookies = Cookie.get_cookies(req)
+    if cookies and cookies.has_key(key):
+        return cookies[key].value
+    return None
+
+def getOption(req):
+    fmt = getCookie(req, 'format')
+    if fmt:
+        return '-f '+fmt
+    return None
+
 def handleCmd(cmd):
     os.system('rm -f '+conf.workdir+'vod_*')
     if cmd in ['update', 'updatedb']:
         runCmd(cmd)
-    elif cmd in ['def', 'low']:
-        conf.loadConf(conf.vodpath+'config/vodconf_'+cmd)
     else:
         return 'error'
     return 'success'
- 
+
 def index(req):
 
     req.content_type = 'text/html; charset=utf-8'
@@ -98,7 +108,7 @@ def index(req):
 
     elif v:
         v = getUnparsedURL(req) or v
-        playURL(v)
+        playURL(v, getOption(req))
         page.render(req, 'panel', '<h1>playURL <a target=_blank href=%s>%s</a><h1>' %(v, v))
 
     elif a:
