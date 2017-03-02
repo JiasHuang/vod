@@ -45,8 +45,16 @@ function select_slider() {
 }
 
 function select_format() {
-    var defval = 'best[ext!=webm][protocol^=http]';
-    var dict = {"480":"best[ext!=webm][protocol^=http][height<=480]", "720":"best[ext!=webm][protocol^=http][height<=720]", "default":defval};
+    var defval = 'best[ext!=webm][protocol^=http]/best[ext!=webm]';
+    var dict = {
+        "http-720p":"best[ext!=webm][protocol^=http][height<=720]",
+        "http-480p":"best[ext!=webm][protocol^=http][height<=480]",
+        "http-360p":"best[ext!=webm][protocol^=http][height<=360]",
+        "720p":"best[ext!=webm][height<=720]",
+        "480p":"best[ext!=webm][height<=480]",
+        "360p":"best[ext!=webm][height<=360]",
+        "default":defval
+    };
     return select('format', 'formatSelect', dict, localStorage.getItem('Format') || defval);
 }
 
