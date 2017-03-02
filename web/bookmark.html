@@ -5,6 +5,12 @@
 
 <link rel="stylesheet" href="bookmark.css">
 
+<script type="text/javascript" src="bookmark.js"></script>
+
+<script type="text/javascript">
+    window.onload = syncAll;
+</script>
+
 </head>
 
 <body bgcolor=silver>
@@ -13,10 +19,10 @@
 
 <table>
 <tr><th>YOUTUBE</th></tr>
-<tr><td><a href=view.py?p=https://www.youtube.com/user/jiastw/playlists>播放清單</a></td></tr>
-<tr><td><a href=view.py?p=https://www.youtube.com/user/jiastw/channels>訂閱內容</a></td></tr>
-<tr><td><a href=view.py?p=https://www.youtube.com/user/jiastw/videos>上傳的影片</a></td></tr>
-<tr><td><a href=view.py?p=https://www.youtube.com/playlist?list=PLkP0kGDs5OterVCDN8KFVMWGDepX8UvUW>民視全球新聞</a></td></tr>
+<tr><td><a id="playlists" href=view.py?p=https://www.youtube.com/user/jiastw/playlists>playlists</a></td></tr>
+<tr><td><a id="channels" href=view.py?p=https://www.youtube.com/user/jiastw/channels>channels</a></td></tr>
+<tr><td><a id="videos" href=view.py?p=https://www.youtube.com/user/jiastw/videos>videos</a></td></tr>
+<tr><td>+</td></tr>
 </table>
 
 <table>
@@ -78,7 +84,6 @@
     <td><a href=view.py?p=http://list.le.com/listn/c1_t30013_a-1_y-1_s1_lg-1_ph1_md_o4_d1_p.html>動漫電影</a></td>
 </tr>
 </table>
-
 
 </div>
 </body>

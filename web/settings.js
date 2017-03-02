@@ -10,8 +10,9 @@ function saveCookie() {
 
 function save() {
     localStorage.setItem('Slider', $('#slider').val());
-    localStorage.setItem('Format', $('#format').val());
     localStorage.setItem('EntryMax', $('#entryMax').val());
+    localStorage.setItem('Format', $('#format').val());
+    localStorage.setItem('Username', $('#username').val());
     saveCookie();
     window.location.href = 'view.py';
 }
@@ -64,6 +65,12 @@ function select_entryMax() {
     return select('entryMax', 'entryMaxSelect', dict, localStorage.getItem('EntryMax') || defval);
 }
 
+function select_username() {
+    var defval = 'YouTube';
+    var dict = {"default":defval};
+    return select('username', 'usernameSelect', dict, localStorage.getItem('Username') || defval);
+}
+
 function onchange(inputID, selectID) {
     var textfield = document.getElementById(inputID);
     var contentselect = document.getElementById(selectID);
@@ -79,8 +86,9 @@ function show() {
 
     var text = '<table>';
     text += '<tr><th>Slider</th><td>'+select_slider()+'</td></tr>';
+    text += '<tr><th>Slider-EntryMax</th><td>'+select_entryMax()+'</td></tr>';
     text += '<tr><th>Format</th><td>'+select_format()+'</td></tr>';
-    text += '<tr><th>EntryMax</th><td>'+select_entryMax()+'</td></tr>';
+    text += '<tr><th>YouTube-Username</th><td>'+select_username()+'</td></tr>';
     text += '</table>';
 
     $('#Result').html(text);
@@ -88,5 +96,6 @@ function show() {
     onchange('slider', 'sliderSelect');
     onchange('format', 'formatSelect');
     onchange('entryMax', 'entryMaxSelect');
+    onchange('username', 'usernameSelect');
 }
 
