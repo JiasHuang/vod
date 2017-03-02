@@ -52,7 +52,7 @@ def getCookie(req, key):
 def getOption(req):
     fmt = getCookie(req, 'format')
     if fmt:
-        return '-f '+fmt
+        return '-f \'%s\'' %(fmt)
     return None
 
 def handleCmd(cmd):

@@ -9,25 +9,6 @@ import urlparse
 import meta
 
 entryCnt = 0
-bCluster = 0
-
-def autoCluster_cmd(req, cmd):
-    global bCluster
-    if cmd == 'init':
-        bCluster = 1
-    if bCluster:
-        if cmd == 'open':
-            req.write('<div class="entryCluster">\n')
-        if cmd == 'close':
-            req.write('</div>\n')
-
-def autoCluster(req, entryMax=5):
-    global bCluster
-    global entryCnt
-    if bCluster:
-        if entryCnt > entryMax and (entryCnt % entryMax) == 1:
-            autoCluster_cmd(req, 'close')
-            autoCluster_cmd(req, 'open')
 
 def loadFile(filename):
     path = os.path.dirname(os.path.abspath(__file__))+'/'+filename
@@ -63,8 +44,8 @@ def load(url):
 def addEntry(req, link, title, image=None, option=None):
     global entryCnt
     entryCnt = entryCnt + 1
+    req.write('<!--Entry%s-->\n' %(entryCnt))
     if image:
-        autoCluster(req)
         req.write('<div class="image-wrapper">\n')
         req.write('<a href="%s" %s>\n' %(link, option or ''))
         req.write('<div class="imageContainer"><img src="%s" /></div>\n' %(image))
@@ -336,14 +317,12 @@ def onPageEnd(req):
     global entryCnt
     if entryCnt == 0:
         req.write('<h2>Oops! Not Found</h2>')
+    req.write('<!--EntryEnd-->')
 
 def page(req, url):
 
     html = re.split('<!--result-->', loadFile('list.html'))
     req.write(html[0])
-
-    autoCluster_cmd(req, 'init')
-    autoCluster_cmd(req, 'open')
 
     if re.search(r'litv', url):
         page_litv(req, url);
@@ -368,8 +347,6 @@ def page(req, url):
 
     else:
         page_def(req, url)
-
-    autoCluster_cmd(req, 'close')
 
     onPageEnd(req)
     req.write(html[1])

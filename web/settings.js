@@ -4,12 +4,14 @@ function saveCookie() {
     var d = new Date();
     d.setTime(d.getTime() + (expire_days * 24 * 60 * 60 * 1000));
     var expires = "expires=" + d.toGMTString();
-    document.cookie = 'format="'+$('#format').val()+'"; '+expires+'; ';
+    var format = "format=" + $('#format').val();
+    document.cookie = format+'; '+expires+'; ';
 }
 
 function save() {
     localStorage.setItem('Slider', $('#slider').val());
     localStorage.setItem('Format', $('#format').val());
+    localStorage.setItem('EntryMax', $('#entryMax').val());
     saveCookie();
     window.location.href = 'view.py';
 }
@@ -48,6 +50,12 @@ function select_format() {
     return select('format', 'formatSelect', dict, localStorage.getItem('Format') || defval);
 }
 
+function select_entryMax() {
+    var defval = '5';
+    var dict = {"1":"1", "2":"2", "3":"3", "4":"4", "5":"5", "default":defval};
+    return select('entryMax', 'entryMaxSelect', dict, localStorage.getItem('EntryMax') || defval);
+}
+
 function onchange(inputID, selectID) {
     var textfield = document.getElementById(inputID);
     var contentselect = document.getElementById(selectID);
@@ -64,11 +72,13 @@ function show() {
     var text = '<table>';
     text += '<tr><th>Slider</th><td>'+select_slider()+'</td></tr>';
     text += '<tr><th>Format</th><td>'+select_format()+'</td></tr>';
+    text += '<tr><th>EntryMax</th><td>'+select_entryMax()+'</td></tr>';
     text += '</table>';
 
     $('#Result').html(text);
 
     onchange('slider', 'sliderSelect');
     onchange('format', 'formatSelect');
+    onchange('entryMax', 'entryMaxSelect');
 }
 
