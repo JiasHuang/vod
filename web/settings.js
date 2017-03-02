@@ -4,7 +4,8 @@ function saveCookie() {
     var d = new Date();
     d.setTime(d.getTime() + (expire_days * 24 * 60 * 60 * 1000));
     var expires = "expires=" + d.toGMTString();
-    document.cookie = 'format="'+$('#format').val()+'"; '+expires+'; ';
+    var format = "format=" + $('#format').val();
+    document.cookie = format+'; '+expires+'; ';
 }
 
 function save() {
