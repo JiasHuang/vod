@@ -38,8 +38,8 @@ function setWidthHeight(entryMax) {
 
 function onReady() {
 
-    var slider = localStorage.getItem('Slider') || 'yes';
-    var entryMax = parseInt(localStorage.getItem('EntryMax')) || 5;
+    var slider = localStorage.getItem('slider');
+    var entryMax = parseInt(localStorage.getItem('entryMax') || '5');
 
     if (slider == 'no') {
         return;
