@@ -41,7 +41,7 @@ sudo service apache2 restart
 
 - Download source codes
 ```
-git clone http://gitbub.com/jiashuang/vod
+git clone http://github.com/jiashuang/vod
 cd vod
 ```
 
