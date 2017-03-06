@@ -308,6 +308,11 @@ def page_youtube(req, url):
             title = re.search(r'data-title="([^"]*)"', m.group())
             if vid and title:
                 addYouTube(req, vid.group(1), title.group(1))
+    elif re.search(r'/channel/', url):
+        username = meta.search(r'/user/(.*?)/videos', load(url))
+        if username:
+            addPage(req, 'https://www.youtube.com/user/%s/playlists' %(username), 'playlists')
+            addPage(req, 'https://www.youtube.com/user/%s/videos' %(username), 'videos')
     else:
         for m in re.finditer(r'watch\?v=(.{11})">([^<]*)</a>', load(url)):
             vid = m.group(1)
@@ -341,9 +346,6 @@ def page(req, url):
 
     elif re.search(r'i-movie', url):
         page_imovie(req, url)
-
-    elif re.search('(porn|jav)',url):
-        meta.findImageLink(req, url, True, False)
 
     else:
         page_def(req, url)
