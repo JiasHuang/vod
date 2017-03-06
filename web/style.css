@@ -66,7 +66,7 @@
 .imageWrapper h2 {
     position: absolute;
     width: calc(100vw - 25vh);
-    left: 25vh;
+    left: 27vh;
     top: 10px;
     font-size: 32px;
     color: blue;
