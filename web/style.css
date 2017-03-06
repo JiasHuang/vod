@@ -43,15 +43,11 @@
     max-height: 100vh;
 }
 
-.image-wrapper {
+.imageWrapper {
     position: relative;
 }
 
-.image-wrapper a {
-    display: inline-table;
-}
-
-.image-wrapper .imageContainer {
+.imageContainer {
     width: 24vh;
     height: 18vh;
     overflow: hidden;
@@ -60,14 +56,14 @@
     text-align: center;
 }
 
-.image-wrapper a img {
+.imageContainer img {
     margin-left: auto;
     margin-right: auto;
     width: auto;
     height: 100%;
 }
 
-.image-wrapper a h2 {
+.imageWrapper h2 {
     position: absolute;
     width: calc(100vw - 25vh);
     left: 25vh;

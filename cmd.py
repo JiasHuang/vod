@@ -28,17 +28,8 @@ def update():
     return
 
 def updateDataBaseEntry(fd, url, title0):
-    for m in re.finditer(r'<a href="([^"]*)">(.*?)</a>', loadLocal(url), re.DOTALL|re.MULTILINE):
-        link = m.group(1)
-        title = search(r'<h2>(.*?)</h2>', m.group(2))
-        image = search(r'src="([^"]*)"', m.group(2))
-        if not title:
-            continue
-        fd.write('<a href="%s">\n' %(link))
-        fd.write('<h2>%s</h2>\n' %(title0+'/'+title))
-        if image:
-            fd.write('<img src="%s" />\n' %(image))
-        fd.write('</a>\n')
+    for m in re.finditer(r'<!-- link="([^"]*)" title="([^"]*)" image="([^"]*)" -->\n', loadLocal(url)):
+        fd.write(m.group())
 
 def updatedb():
     local = os.path.expanduser('~')+'/.voddatabase'

@@ -45,17 +45,14 @@ def addEntry(req, link, title, image=None, option=None):
     global entryCnt
     entryCnt = entryCnt + 1
     req.write('<!--Entry%s-->\n' %(entryCnt))
+    req.write('<!-- link="%s" title="%s" image="%s" -->\n' %(link, title, image or ''))
     if image:
-        req.write('<div class="image-wrapper">\n')
-        req.write('<a href="%s" %s>\n' %(link, option or ''))
-        req.write('<div class="imageContainer"><img src="%s" /></div>\n' %(image))
-        req.write('<h2>%s</h2>\n' %(title))
-        req.write('</a>\n')
+        req.write('<div class="imageWrapper">\n')
+        req.write('<div class="imageContainer"><a href="%s" %s><img src="%s" /></a></div>\n' %(link, option or '', image))
+        req.write('<h2><a href="%s" %s>%s</h2>\n' %(link, option or '', title))
         req.write('</div>\n')
     else:
-        req.write('<a href="%s" %s>\n' %(link, option or ''))
-        req.write('<h2 class="entryTitle">%s</h2>\n' %(title))
-        req.write('</a>\n')
+        req.write('<h2 class="entryTitle"><a href="%s" %s>%s</a></h2>\n' %(link, option or '', title))
 
 def addPage(req, link, title, image=None):
     addEntry(req, 'view.py?p='+link, title, image)
@@ -126,10 +123,10 @@ def search_yandex(req, q):
 
 def search_db(req, q):
     local = os.path.expanduser('~')+'/.voddatabase'
-    for m in re.finditer(r'<a href="([^"]*)">(.*?)</a>', meta.readLocal(local), re.DOTALL|re.MULTILINE):
-        link = m.group(1)
-        title = meta.search(r'<h2>(.*?)</h2>', m.group(2))
-        image = meta.search(r'src="([^"]*)"', m.group(2)) or 'Movies-icon.png'
+    for m in re.finditer(r'<!-- link="([^"]*)" title="([^"]*)" image="([^"]*)" -->'):
+        link, title, image = m.group(1), m.group(2), m.group(3)
+        if len(image) == 0:
+            image = 'Movies-icon.png'
         if re.search(q, title, re.IGNORECASE):
             addEntry(req, link, title, image)
 
@@ -301,18 +298,14 @@ def page_youtube(req, url):
                 link = meta.search(r'href="([^"]*)"', m.group())
                 title = meta.search(r'title="([^"]*)"', m.group())
                 if link and title:
-                    addPage(req, 'https://www.youtube.com'+link, title)
+                    addPage(req, 'https://www.youtube.com'+link+'/playlists', title+' - playlists')
+                    addPage(req, 'https://www.youtube.com'+link+'/videos', title+' - videos')
     elif re.search(r'playlist\?', url):
         for m in re.finditer(r'pl-video yt-uix-tile ([^>]*)', load(url)):
             vid = re.search(r'data-video-id="([^"]*)"', m.group())
             title = re.search(r'data-title="([^"]*)"', m.group())
             if vid and title:
                 addYouTube(req, vid.group(1), title.group(1))
-    elif re.search(r'/channel/', url):
-        username = meta.search(r'/user/(.*?)/videos', load(url))
-        if username:
-            addPage(req, 'https://www.youtube.com/user/%s/playlists' %(username), 'playlists')
-            addPage(req, 'https://www.youtube.com/user/%s/videos' %(username), 'videos')
     else:
         for m in re.finditer(r'watch\?v=(.{11})">([^<]*)</a>', load(url)):
             vid = m.group(1)
