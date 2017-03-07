@@ -123,7 +123,7 @@ def search_yandex(req, q):
 
 def search_db(req, q):
     local = os.path.expanduser('~')+'/.voddatabase'
-    for m in re.finditer(r'<!-- link="([^"]*)" title="([^"]*)" image="([^"]*)" -->'):
+    for m in re.finditer(r'<!-- link="([^"]*)" title="([^"]*)" image="([^"]*)" -->', meta.readLocal(local)):
         link, title, image = m.group(1), m.group(2), m.group(3)
         if len(image) == 0:
             image = 'Movies-icon.png'
@@ -298,8 +298,8 @@ def page_youtube(req, url):
                 link = meta.search(r'href="([^"]*)"', m.group())
                 title = meta.search(r'title="([^"]*)"', m.group())
                 if link and title:
-                    addPage(req, 'https://www.youtube.com'+link+'/playlists', title+' - playlists')
-                    addPage(req, 'https://www.youtube.com'+link+'/videos', title+' - videos')
+                    addPage(req, 'https://www.youtube.com'+link+'/playlists', title+'/playlists')
+                    addPage(req, 'https://www.youtube.com'+link+'/videos', title+'/videos')
     elif re.search(r'playlist\?', url):
         for m in re.finditer(r'pl-video yt-uix-tile ([^>]*)', load(url)):
             vid = re.search(r'data-video-id="([^"]*)"', m.group())
@@ -322,6 +322,8 @@ def page(req, url):
     html = re.split('<!--result-->', loadFile('list.html'))
     req.write(html[0])
 
+    req.write('<div class="bxslider">\n')
+
     if re.search(r'litv', url):
         page_litv(req, url);
 
@@ -342,6 +344,8 @@ def page(req, url):
 
     else:
         page_def(req, url)
+
+    req.write('</div>\n')
 
     onPageEnd(req)
     req.write(html[1])

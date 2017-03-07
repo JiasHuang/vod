@@ -45,7 +45,7 @@ function onReady() {
         return;
     }
 
-    if ($('.imageContainer').length > entryMax) {
+    if ($('.bxslider').length > 0 &&  $('.imageContainer').length > entryMax) {
         setEntryCluster(entryMax);
         setWidthHeight(entryMax);
         bxslider = $('.bxslider').bxSlider();
