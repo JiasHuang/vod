@@ -28,8 +28,9 @@ def update():
     return
 
 def updateDataBaseEntry(fd, url, title0):
-    for m in re.finditer(r'<!-- link="([^"]*)" title="([^"]*)" image="([^"]*)" -->\n', loadLocal(url)):
-        fd.write(m.group())
+    for m in re.finditer(r'<!-- link="([^"]*)" title="([^"]*)" image="([^"]*)" -->', loadLocal(url)):
+        link, title, image = m.group(1), m.group(2), m.group(3)
+        fd.write('<!-- link="%s" title="%s/%s" image="%s" -->\n' %(link, title0, title, image))
 
 def updatedb():
     local = os.path.expanduser('~')+'/.voddatabase'
