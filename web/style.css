@@ -66,10 +66,12 @@
 .imageWrapper h2 {
     position: absolute;
     width: calc(100vw - 25vh);
+    height: 18vh;
     left: 27vh;
-    top: 10px;
+    top: 0px;
     font-size: 32px;
     color: blue;
     word-wrap: break-word;
+    overflow: hidden;
 }
 

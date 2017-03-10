@@ -34,6 +34,7 @@ function setWidthHeight(entryMax) {
     $('.imageContainer').css('width', windowHeight * 120 / entryMax / 100);
     $('h2').css('left', windowHeight * 135 / entryMax / 100);
     $('h2').css('width', windowWidth - (windowHeight * 135 / entryMax / 100));
+    $('h2').css('height', windowHeight * 90 / entryMax / 100);
 };
 
 function onReady() {
