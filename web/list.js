@@ -28,13 +28,15 @@ function setEntryCluster(entryMax) {
 }
 
 function setWidthHeight(entryMax) {
-    windowHeight = $(window).innerHeight();
-    windowWidth = $(window).innerWidth();
-    $('.imageContainer').css('height', windowHeight * 90 / entryMax / 100);
-    $('.imageContainer').css('width', windowHeight * 120 / entryMax / 100);
-    $('h2').css('left', windowHeight * 135 / entryMax / 100);
-    $('h2').css('width', windowWidth - (windowHeight * 135 / entryMax / 100));
-    $('h2').css('height', windowHeight * 90 / entryMax / 100);
+    var windowHeight = $(window).innerHeight();
+    var windowWidth = $(window).innerWidth();
+    var imageHeight = windowHeight * 90 / entryMax / 100;
+    var imageWidth = windowHeight * 120 / entryMax / 100;
+    $('.imageContainer').css('height', imageHeight);
+    $('.imageContainer').css('width', imageWidth);
+    $('h2').css('left', imageWidth);
+    $('h2').css('width', windowWidth - imageWidth);
+    $('h2').css('height', imageHeight);
 };
 
 function onReady() {

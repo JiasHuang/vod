@@ -37,6 +37,14 @@
 
 .entryTitle {
     font-size: 32px;
+    border: 2px solid white;
+    padding: 16px;
+    margin: 0;
+    overflow: hidden;
+}
+
+.entryEven {
+    background-color: #D3D3D3;
 }
 
 .entryCluster {
@@ -65,13 +73,15 @@
 
 .imageWrapper h2 {
     position: absolute;
-    width: calc(100vw - 25vh);
+    width: calc(100vw - 24vh);
     height: 18vh;
-    left: 27vh;
+    left: 24vh;
     top: 0px;
     font-size: 32px;
     color: blue;
     word-wrap: break-word;
     overflow: hidden;
+    padding: 16px;
+    margin: 0px;
 }
 

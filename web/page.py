@@ -44,15 +44,18 @@ def load(url):
 def addEntry(req, link, title, image=None, option=None):
     global entryCnt
     entryCnt = entryCnt + 1
+    entryEven = None
+    if (entryCnt & 1 == 0):
+        entryEven = 'entryEven'
     req.write('<!--Entry%s-->\n' %(entryCnt))
     req.write('<!-- link="%s" title="%s" image="%s" -->\n' %(link, title, image or ''))
     if image:
         req.write('<div class="imageWrapper">\n')
         req.write('<div class="imageContainer"><a href="%s" %s><img src="%s" /></a></div>\n' %(link, option or '', image))
-        req.write('<h2><a href="%s" %s>%s</h2>\n' %(link, option or '', title))
+        req.write('<h2><a href="%s" %s>%s</a></h2>\n' %(link, option or '', title))
         req.write('</div>\n')
     else:
-        req.write('<h2 class="entryTitle"><a href="%s" %s>%s</a></h2>\n' %(link, option or '', title))
+        req.write('<h2 class="entryTitle %s"><a href="%s" %s>%s</a></h2>\n' %(entryEven or '', link, option or '', title))
 
 def addPage(req, link, title, image=None):
     addEntry(req, 'view.py?p='+link, title, image)
