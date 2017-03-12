@@ -57,7 +57,7 @@ def searchFrame(url):
             if m.group(1) not in watch:
                 watch.append(m.group(1))
     for w in watch:
-        src = xurl.getFrame(w)
+        src = decodeJSCode(w) or xurl.getFrame(w)
         if src and not re.search(r'/ads/', src):
             return src
     return None

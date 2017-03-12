@@ -85,3 +85,14 @@
     margin: 0px;
 }
 
+#loadingMessage {
+    position: fixed;
+    width: 100%;
+    z-index: 10;
+}
+
+#loadingMessage h1 {
+    text-align: center;
+    color: white;
+    background-color: rgba(0, 0, 0, 0.5);
+}

@@ -32,10 +32,11 @@ function setWidthHeight(entryMax) {
     var windowWidth = $(window).innerWidth();
     var imageHeight = windowHeight * 90 / entryMax / 100;
     var imageWidth = windowHeight * 120 / entryMax / 100;
+    var titleWidth = windowWidth - imageWidth - 32;
     $('.imageContainer').css('height', imageHeight);
     $('.imageContainer').css('width', imageWidth);
     $('h2').css('left', imageWidth);
-    $('h2').css('width', windowWidth - imageWidth);
+    $('h2').css('width', titleWidth);
     $('h2').css('height', imageHeight);
 };
 
@@ -44,15 +45,13 @@ function onReady() {
     var slider = localStorage.getItem('slider');
     var entryMax = parseInt(localStorage.getItem('entryMax') || '5');
 
-    if (slider == 'no') {
-        return;
-    }
-
-    if ($('.bxslider').length > 0 &&  $('.imageContainer').length > entryMax) {
+    if (slider != 'no' && $('.bxslider').length > 0 &&  $('.imageContainer').length > entryMax) {
         setEntryCluster(entryMax);
         setWidthHeight(entryMax);
         bxslider = $('.bxslider').bxSlider();
         $(document).keydown(onKeyDown);
     }
+
+    $('#loadingMessage').hide();
 }
 
