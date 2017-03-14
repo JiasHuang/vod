@@ -14,7 +14,10 @@ def load(url, local=None, options=None):
     return xurl.load2(url, local, options)
 
 def str2int(s):
-    return int(re.sub("[^0-9]", "", s))
+    try:
+        return int(re.sub("[^0-9]", "", s))
+    except:
+        return 0
 
 def search(patten, txt):
     m = re.search(patten, txt)
@@ -25,9 +28,10 @@ def search(patten, txt):
 def parseFileSource(txt):
     best_f = None
     best_l = None
-    for m in re.finditer(r'{(.*?)}', txt):
-        f = search(r'"file":"([^"]*)"', m.group()) or search(r'file:([^,]*)', m.group())
-        l = search(r'"label":"([^"]*)"', m.group()) or search(r'label:([0-9]*)', m.group())
+    for m in re.finditer(r'{(.*?)}', txt, re.DOTALL|re.MULTILINE):
+        t = re.sub('\'', '"', m.group())
+        f = search(r'file"?:\s*"([^"]*)', t)
+        l = search(r'label"?:\s*"([^"]*)', t)
         if f:
             encoded = re.search(r'window.atob(([^)]*))', f)
             if encoded:
@@ -49,6 +53,22 @@ def decodeJSCode(url):
                 return parseFileSource(jsunpack.unpackURL(src.group(1)))
     return None
 
+def decodeJSCode_javfinder(url):
+    m = re.search(r'<script>(.*?)</script>', load(url), re.DOTALL|re.MULTILINE)
+    if m:
+        data = m.group(1)
+        fake = 'function jwplayer(a){this.setup=function(a){console.log(a);process.exit();};return this;}'
+        main = load('https://cdn.javfinder.com/v1/player/main.js?v=4')
+        srcs = jsunpack.executeJSCode(data+fake+main)
+        return parseFileSource(srcs)
+    return None
+
+def getFrame(url):
+    src = xurl.getFrame(url)
+    if src and re.search(r'video.php', src):
+        return decodeJSCode_javfinder(src) or src
+    return src
+
 def searchFrame(url):
     txt = load(url)
     watch = []
@@ -57,7 +77,7 @@ def searchFrame(url):
             if m.group(1) not in watch:
                 watch.append(m.group(1))
     for w in watch:
-        src = decodeJSCode(w) or xurl.getFrame(w)
+        src = decodeJSCode(w) or getFrame(w)
         if src and not re.search(r'/ads/', src):
             return src
     return None
@@ -85,7 +105,7 @@ def getSource(url):
                 if re.search(r'/watch/', m.group(1)):
                     url = m.group(1)
                     break;
-        return decodeJSCode(url) or xurl.getFrame(url) or searchFrame(url) or ''
+        return decodeJSCode(url) or getFrame(url) or searchFrame(url) or ''
 
     return ''
 
