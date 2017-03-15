@@ -69,16 +69,32 @@ def getFrame(url):
         return decodeJSCode_javfinder(src) or src
     return src
 
-def searchFrame(url):
-    txt = load(url)
+def searchWatch(url):
     watch = []
-    for m in re.finditer(r'href="([^"]*)"', txt):
+    if re.search(r'/watch/', url):
+        watch.append(url)
+    for m in re.finditer(r'href="([^"]*)"', load(url)):
         if re.search(r'/watch/', m.group(1)):
             if m.group(1) not in watch:
                 watch.append(m.group(1))
+    return watch
+
+def searchMovieWatch(url):
+    watch = searchWatch(url)
+    if len(watch) > 0:
+        return watch[0]
+    return url
+
+def getWatchSource(url):
+    if re.search(r'/movie/', url):
+        url = searchMovieWatch(url)
+    watch = searchWatch(url)
+    print('\n[jav][watch][all]\n\n\t'+'\n\t'.join(watch))
     for w in watch:
+        print('\n[jav][watch]\n\n\t'+w)
         src = decodeJSCode(w) or getFrame(w)
         if src and not re.search(r'/ads/', src):
+            print('\n[jav][src]\n\n\t'+src)
             return src
     return None
 
@@ -88,7 +104,7 @@ def getSource(url):
         print('\n[jav] invalid url')
 
     elif re.search(r'porn2tube', url):
-        src = xurl.getFrame(url)
+        src = getFrame(url)
         if src:
             if youtubedl.checkURL(src):
                 return src
@@ -100,12 +116,7 @@ def getSource(url):
         return parseFileSource(txt)
 
     elif re.search(r'javpub', url):
-        if re.search(r'/movie/', url):
-            for m in re.finditer(r'href="([^"]*)"', load(url)):
-                if re.search(r'/watch/', m.group(1)):
-                    url = m.group(1)
-                    break;
-        return decodeJSCode(url) or getFrame(url) or searchFrame(url) or ''
+        return getWatchSource(url) or ''
 
     return ''
 
