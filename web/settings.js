@@ -51,7 +51,7 @@ function getDefault(key) {
             'default':'best[ext!=webm][protocol^=http]/best[ext!=webm]',
         },
         'username' : {
-            'default':'jiastw',
+            'default':'',
         },
     };
 

@@ -5,89 +5,20 @@
 
 <link rel="stylesheet" href="bookmark.css">
 
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
 <script type="text/javascript" src="bookmark.js"></script>
 
 <script type="text/javascript">
-    window.onload = syncAll;
+    window.onload = loadAll;
 </script>
 
 </head>
 
 <body bgcolor=silver>
 
-<div>
-
-<table>
-<tr><th>YOUTUBE</th></tr>
-<tr><td><a id="playlists" href=view.py?p=https://www.youtube.com/user/jiastw/playlists>playlists</a></td></tr>
-<tr><td><a id="channels" href=view.py?p=https://www.youtube.com/user/jiastw/channels>channels</a></td></tr>
-<tr><td><a id="videos" href=view.py?p=https://www.youtube.com/user/jiastw/videos>videos</a></td></tr>
-<tr><td>+</td></tr>
-</table>
-
-<table>
-<tr><th colspan=2>LITV</th>
-<tr>
-    <td><a href=view.py?p=https://www.litv.tv/vod/drama/list.do?brc_id=52>陸劇精選</a></td>
-    <td><a href=view.py?p=https://www.litv.tv/vod/show/list.do?brc_id=63>旅遊美食</a></td>
-</tr>
-<tr>
-    <td><a href=view.py?p=https://www.litv.tv/vod/drama/list.do?brc_id=54>日韓劇場</a></td>
-    <td><a href=view.py?p=https://www.litv.tv/vod/show/list.do?brc_id=155>音樂選秀</a></td>
-</tr>
-<tr>
-    <td><a href=view.py?p=https://www.litv.tv/vod/drama/list.do?brc_id=53>台劇熱播</a></td>
-    <td><a href=view.py?p=https://www.litv.tv/vod/show/list.do?brc_id=158>人文教育</a></td>
-</tr>
-    <td><a href=view.py?p=https://www.litv.tv/vod/drama/list.do?brc_id=90>電視熱播</a></td>
-    <td><a href=view.py?p=https://www.litv.tv/vod/show/list.do?brc_id=157>談話節目</a></td>
-</tr>
-</table>
-
-<table>
-<tr><th>爱奇艺</th></tr>
-<tr><td><a href=view.py?p=http://list.tw.iqiyi.com/www/1/4----------0---4-1-1-iqiyi--.html>韓國電影</a></td></tr>
-<tr><td><a href=view.py?p=http://list.tw.iqiyi.com/www/1/1----------0---11-1-1-iqiyi--.html>華語電影</a></td></tr>
-<tr><td><a href=view.py?p=http://list.tw.iqiyi.com/www/1/------27977----0---11-1-1-iqiyi--.html>口碑佳片</a></td></tr>
-<tr><td><a href=view.py?p=http://list.tw.iqiyi.com/www/1/------27815----0---4-1-1-iqiyi--.html>院線電影</a></td></tr>
-</table>
-
-<table>
-<tr><th>LOVETV</th></tr>
-<tr><td><a href=view.py?p=http://jp.jplovetv.com/2012/08/drama-list.html>日劇</a></td></tr>
-<tr><td><a href=view.py?p=http://kr11.vslovetv.com/2012/04/drama-list.html>韓劇</a></td></tr>
-<tr><td><a href=view.py?p=http://cn.lovetvshow.info/2012/05/drama-list.html>陸劇</a></td></tr>
-<tr><td><a href=view.py?p=http://tw.lovetvshow.info/2013/05/drama-list.html>台劇</a></td></tr>
-</table>
-
-<table>
-<tr><th>XUITE</th></tr>
-<tr><td><a href=view.py?p=http://vlog.xuite.net/a4940530>韓劇</a></td></tr>
-<tr><td><a href=view.py?p=http://vlog.xuite.net/eltaott>ELTA OTT</a></td></tr>
-<tr><td>+</td></tr>
-<tr><td>+</td></tr>
-</table>
-
-<table>
-<tr><th colspan=2>乐视</th></tr>
-<tr>
-    <td><a href=view.py?p=http://list.le.com/listn/c1_t-1_a-1_y-1_s1_lg-1_ph1_md_o4_d1_p.html>最新更新</a></td>
-    <td><a href=view.py?p=http://list.le.com/listn/c1_t-1_a50071_y-1_s1_lg-1_ph1_md_o4_d1_p.html>美國電影</a></td>
-<tr>
-    <td><a href=view.py?p=http://list.le.com/listn/c1_t-1_a-1_y-1_s1_lg-1_ph1_md_o9_d1_p.html>昨日热播</a></td>
-    <td><a href=view.py?p=http://list.le.com/listn/c1_t-1_a50042_y-1_s1_lg-1_ph1_md_o4_d1_p.html>韓國電影</a></td>
-</tr>
-<tr>
-    <td><a href=view.py?p=http://list.le.com/listn/c1_t-1_a-1_y-1_s1_lg-1_ph1_md_o3_d1_p.html>歷史热播</a></td>
-    <td><a href=view.py?p=http://list.le.com/listn/c1_t-1_a-1_y-1_s1_lg70001_ph1_md_o4_d1_p.html>華語電影</a></td>
-</tr>
-<tr>
-    <td><a href=view.py?p=http://list.le.com/listn/c1_t-1_a-1_y-1_s1_lg-1_ph1_md_o2_d1_p.html>最高評分</a></td>
-    <td><a href=view.py?p=http://list.le.com/listn/c1_t30013_a-1_y-1_s1_lg-1_ph1_md_o4_d1_p.html>動漫電影</a></td>
-</tr>
-</table>
-
+<div id="result">
 </div>
+
 </body>
 
 </html>
