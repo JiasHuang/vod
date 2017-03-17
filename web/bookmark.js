@@ -3,7 +3,9 @@ function loadgist(gistid, filename) {
     $.ajax({
         url: 'https://api.github.com/gists/'+gistid,
         type: 'GET',
-        dataType: 'jsonp'
+        dataType: 'jsonp',
+        cache: true,
+        jsonpCallback: 'myCallback'
     }).success( function(gistdata) {
         var content = gistdata.data.files[filename].content;
         parseRemoteFile(filename, content);
