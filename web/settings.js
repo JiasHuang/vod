@@ -48,6 +48,7 @@ function getDefault(key) {
             '720p':'best[ext!=webm][height<=720]',
             '480p':'best[ext!=webm][height<=480]',
             '360p':'best[ext!=webm][height<=360]',
+            'audio-only':'bestaudio',
             'default':'best[ext!=webm][protocol^=http]/best[ext!=webm]',
         },
         'username' : {
