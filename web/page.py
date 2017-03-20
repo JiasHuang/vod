@@ -90,13 +90,13 @@ def addGoogleDrive(req, vid, title=None):
     link = 'https://drive.google.com/file/d/'+vid
     addVideo(req, link, title)
 
-def search_youtube(req, q):
-    url = 'https://www.youtube.com/results?sp=CAISAiAB&q='+q
+def search_youtube(req, q, args=None):
+    url = 'https://www.youtube.com/results?q=%s%s' %(q, args or '')
     for m in re.finditer(r'<a href="/watch\?v=(.{11})".*?>([^<]*)</a>', load(url)):
         addYouTube(req, m.group(1), m.group(2))
 
-def search_playlist(req, q):
-    url = 'https://www.youtube.com/results?sp=EgIQAw%3D%3D&q='+q
+def search_playlist(req, q, args=None):
+    url = 'https://www.youtube.com/results?q=%s%s' %(q, args or '')
     playlist = None
     for m in re.finditer(r'href="/watch\?v=(.{11})&amp;list=([^"]*)".*?>([^<]*)</a>', load(url)):
         if playlist != m.group(2):
@@ -143,27 +143,31 @@ def search(req, q, s):
 
     req.write('<img onload="loadImage()" onclick="startDictation()" src="mic-icon.png" id="ximage" class="topright" />\n')
 
-    req.write('<h1>\n')
-    req.write('<a href=view.py>Home</a>&nbsp;&nbsp;&nbsp;\n')
-    req.write('<a href=view.py?s=youtube&q='+q1+'>YouTube</a>&nbsp;&nbsp;&nbsp;\n')
-    req.write('<a href=view.py?s=playlist&q='+q1+'>PlayList</a>&nbsp;&nbsp;&nbsp;\n')
-    req.write('</h1>\n')
+    engines = ['YouTube', 'HD', 'Long', 'Subtitle', 'PlayList']
 
-    req.write('<br>\n')
+    req.write('<table><tr>\n')
+    for x in engines:
+        css = 'center'
+        if x.lower() == s:
+            css += ' highlight'
+        req.write('<td class="%s"><a href=view.py?s=%s&q=%s>%s</a></td>\n' %(css, x.lower(), q1, x))
+    req.write('</tr></table>\n')
 
-    req.write('<form action="view.py" method="get" id="xform">\n')
+    req.write('<form class="form" action="view.py" method="get" id="xform">\n')
     req.write('<input type="hidden" name="s" value="%s" class="input"\>\n' %(s))
     req.write('<input type="text" name="q" value="%s" class="input" id="xinput"\>\n' %(q))
     req.write('</form>\n')
 
-    req.write('<br>\n')
-
-    search_db(req, q1)
-
     if s == 'youtube':
         search_youtube(req, q1)
+    elif s == 'hd':
+        search_youtube(req, q1, '&sp=EgIgAQ%3D%3D')
+    elif s == 'long':
+        search_youtube(req, q1, '&sp=EgIYAg%3D%3D')
+    elif s == 'subtitle':
+        search_youtube(req, q1, '&sp=EgIoAQ%3D%3D')
     elif s == 'playlist':
-        search_playlist(req, q1)
+        search_playlist(req, q1, '&sp=EgIQAw%3D%3D')
     elif s == 'bing':
         search_bing(req, q1)
     elif s == 'yandex':

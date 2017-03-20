@@ -85,6 +85,21 @@
     margin: 0px;
 }
 
+.center {
+    text-align: center;
+    font-size: 32px;
+    padding: 16px;
+}
+
+.highlight {
+    font-size: 36px;
+    font-weight: bold;
+}
+
+.form {
+    margin: 16px 0px;
+}
+
 #loadingMessage {
     position: fixed;
     width: 100%;
