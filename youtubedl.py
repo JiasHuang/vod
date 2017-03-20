@@ -40,7 +40,7 @@ def genM3U(url, result):
     for r in result:
         fd.write('#EXTINF:0,0\n')
         fd.write(r+'\n')
-    local.close()
+    fd.close()
     return local
 
 def parseJson(path):
