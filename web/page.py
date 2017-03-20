@@ -71,11 +71,12 @@ def addYouTube(req, vid, title=None):
     link = 'https://www.youtube.com/watch?v='+vid
     addVideo(req, link, title)
 
-def addPlayList(req, playlist, title, video=None):
+def addPlayList(req, playlist, title, vid=None):
     link = 'https://www.youtube.com/playlist?list='+playlist
     image = None
-    if video:
-        image = 'http://img.youtube.com/vi/'+video+'/0.jpg'
+    if vid:
+        link = 'https://www.youtube.com/watch?v=%s&list=%s' %(vid, playlist)
+        image = 'http://img.youtube.com/vi/'+vid+'/0.jpg'
     addPage(req, link, title, image)
 
 def addDailyMotion(req, vid, title=None):
@@ -92,16 +93,17 @@ def addGoogleDrive(req, vid, title=None):
 
 def search_youtube(req, q, args=None):
     url = 'https://www.youtube.com/results?q=%s%s' %(q, args or '')
-    for m in re.finditer(r'<a href="/watch\?v=(.{11})".*?>([^<]*)</a>', load(url)):
-        addYouTube(req, m.group(1), m.group(2))
-
-def search_playlist(req, q, args=None):
-    url = 'https://www.youtube.com/results?q=%s%s' %(q, args or '')
-    playlist = None
-    for m in re.finditer(r'href="/watch\?v=(.{11})&amp;list=([^"]*)".*?>([^<]*)</a>', load(url)):
-        if playlist != m.group(2):
-            video, playlist, title = m.group(1), m.group(2), m.group(3)
-            addPlayList(req, playlist, title, video)
+    for m in re.finditer(r'href="/watch\?v=(.{11})([^"]*)".*?>([^<]*)</a>', load(url)):
+        vid, args, title = m.group(1), m.group(2), m.group(3)
+        playlist = meta.search(r'list=([^"]*)', args)
+        if playlist:
+            addPlayList(req, playlist, 'Playlist/'+title, vid)
+        else:
+            desc_id = meta.search(r'description-id-([^"]*)', m.group())
+            if desc_id:
+                desc = meta.search(r'description-id-'+re.escape(desc_id)+'">([^<]*)</span>', load(url))
+                title += desc or ''
+            addYouTube(req, vid, title)
 
 def search_bing(req, q):
     url = 'https://www.bing.com/search?count=30&q=site:drive.google.com+(mp4+OR+mkv+OR+avi+OR+flv)+'+q
@@ -143,7 +145,7 @@ def search(req, q, s):
 
     req.write('<img onload="loadImage()" onclick="startDictation()" src="mic-icon.png" id="ximage" class="topright" />\n')
 
-    engines = ['YouTube', 'HD', 'Long', 'Subtitle', 'PlayList']
+    engines = ['YouTube', 'HD', 'Long', 'Subtitle', 'Playlist']
 
     req.write('<table><tr>\n')
     for x in engines:
@@ -167,7 +169,7 @@ def search(req, q, s):
     elif s == 'subtitle':
         search_youtube(req, q1, '&sp=EgIoAQ%3D%3D')
     elif s == 'playlist':
-        search_playlist(req, q1, '&sp=EgIQAw%3D%3D')
+        search_youtube(req, q1, '&sp=EgIQAw%3D%3D')
     elif s == 'bing':
         search_bing(req, q1)
     elif s == 'yandex':
@@ -309,10 +311,16 @@ def page_youtube(req, url):
                     addPage(req, 'https://www.youtube.com'+link+'/videos', title+'/videos')
     elif re.search(r'playlist\?', url):
         for m in re.finditer(r'pl-video yt-uix-tile ([^>]*)', load(url)):
-            vid = re.search(r'data-video-id="([^"]*)"', m.group())
-            title = re.search(r'data-title="([^"]*)"', m.group())
+            vid = meta.search(r'data-video-id="([^"]*)"', m.group())
+            title = meta.search(r'data-title="([^"]*)"', m.group())
             if vid and title:
-                addYouTube(req, vid.group(1), title.group(1))
+                addYouTube(req, vid, title)
+    elif re.search(r'list=', url):
+        for m in re.finditer(r'<li ([^>]*)>', load(url)):
+            vid = meta.search(r'data-video-id="([^"]*)"', m.group())
+            title = meta.search(r'data-video-title="([^"]*)"', m.group())
+            if vid and title:
+                addYouTube(req, vid, title)
     else:
         for m in re.finditer(r'watch\?v=(.{11})">([^<]*)</a>', load(url)):
             vid = m.group(1)
