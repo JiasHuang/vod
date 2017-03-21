@@ -101,11 +101,15 @@ def addGoogleDrive(req, vid, title=None):
 
 def search_youtube(req, q, args=None):
     url = 'https://www.youtube.com/results?q=%s%s' %(q, args or '')
+    playlists = []
     for m in re.finditer(r'href="/watch\?v=(.{11})([^"]*)".*?>([^<]*)</a>', load(url)):
         vid, args, title = m.group(1), m.group(2), m.group(3)
         playlist = meta.search(r'list=([^"]*)', args)
         if playlist:
-            addPlayList(req, playlist, title, vid, 'Playlist')
+            if playlist not in playlists:
+                playlists.append(playlist)
+                desc = meta.search(r'<a href="/playlist\?list='+re.escape(playlist)+'" .*?\((.*?)\)</a>', load(url))
+                addPlayList(req, playlist, title, vid, desc or 'Playlist')
         else:
             desc_id = meta.search(r'description-id-([^"]*)', m.group())
             if desc_id:
