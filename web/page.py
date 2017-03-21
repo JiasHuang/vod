@@ -83,8 +83,10 @@ def addPlayList(req, playlist, title, vid=None, desc=None):
     link = 'https://www.youtube.com/playlist?list='+playlist
     image = None
     if vid:
-        link = 'https://www.youtube.com/watch?v=%s&list=%s' %(vid, playlist)
         image = 'http://img.youtube.com/vi/'+vid+'/0.jpg'
+    if desc == 'NA':
+        link = 'https://www.youtube.com/watch?v=%s&list=%s' %(vid, playlist)
+        desc = 'Playlist'
     addPage(req, link, title, image, desc)
 
 def addDailyMotion(req, vid, title=None):
@@ -99,25 +101,34 @@ def addGoogleDrive(req, vid, title=None):
     link = 'https://drive.google.com/file/d/'+vid
     addVideo(req, link, title)
 
+def getDuration(desc):
+    if not desc:
+        return None
+    return meta.search(r'(\d[^<。]*)', desc)
+
+def getDescription(attributes, txt):
+    if not attributes or not txt:
+        return None
+    desc_id = meta.search(r'description-id-([^"]*)', attributes)
+    if desc_id:
+        desc = meta.search(r'description-id-'+re.escape(desc_id)+'">([^<]*)</span>', txt)
+        return getDuration(desc) or desc
+    return None
+
 def search_youtube(req, q, args=None):
     url = 'https://www.youtube.com/results?q=%s%s' %(q, args or '')
+    txt = load(url)
     playlists = []
-    for m in re.finditer(r'href="/watch\?v=(.{11})([^"]*)".*?>([^<]*)</a>', load(url)):
+    for m in re.finditer(r'href="/watch\?v=(.{11})([^"]*)".*?>([^<]*)</a>', txt):
         vid, args, title = m.group(1), m.group(2), m.group(3)
         playlist = meta.search(r'list=([^"]*)', args)
         if playlist:
             if playlist not in playlists:
                 playlists.append(playlist)
-                desc = meta.search(r'<a href="/playlist\?list='+re.escape(playlist)+'" .*?\((.*?)\)</a>', load(url))
-                addPlayList(req, playlist, title, vid, desc or 'Playlist')
+                desc = meta.search(r'<a href="/playlist\?list='+re.escape(playlist)+'" .*?\((.*?)\)</a>', txt)
+                addPlayList(req, playlist, title, vid, desc or 'NA')
         else:
-            desc_id = meta.search(r'description-id-([^"]*)', m.group())
-            if desc_id:
-                desc = meta.search(r'description-id-'+re.escape(desc_id)+'">([^<]*)</span>', load(url))
-                duration = meta.search(r'(\d[\d:]*)', desc)
-                addYouTube(req, vid, title, duration or desc)
-            else:
-                addYouTube(req, vid, title)
+            addYouTube(req, vid, title, getDescription(m.group(), txt))
 
 def search_bing(req, q):
     url = 'https://www.bing.com/search?count=30&q=site:drive.google.com+(mp4+OR+mkv+OR+avi+OR+flv)+'+q
@@ -159,7 +170,7 @@ def search(req, q, s):
 
     req.write('<img onload="loadImage()" onclick="startDictation()" src="mic-icon.png" id="ximage" class="topright" />\n')
 
-    engines = ['YouTube', 'HD', 'Long', 'Subtitle', 'Playlist']
+    engines = ['YouTube', 'HD', 'Long', 'Playlist']
 
     req.write('<table><tr>\n')
     for x in engines:
@@ -180,8 +191,6 @@ def search(req, q, s):
         search_youtube(req, q1, '&sp=EgIgAQ%3D%3D')
     elif s == 'long':
         search_youtube(req, q1, '&sp=EgIYAg%3D%3D')
-    elif s == 'subtitle':
-        search_youtube(req, q1, '&sp=EgIoAQ%3D%3D')
     elif s == 'playlist':
         search_youtube(req, q1, '&sp=EgIQAw%3D%3D')
     elif s == 'bing':
@@ -310,41 +319,45 @@ def page_imovie(req, url):
                 addVideo(req, src)
 
 def page_youtube(req, url):
+    txt = load(url)
     if re.search(r'/playlists($)', url):
         playlist = None
-        for m in re.finditer(r'href="/playlist\?list=([^"]*)"*?>([^<]*)</a>', load(url)):
+        for m in re.finditer(r'href="/playlist\?list=([^"]*)"*?>([^<]*)</a>', txt):
             if playlist != m.group(1):
                 playlist, title = m.group(1), m.group(2)
                 addPlayList(req, playlist, title)
     elif re.search(r'/channels($)', url):
-        for m in re.finditer(r'class="yt-uix-sessionlink yt-uix-tile-link ([^>]*)', load(url)):
+        for m in re.finditer(r'class="yt-uix-sessionlink yt-uix-tile-link ([^>]*)', txt):
                 link = meta.search(r'href="([^"]*)"', m.group())
                 title = meta.search(r'title="([^"]*)"', m.group())
                 if link and title:
                     addPage(req, 'https://www.youtube.com'+link+'/playlists', title+'/playlists')
                     addPage(req, 'https://www.youtube.com'+link+'/videos', title+'/videos')
     elif re.search(r'playlist\?', url):
-        for m in re.finditer(r'pl-video yt-uix-tile ([^>]*)', load(url)):
+        for m in re.finditer(r'<tr (.*?)</tr>', txt, re.DOTALL|re.MULTILINE):
             vid = meta.search(r'data-video-id="([^"]*)"', m.group())
             title = meta.search(r'data-title="([^"]*)"', m.group())
+            desc = meta.search(r'<span aria-label=".*?">(.*?)</span>', m.group())
             if vid and title:
-                addYouTube(req, vid, title)
+                addYouTube(req, vid, title, getDuration(desc) or desc)
     elif re.search(r'list=', url):
-        for m in re.finditer(r'<li ([^>]*)>', load(url)):
+        for m in re.finditer(r'<li ([^>]*)>', txt):
             vid = meta.search(r'data-video-id="([^"]*)"', m.group())
             title = meta.search(r'data-video-title="([^"]*)"', m.group())
             if vid and title:
                 addYouTube(req, vid, title)
     else:
-        for m in re.finditer(r'watch\?v=(.{11})">([^<]*)</a>', load(url)):
-            vid = m.group(1)
-            addYouTube(req, m.group(1), m.group(2))
+        for m in re.finditer(r'<a (.*?)</a>', txt, re.DOTALL|re.MULTILINE):
+            vid = meta.search(r'href="/watch\?v=(.{11})', m.group())
+            title = meta.search(r'title="([^"]*)"', m.group())
+            if vid and title:
+                addYouTube(req, vid, title, getDescription(m.group(), txt))
 
 def onPageEnd(req):
     global entryCnt
     if entryCnt == 0:
-        req.write('<h2>Oops! Not Found</h2>')
-    req.write('<!--EntryEnd-->')
+        req.write('<h2>Oops! Not Found</h2>\n')
+    req.write('<!--EntryEnd-->\n')
 
 def page(req, url):
 
