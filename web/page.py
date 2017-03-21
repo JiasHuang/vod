@@ -41,43 +41,51 @@ def renderDIR(req, d):
 def load(url):
     return meta.load(url)
 
-def addEntry(req, link, title, image=None, option=None):
+def addEntry(req, link, title, image=None, desc=None):
     global entryCnt
     entryCnt = entryCnt + 1
     entryEven = None
     if (entryCnt & 1 == 0):
         entryEven = 'entryEven'
     req.write('<!--Entry%s-->\n' %(entryCnt))
-    req.write('<!-- link="%s" title="%s" image="%s" -->\n' %(link, title, image or ''))
+    req.write('<!-- link="%s" title="%s" image="%s" desc="%s" -->\n' %(link, title, image or '', desc or ''))
+    if re.search('view.py?v=', link):
+        anchor = 'href="%s" target="playVideo"' %(link)
+    else:
+        anchor = 'href="%s"' %(link)
     if image:
         req.write('<div class="imageWrapper">\n')
-        req.write('<div class="imageContainer"><a href="%s" %s><img src="%s" /></a></div>\n' %(link, option or '', image))
-        req.write('<h2><a href="%s" %s>%s</a></h2>\n' %(link, option or '', title))
+        req.write('<div class="imageContainer">\n')
+        req.write('<a %s><img src="%s" /></a>\n' %(anchor, image))
+        if desc:
+            req.write('<p>%s</p>\n' %(desc))
+        req.write('</div>\n')
+        req.write('<h2><a %s>%s</a></h2>\n' %(anchor, title))
         req.write('</div>\n')
     else:
-        req.write('<h2 class="entryTitle %s"><a href="%s" %s>%s</a></h2>\n' %(entryEven or '', link, option or '', title))
+        req.write('<h2 class="entryTitle %s"><a %s>%s</a></h2>\n' %(entryEven or '', anchor, title))
 
-def addPage(req, link, title, image=None):
-    addEntry(req, 'view.py?p='+link, title, image)
+def addPage(req, link, title, image=None, desc=None):
+    addEntry(req, 'view.py?p='+link, title, image, desc)
 
-def addVideo(req, link, title=None, image=None):
+def addVideo(req, link, title=None, image=None, desc=None):
     if not link:
         return
     if re.search(r'^//', link):
         link = re.sub('//', 'http://', link)
-    addEntry(req, 'view.py?v='+link, title or link, image or meta.getImage(link) or 'Movies-icon.png', 'target="playVideo"')
+    addEntry(req, 'view.py?v='+link, title or link, image or meta.getImage(link) or 'Movies-icon.png', desc)
 
-def addYouTube(req, vid, title=None):
+def addYouTube(req, vid, title=None, desc=None):
     link = 'https://www.youtube.com/watch?v='+vid
-    addVideo(req, link, title)
+    addVideo(req, link, title, None, desc)
 
-def addPlayList(req, playlist, title, vid=None):
+def addPlayList(req, playlist, title, vid=None, desc=None):
     link = 'https://www.youtube.com/playlist?list='+playlist
     image = None
     if vid:
         link = 'https://www.youtube.com/watch?v=%s&list=%s' %(vid, playlist)
         image = 'http://img.youtube.com/vi/'+vid+'/0.jpg'
-    addPage(req, link, title, image)
+    addPage(req, link, title, image, desc)
 
 def addDailyMotion(req, vid, title=None):
     link = 'http://www.dailymotion.com/video/'+vid
@@ -97,13 +105,15 @@ def search_youtube(req, q, args=None):
         vid, args, title = m.group(1), m.group(2), m.group(3)
         playlist = meta.search(r'list=([^"]*)', args)
         if playlist:
-            addPlayList(req, playlist, 'Playlist/'+title, vid)
+            addPlayList(req, playlist, title, vid, 'Playlist')
         else:
             desc_id = meta.search(r'description-id-([^"]*)', m.group())
             if desc_id:
                 desc = meta.search(r'description-id-'+re.escape(desc_id)+'">([^<]*)</span>', load(url))
-                title += desc or ''
-            addYouTube(req, vid, title)
+                duration = meta.search(r'(\d[\d:]*)', desc)
+                addYouTube(req, vid, title, duration or desc)
+            else:
+                addYouTube(req, vid, title)
 
 def search_bing(req, q):
     url = 'https://www.bing.com/search?count=30&q=site:drive.google.com+(mp4+OR+mkv+OR+avi+OR+flv)+'+q

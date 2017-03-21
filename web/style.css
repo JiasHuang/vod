@@ -56,6 +56,7 @@
 }
 
 .imageContainer {
+    position: relative;
     width: 24vh;
     height: 18vh;
     overflow: hidden;
@@ -69,6 +70,17 @@
     margin-right: auto;
     width: auto;
     height: 100%;
+}
+
+.imageContainer p {
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+    font-size: 10px;
+    color: white;
+    z-index: 10;
+    background-color: rgba(0, 0, 0, 0.5);
+    overflow: hidden;
 }
 
 .imageWrapper h2 {
