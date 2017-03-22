@@ -84,9 +84,10 @@ def addPlayList(req, playlist, title, vid=None, desc=None):
     image = None
     if vid:
         image = 'http://img.youtube.com/vi/'+vid+'/0.jpg'
-    if desc == 'NA':
-        link = 'https://www.youtube.com/watch?v=%s&list=%s' %(vid, playlist)
-        desc = 'Playlist'
+        if not desc:
+            # Some playlist URLs don't actually serve a playlist
+            link = 'https://www.youtube.com/watch?v=%s&list=%s' %(vid, playlist)
+            desc = 'Playlist'
     addPage(req, link, title, image, desc)
 
 def addDailyMotion(req, vid, title=None):
@@ -102,13 +103,9 @@ def addGoogleDrive(req, vid, title=None):
     addVideo(req, link, title)
 
 def getDuration(desc):
-    if not desc:
-        return None
     return meta.search(r'(\d[^<。]*)', desc)
 
 def getDescription(attributes, txt):
-    if not attributes or not txt:
-        return None
     desc_id = meta.search(r'description-id-([^"]*)', attributes)
     if desc_id:
         desc = meta.search(r'description-id-'+re.escape(desc_id)+'">([^<]*)</span>', txt)
@@ -126,7 +123,7 @@ def search_youtube(req, q, args=None):
             if playlist not in playlists:
                 playlists.append(playlist)
                 desc = meta.search(r'<a href="/playlist\?list='+re.escape(playlist)+'" .*?\((.*?)\)</a>', txt)
-                addPlayList(req, playlist, title, vid, desc or 'NA')
+                addPlayList(req, playlist, title, vid, desc)
         else:
             addYouTube(req, vid, title, getDescription(m.group(), txt))
 
@@ -221,17 +218,13 @@ def page_xuite(req, url):
 
 def page_xuiteDIR(req, url):
 
-    m = re.search(r'xuite.net/([a-z0-9A-Z]*)($)', url)
-    if not m:
+    user = meta.search(r'xuite.net/([a-z0-9A-Z]*)($)', url)
+    if not user:
         return
 
-    user = m.group(1)
-
-    m = re.search(r'userSn=([0-9]*)', load(url))
-    if not m:
+    userSn = meta.search(r'userSn=([0-9]*)', load(url))
+    if not userSn:
         return
-
-    userSn = m.group(1)
 
     data = json.loads(load('http://vlog.xuite.net/default/media/widget?title=dir&userSn=%s' %(userSn)))
     if 'content' not in data:
@@ -253,13 +246,10 @@ def page_litv(req, url):
         programInfo = meta.load(_url, None, headers)
         for m in re.finditer(r'{"contentId":"([^"]*)",.*?}', programInfo, re.DOTALL):
             contentId = m.group(1)
-            imageLink = None
-            subtitle = re.search(r'"subtitle":"([^"]*)"', m.group())
-            imageFile = re.search(r'"imageFile":"([^"]*)"', m.group())
-            if imageFile:
-                imageLink = imageFile.group(1)
+            subtitle = meta.search(r'"subtitle":"([^"]*)"', m.group())
+            imageFile = meta.search(r'"imageFile":"([^"]*)"', m.group())
             if subtitle:
-                addVideo(req, re.sub(_contentId, contentId, url), subtitle.group(1), imageLink)
+                addVideo(req, re.sub(_contentId, contentId, url), subtitle, imageFile)
     else:
         meta.findVideoLink(req, url, True, True, 'data-img')
 
@@ -320,13 +310,14 @@ def page_imovie(req, url):
 
 def page_youtube(req, url):
     txt = load(url)
-    if re.search(r'/playlists($)', url):
-        playlist = None
+    if re.search(r'/playlists$', url):
+        playlists = []
         for m in re.finditer(r'href="/playlist\?list=([^"]*)"*?>([^<]*)</a>', txt):
-            if playlist != m.group(1):
-                playlist, title = m.group(1), m.group(2)
+            playlist, title = m.group(1), m.group(2)
+            if playlist not in playlists:
+                playlists.append(playlist)
                 addPlayList(req, playlist, title)
-    elif re.search(r'/channels($)', url):
+    elif re.search(r'/channels$', url):
         for m in re.finditer(r'class="yt-uix-sessionlink yt-uix-tile-link ([^>]*)', txt):
                 link = meta.search(r'href="([^"]*)"', m.group())
                 title = meta.search(r'title="([^"]*)"', m.group())
@@ -337,8 +328,8 @@ def page_youtube(req, url):
         for m in re.finditer(r'<tr (.*?)</tr>', txt, re.DOTALL|re.MULTILINE):
             vid = meta.search(r'data-video-id="([^"]*)"', m.group())
             title = meta.search(r'data-title="([^"]*)"', m.group())
-            desc = meta.search(r'<span aria-label=".*?">(.*?)</span>', m.group())
             if vid and title:
+                desc = meta.search(r'<span aria-label=".*?">(.*?)</span>', m.group())
                 addYouTube(req, vid, title, getDuration(desc) or desc)
     elif re.search(r'list=', url):
         for m in re.finditer(r'<li ([^>]*)>', txt):
@@ -351,7 +342,8 @@ def page_youtube(req, url):
             vid = meta.search(r'href="/watch\?v=(.{11})', m.group())
             title = meta.search(r'title="([^"]*)"', m.group())
             if vid and title:
-                addYouTube(req, vid, title, getDescription(m.group(), txt))
+                desc = getDescription(m.group(), txt)
+                addYouTube(req, vid, title, desc)
 
 def onPageEnd(req):
     global entryCnt

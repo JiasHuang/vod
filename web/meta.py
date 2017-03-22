@@ -16,6 +16,8 @@ import conf
 import page
 
 def search(patten, txt, flags=0):
+    if not txt:
+        return None
     m = re.search(patten, txt, flags)
     if m:
         return m.group(1)
