@@ -78,6 +78,7 @@ def index(req):
     d    = arg.get('d', None) # directory
     f    = arg.get('f', None) # file
     c    = arg.get('c', None) # command
+    x    = arg.get('x', None) # extra
 
     if i:
         i = i.strip()
@@ -97,7 +98,7 @@ def index(req):
         page.page(req, p)
 
     elif q:
-        page.search(req, q, s)
+        page.search(req, q, s, x)
 
     elif d:
         page.renderDIR(req, d)

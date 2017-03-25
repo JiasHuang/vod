@@ -66,6 +66,8 @@ def addEntry(req, link, title, image=None, desc=None):
         req.write('<h2 class="entryTitle %s"><a %s>%s</a></h2>\n' %(entryEven or '', anchor, title))
 
 def addPage(req, link, title, image=None, desc=None):
+    if not link:
+        return
     addEntry(req, 'view.py?p='+link, title, image, desc)
 
 def addVideo(req, link, title=None, image=None, desc=None):
@@ -112,8 +114,30 @@ def getDescription(attributes, txt):
         return getDuration(desc) or desc
     return None
 
-def search_youtube(req, q, args=None):
-    url = 'https://www.youtube.com/results?q=%s%s' %(q, args or '')
+def addNextPages(req, q, txt):
+    prefix = 'view.py?q='+q
+    req.write('<table class="pages"><tr>\n')
+    for m in re.finditer(r'<a href="/results.*?</a>', txt):
+        sp = meta.search(r'sp=([^"&]*)', m.group())
+        if not sp:
+            continue
+        pageno = meta.search(r'>(\d+)</span>', m.group())
+        if pageno:
+            req.write('<td class="pageno"><a href="%s">%s</a></td>\n' %(prefix+'&x='+sp, pageno))
+            continue
+        if re.search(r'«', m.group()):
+            req.write('<td class="pageno"><a href="%s">«Prev</a></td>\n' %(prefix+'&x='+sp))
+            continue
+        if re.search(r'»', m.group()):
+            req.write('<td class="pageno"><a href="%s">Next»</a></td>\n' %(prefix+'&x='+sp))
+            continue
+    req.write('</tr></table>\n')
+    return
+
+def search_youtube(req, q, sp=None):
+    url = 'https://www.youtube.com/results?q='+q
+    if sp:
+        url = url+'&sp='+sp
     txt = load(url)
     playlists = []
     for m in re.finditer(r'href="/watch\?v=(.{11})([^"]*)".*?>([^<]*)</a>', txt):
@@ -126,6 +150,7 @@ def search_youtube(req, q, args=None):
                 addPlayList(req, playlist, title, vid, desc)
         else:
             addYouTube(req, vid, title, getDescription(m.group(), txt))
+    addNextPages(req, q, txt)
 
 def search_bing(req, q):
     url = 'https://www.bing.com/search?count=30&q=site:drive.google.com+(mp4+OR+mkv+OR+avi+OR+flv)+'+q
@@ -157,7 +182,7 @@ def search_db(req, q):
         if re.search(q, title, re.IGNORECASE):
             addEntry(req, link, title, image)
 
-def search(req, q, s):
+def search(req, q, s=None, x=None):
     html = re.split('<!--result-->', loadFile('list.html'))
     req.write(html[0])
 
@@ -170,11 +195,11 @@ def search(req, q, s):
     engines = ['YouTube', 'HD', 'Long', 'Playlist']
 
     req.write('<table><tr>\n')
-    for x in engines:
+    for engin in engines:
         css = 'center'
-        if x.lower() == s:
+        if engin.lower() == s:
             css += ' highlight'
-        req.write('<td class="%s"><a href=view.py?s=%s&q=%s>%s</a></td>\n' %(css, x.lower(), q1, x))
+        req.write('<td class="%s"><a href=view.py?s=%s&q=%s>%s</a></td>\n' %(css, engin.lower(), q1, engin))
     req.write('</tr></table>\n')
 
     req.write('<form class="form" action="view.py" method="get" id="xform">\n')
@@ -183,13 +208,13 @@ def search(req, q, s):
     req.write('</form>\n')
 
     if s == 'youtube':
-        search_youtube(req, q1)
+        search_youtube(req, q1, x)
     elif s == 'hd':
-        search_youtube(req, q1, '&sp=EgIgAQ%3D%3D')
+        search_youtube(req, q1, x or 'EgIgAQ%3D%3D')
     elif s == 'long':
-        search_youtube(req, q1, '&sp=EgIYAg%3D%3D')
+        search_youtube(req, q1, x or 'EgIYAg%3D%3D')
     elif s == 'playlist':
-        search_youtube(req, q1, '&sp=EgIQAw%3D%3D')
+        search_youtube(req, q1, x or 'EgIQAw%3D%3D')
     elif s == 'bing':
         search_bing(req, q1)
     elif s == 'yandex':
