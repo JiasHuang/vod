@@ -2,6 +2,7 @@
 table {
     margin: auto;
     display: inline;
+    empty-cells: hide;
 }
 
 th {

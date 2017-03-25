@@ -28,7 +28,7 @@ function genTemplateTable(channel, links) {
             if (idx < links.length) {
                 text += '<td><a href="view.py?p='+links[idx].link+'">'+links[idx].title+'</a></td>';
             } else {
-                text += '<td>+</td>';
+                text += '<td></td>';
             }
         }
         text += '</tr>';
