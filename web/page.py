@@ -194,6 +194,7 @@ def search(req, q, s=None, x=None):
 
     engines = ['YouTube', 'HD', 'Long', 'Playlist']
 
+    req.write('<div class="searchbar">\n')
     req.write('<table><tr>\n')
     for engin in engines:
         css = 'center'
@@ -206,6 +207,9 @@ def search(req, q, s=None, x=None):
     req.write('<input type="hidden" name="s" value="%s" class="input"\>\n' %(s))
     req.write('<input type="text" name="q" value="%s" class="input" id="xinput"\>\n' %(q))
     req.write('</form>\n')
+    req.write('</div>\n')
+
+    req.write('<div class="space"></div>\n')
 
     if s == 'youtube':
         search_youtube(req, q1, x)
