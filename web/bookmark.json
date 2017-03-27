@@ -1,0 +1,55 @@
+{"channels" : [
+
+    {"channel" : "YOUTUBE", "links" : [
+        {"title" : "playlists", "link" : "https://www.youtube.com/user/jiastw/playlists"},
+        {"title" : "channels", "link" : "https://www.youtube.com/user/jiastw/channels"},
+        {"title" : "videos", "link" : "https://www.youtube.com/user/jiastw/videos"}
+    ]},
+
+    {"channel" : "LITV", "links" : [
+        {"title" : "陸劇精選", "link" : "https://www.litv.tv/vod/drama/list.do?brc_id=52"},
+        {"title" : "日韓劇場", "link" : "https://www.litv.tv/vod/drama/list.do?brc_id=54"},
+        {"title" : "台劇熱播", "link" : "https://www.litv.tv/vod/drama/list.do?brc_id=53"},
+        {"title" : "電視熱播", "link" : "https://www.litv.tv/vod/drama/list.do?brc_id=90"},
+        {"title" : "旅遊美食", "link" : "https://www.litv.tv/vod/show/list.do?brc_id=63"},
+        {"title" : "音樂選秀", "link" : "https://www.litv.tv/vod/show/list.do?brc_id=155"},
+        {"title" : "人文教育", "link" : "https://www.litv.tv/vod/show/list.do?brc_id=158"},
+        {"title" : "談話節目", "link" : "https://www.litv.tv/vod/show/list.do?brc_id=157"}
+    ]},
+
+    {"channel" : "爱奇艺", "links" : [
+        {"title" : "韓國電影", "link" : "http://list.tw.iqiyi.com/www/1/4----------0---4-1-1-iqiyi--.html"},
+        {"title" : "華語電影", "link" : "http://list.tw.iqiyi.com/www/1/1----------0---11-1-1-iqiyi--.html"},
+        {"title" : "口碑佳片", "link" : "http://list.tw.iqiyi.com/www/1/------27977----0---11-1-1-iqiyi--.html"},
+        {"title" : "院線電影", "link" : "http://list.tw.iqiyi.com/www/1/------27815----0---4-1-1-iqiyi--.html"}
+
+    ]},
+
+    {"channel" : "LOVETV", "links" : [
+        {"title" : "日劇", "link" : "http://jp.jplovetv.com/2012/08/drama-list.html"},
+        {"title" : "韓劇", "link" : "http://kr11.vslovetv.com/2012/04/drama-list.html"},
+        {"title" : "陸劇", "link" : "http://cn.lovetvshow.info/2012/05/drama-list.html"},
+        {"title" : "台劇", "link" : "http://tw.lovetvshow.info/2013/05/drama-list.html"}
+    ]},
+
+    {"channel" : "XUITE", "links" : [
+        {"title" : "韓劇", "link" : "http://vlog.xuite.net/a4940530"},
+        {"title" : "ELTA OTT", "link" : "http://vlog.xuite.net/eltaott"}
+    ]},
+
+    {"channel" : "乐视", "links" : [
+        {"title" : "最新更新", "link" : "http://list.le.com/listn/c1_t-1_a-1_y-1_s1_lg-1_ph1_md_o4_d1_p.html"},
+        {"title" : "昨日热播", "link" : "http://list.le.com/listn/c1_t-1_a-1_y-1_s1_lg-1_ph1_md_o9_d1_p.html"},
+        {"title" : "歷史热播", "link" : "http://list.le.com/listn/c1_t-1_a-1_y-1_s1_lg-1_ph1_md_o3_d1_p.html"},
+        {"title" : "最高評分", "link" : "http://list.le.com/listn/c1_t-1_a-1_y-1_s1_lg-1_ph1_md_o2_d1_p.html"},
+        {"title" : "美國電影", "link" : "http://list.le.com/listn/c1_t-1_a50071_y-1_s1_lg-1_ph1_md_o4_d1_p.html"},
+        {"title" : "韓國電影", "link" : "http://list.le.com/listn/c1_t-1_a50042_y-1_s1_lg-1_ph1_md_o4_d1_p.html"},
+        {"title" : "華語電影", "link" : "http://list.le.com/listn/c1_t-1_a-1_y-1_s1_lg70001_ph1_md_o4_d1_p.html"},
+        {"title" : "動漫電影", "link" : "http://list.le.com/listn/c1_t30013_a-1_y-1_s1_lg-1_ph1_md_o4_d1_p.html"}
+    ]},
+
+    {"channel" : "UNSTABLE", "links" : [
+        {"title" : "i-movie", "link" : "http://i-movie.co/"}
+    ]}
+
+]}

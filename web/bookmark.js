@@ -5,12 +5,16 @@ function loadgist(gistid, filename) {
         type: 'GET',
         dataType: 'jsonp',
         cache: true,
-        jsonpCallback: 'myCallback'
+        jsonpCallback: 'myCallback',
+        timeout: 1000
     }).success( function(gistdata) {
         var content = gistdata.data.files[filename].content;
-        parseRemoteFile(filename, content);
+        parseJSON(JSON.parse(content));
     }).error( function(e) {
         console.log(e);
+        $.getJSON("bookmark.json", function(json) {
+            parseJSON(json);
+        });
     });
 }
 
@@ -55,8 +59,7 @@ function genCustomTable() {
 }
 
 
-function parseRemoteFile(filename, content) {
-    var obj = JSON.parse(content);
+function parseJSON(obj) {
     var text = '';
 
     text += genCustomTable();
