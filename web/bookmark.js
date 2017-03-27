@@ -72,7 +72,26 @@ function parseJSON(obj) {
     $('#result').html(text);
 }
 
+function onTimeout () {
+    console.log('timeout');
+    $.getJSON("bookmark.json", parseJSON);
+}
+
 function loadAll() {
-    loadgist("30f6cc0f78ee246c1e28bd537764d6c4", "bookmark.json");
+    //loadgist("30f6cc0f78ee246c1e28bd537764d6c4", "bookmark.json");
+    var jsonURL = 'https://gist.githubusercontent.com/JiasHuang/30f6cc0f78ee246c1e28bd537764d6c4/raw/bookmark.json';
+
+    var bookmark = localStorage.getItem('bookmark');
+    if (bookmark && bookmark.length > 0) {
+        jsonURL = bookmark;
+    }
+
+    $.ajax({
+        url: 'access.py?j='+jsonURL,
+        dataType: 'json',
+        error: onTimeout,
+        success: parseJSON,
+        timeout: 2000
+    });
 }
 

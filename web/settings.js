@@ -16,7 +16,7 @@ function saveCookie() {
 }
 
 function save() {
-    var lists = ['slider', 'entryMax', 'format', 'username'];
+    var lists = ['slider', 'entryMax', 'format', 'username', 'bookmark'];
     for (var i=0; i<lists.length; i++) {
         localStorage.setItem(lists[i], document.getElementById(lists[i]).value);
     }
@@ -54,6 +54,9 @@ function getDefault(key) {
         'username' : {
             'default':'',
         },
+        'bookmark' : {
+            'default':'',
+        }
     };
 
     return defs[key];
@@ -92,7 +95,8 @@ function show() {
         'Slider':'slider',
         'Slider-EntryMax':'entryMax',
         'Format':'format',
-        'YouTube-Username':'username'
+        'YouTube-Username':'username',
+        'Bookmark.json':'bookmark'
     };
 
     var text = '<table>';
