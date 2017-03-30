@@ -59,6 +59,7 @@ def decodeJSCode_javfinder(url):
         data = m.group(1)
         fake = 'function jwplayer(a){this.setup=function(a){console.log(a);process.exit();};return this;}'
         main = load('https://cdn.javfinder.com/v1/player/main.js?v=4')
+        main = re.sub('window.location.pathname', '""', main);
         srcs = jsunpack.executeJSCode(data+fake+main)
         return parseFileSource(srcs)
     return None

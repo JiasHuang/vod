@@ -70,7 +70,7 @@ ul.bxslider {
 .bx-wrapper .bx-pager.bx-default-pager a:hover,
 .bx-wrapper .bx-pager.bx-default-pager a.active,
 .bx-wrapper .bx-pager.bx-default-pager a:focus {
-  background: OrangeRed;
+  background: #4CAF50;
   border: 2px solid white;
 }
 .bx-wrapper .bx-pager-item,
