@@ -49,7 +49,7 @@ def addEntry(req, link, title, image=None, desc=None):
         entryEven = 'entryEven'
     req.write('<!--Entry%s-->\n' %(entryCnt))
     req.write('<!-- link="%s" title="%s" image="%s" desc="%s" -->\n' %(link, title, image or '', desc or ''))
-    if re.search('view.py?v=', link):
+    if re.search('view.py\?v=', link):
         anchor = 'href="%s" target="playVideo"' %(link)
     else:
         anchor = 'href="%s"' %(link)
