@@ -15,10 +15,10 @@ import gzip
 import conf
 import page
 
-def search(patten, txt, flags=0):
+def search(pattern, txt, flags=0):
     if not txt:
         return None
-    m = re.search(patten, txt, flags)
+    m = re.search(pattern, txt, flags)
     if m:
         return m.group(1)
     return None

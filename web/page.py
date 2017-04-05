@@ -283,7 +283,31 @@ def page_litv(req, url):
         meta.findVideoLink(req, url, True, True, 'data-img')
 
 def page_iqiyi(req, url):
-    meta.findImageLink(req, url, True, False)
+    if re.search(r'list.', url):
+        showPage = False
+        if re.search(r'/www/2/', url):
+            showPage = True
+        pages = []
+        pages.append(url)
+        parsed_uri = urlparse.urlparse(url)
+        domain = '{uri.scheme}://{uri.netloc}'.format(uri=parsed_uri)
+        for m in re.finditer(r'<a data-key.*? href="([^"]*)"', load(url), re.DOTALL):
+            page = meta.absURL(domain, m.group(1))
+            if page not in pages:
+                pages.append(page)
+        for page in pages:
+            meta.findImageLink(req, page, True, showPage)
+    else:
+        albumId = meta.search(r'albumId:\s*(\d+)', load(url))
+        if albumId:
+            avlist = load('http://cache.video.qiyi.com/jp/avlist/%s/' %(albumId))
+            avlist = re.sub('var tvInfoJs=', '', avlist)
+            data = json.loads(avlist)
+            if 'data' in data:
+                if 'vlist' in data['data']:
+                    for d in data['data']['vlist']:
+                        if 'vurl' in d and 'vn' in d and 'vpic' in d:
+                            addVideo(req, d['vurl'].encode('utf8'), d['vn'].encode('utf8'), d['vpic'].encode('utf8'))
 
 def page_lovetv(req, url):
     parsed_uri = urlparse.urlparse(url)
