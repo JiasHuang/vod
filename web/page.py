@@ -367,7 +367,10 @@ def page_lovetv(req, url):
 def page_imovie(req, url):
     if url == 'http://i-movie.co/':
         for i in range(1, 5):
-            data = json.loads(meta.post('http://i-movie.co/sql.php?tag=getMovie', {'page':str(i), 'type':'all', 'sort':'time'}))
+            try:
+                data = json.loads(meta.post('http://i-movie.co/sql.php?tag=getMovie', {'page':str(i), 'type':'all', 'sort':'time'}))
+            except:
+                return
             if 'json' in data:
                 for d in data['json']:
                     vid, title, image  = d['id'].encode('utf8'), d['name'].encode('utf8'), d['image'].encode('utf8')
@@ -375,7 +378,10 @@ def page_imovie(req, url):
     else:
         vid = meta.search(r'view.php\?id=([0-9]*)', url)
         if vid:
-            data = json.loads(meta.post('http://i-movie.co/sql.php?tag=getOneMovie', {'id':vid}))
+            try:
+                data = json.loads(meta.post('http://i-movie.co/sql.php?tag=getOneMovie', {'id':vid}))
+            except:
+                return
             for d in data:
                 url = d['url'].encode('utf8')
                 src = meta.search(r'src="([^"]*)"', url) or url
