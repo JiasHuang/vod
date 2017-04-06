@@ -284,9 +284,6 @@ def page_litv(req, url):
 
 def page_iqiyi(req, url):
     if re.search(r'list.', url):
-        showPage = False
-        if re.search(r'/www/2/', url):
-            showPage = True
         pages = []
         pages.append(url)
         parsed_uri = urlparse.urlparse(url)
@@ -296,7 +293,13 @@ def page_iqiyi(req, url):
             if page not in pages:
                 pages.append(page)
         for page in pages:
-            meta.findImageLink(req, page, True, showPage)
+            objs = meta.findImageLink(None, page, True)
+            for obj in objs:
+                basename = os.path.basename(obj.url)
+                if re.search(r'^a_', basename):
+                    addPage(req, obj.url, obj.title, obj.image)
+                elif re.search(r'^v_', basename):
+                    addVideo(req, obj.url, obj.title, obj.image)
     else:
         albumId = meta.search(r'albumId:\s*(\d+)', load(url))
         if albumId:

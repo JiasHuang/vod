@@ -15,6 +15,16 @@ import gzip
 import conf
 import page
 
+class entryObj(object):
+    url = None
+    title = None
+    image = None
+
+    def __init__(self, url, title, image):
+        self.url = url
+        self.title = title
+        self.image = image
+
 def search(pattern, txt, flags=0):
     if not txt:
         return None
@@ -160,6 +170,7 @@ def findImageLink(req, url, unquote=False, showPage=False):
     parsed_uri = urlparse.urlparse(url)
     domain = '{uri.scheme}://{uri.netloc}'.format(uri=parsed_uri)
     txt = load(url)
+    objs = []
     for m in re.finditer(r'<a\s.*?</a>', txt, re.DOTALL|re.MULTILINE):
         link = search(r'href\s*=\s*"([^"]*)"', m.group(0))
         image = search(r'src\s*=\s*"(.*?\.jpg)"', m.group(0))
@@ -170,10 +181,15 @@ def findImageLink(req, url, unquote=False, showPage=False):
             link = absURL(domain, link)
             if urlparse.urlparse(link).path.rstrip('/') == '':
                 continue
+            if not req:
+                objs.append(entryObj(link, title or link, image))
+                continue
             if showPage == False:
                 page.addVideo(req, link, title or link, image)
             else:
                 page.addPage(req, link, title or link, image)
+    if not req:
+        return objs
 
 def findVideo(req, url):
     return findVideoLink(req, url)
