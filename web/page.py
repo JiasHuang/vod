@@ -292,7 +292,7 @@ def page_iqiyi(req, url):
             page = meta.absURL(domain, m.group(1))
             if page not in pages:
                 pages.append(page)
-        for page in pages:
+        for page in pages[0:5]:
             objs = meta.findImageLink(None, page, True)
             for obj in objs:
                 basename = os.path.basename(obj.url)
@@ -311,6 +311,23 @@ def page_iqiyi(req, url):
                     for d in data['data']['vlist']:
                         if 'vurl' in d and 'vn' in d and 'vpic' in d:
                             addVideo(req, d['vurl'].encode('utf8'), d['vn'].encode('utf8'), d['vpic'].encode('utf8'))
+
+def page_letv(req, url):
+    pages = []
+    pages.append(url)
+    if re.search(r'list.', url):
+        nextpage = re.search(r'<div class="next-page">.*?</div>', load(url), re.DOTALL|re.MULTILINE)
+        if nextpage:
+            for m in re.finditer(r'href="([^"]*)"', nextpage.group()):
+                if m.group(1) not in pages:
+                    pages.append(m.group(1))
+    for page in pages[0:5]:
+        objs = meta.findImageLink(None, page, True)
+        for obj in objs:
+            if re.search(r'/tv/', obj.url):
+                addPage(req, obj.url, obj.title, obj.image)
+            elif re.search(r'/vplay/', obj.url):
+                addVideo(req, obj.url, obj.title, obj.image)
 
 def page_lovetv(req, url):
     parsed_uri = urlparse.urlparse(url)
@@ -419,6 +436,9 @@ def page(req, url):
 
     elif re.search(r'iqiyi', url):
         page_iqiyi(req, url)
+
+    elif re.search(r'(le.com|letv)', url):
+        page_letv(req, url)
 
     elif re.search(r'lovetv', url):
         page_lovetv(req, url);
