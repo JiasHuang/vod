@@ -174,7 +174,7 @@ def findImageLink(req, url, unquote=False, showPage=False):
     for m in re.finditer(r'<a\s.*?</a>', txt, re.DOTALL|re.MULTILINE):
         link = search(r'href\s*=\s*"([^"]*)"', m.group(0))
         image = search(r'src\s*=\s*"(.*?\.jpg)"', m.group(0))
-        title = search(r'alt\s*=\s*"([^"]*)"', m.group(0))
+        title = search(r'alt\s*=\s*"([^"]*)"', m.group(0)) or search(r'title\s*=\s*"([^"]*)"', m.group(0))
         if link and image:
             if unquote == True:
                 link = urllib.unquote(link)
