@@ -3,7 +3,6 @@
 
 import re
 import os
-import json
 import urlparse
 
 import meta
@@ -255,7 +254,7 @@ def page_xuiteDIR(req, url):
     if not userSn:
         return
 
-    data = json.loads(load('http://vlog.xuite.net/default/media/widget?title=dir&userSn=%s' %(userSn)))
+    data = meta.parseJSON(load('http://vlog.xuite.net/default/media/widget?title=dir&userSn=%s' %(userSn)))
     if 'content' not in data:
         return
 
@@ -305,7 +304,7 @@ def page_iqiyi(req, url):
         if albumId:
             avlist = load('http://cache.video.qiyi.com/jp/avlist/%s/' %(albumId))
             avlist = re.sub('var tvInfoJs=', '', avlist)
-            data = json.loads(avlist)
+            data = meta.parseJSON(avlist)
             if 'data' in data:
                 if 'vlist' in data['data']:
                     for d in data['data']['vlist']:
@@ -367,10 +366,7 @@ def page_lovetv(req, url):
 def page_imovie(req, url):
     if url == 'http://i-movie.co/':
         for i in range(1, 5):
-            try:
-                data = json.loads(meta.post('http://i-movie.co/sql.php?tag=getMovie', {'page':str(i), 'type':'all', 'sort':'time'}))
-            except:
-                return
+            data = meta.parseJSON(meta.post('http://i-movie.co/sql.php?tag=getMovie', {'page':str(i), 'type':'all', 'sort':'time'}))
             if 'json' in data:
                 for d in data['json']:
                     vid, title, image  = d['id'].encode('utf8'), d['name'].encode('utf8'), d['image'].encode('utf8')
@@ -378,10 +374,7 @@ def page_imovie(req, url):
     else:
         vid = meta.search(r'view.php\?id=([0-9]*)', url)
         if vid:
-            try:
-                data = json.loads(meta.post('http://i-movie.co/sql.php?tag=getOneMovie', {'id':vid}))
-            except:
-                return
+            data = meta.parseJSON(meta.post('http://i-movie.co/sql.php?tag=getOneMovie', {'id':vid}))
             for d in data:
                 url = d['url'].encode('utf8')
                 src = meta.search(r'src="([^"]*)"', url) or url

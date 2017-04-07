@@ -8,6 +8,7 @@ import urllib2
 import urlparse
 import hashlib
 import time
+import json
 
 from StringIO import StringIO
 import gzip
@@ -211,4 +212,10 @@ def findFrame(req, url):
         src = re.search(r'src="([^"]*)"', m.group(1))
         if src:
             page.addVideo(req, src.group(1))
+
+def parseJSON(txt):
+    try:
+        return json.loads(txt)
+    except:
+        return {}
 
