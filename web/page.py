@@ -55,7 +55,7 @@ def addEntry(req, link, title, image=None, desc=None):
     if image:
         req.write('<div class="imageWrapper">\n')
         req.write('<div class="imageContainer">\n')
-        req.write('<a %s><img src="%s" /></a>\n' %(anchor, image))
+        req.write('<a %s><img src="%s" onerror=\'this.onerror=null; this.src="Movies-icon.png"\' /></a>\n' %(anchor, image))
         if desc:
             req.write('<p>%s</p>\n' %(desc))
         req.write('</div>\n')
