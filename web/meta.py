@@ -137,7 +137,8 @@ def getImage(link):
 
     m = re.search(r'http(s|)://drive.google.com/file/d/(\w*)', link)
     if m:
-        return search(r'<meta property="og:image" content="([^"]*)">', load(m.group()))
+        #return search(r'<meta property="og:image" content="([^"]*)">', load(m.group()))
+        return 'https://drive.google.com/thumbnail?authuser=0&sz=w320&id='+m.group(2)
 
     return None
 

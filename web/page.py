@@ -168,9 +168,8 @@ def search_yandex(req, q):
         meta.comment(req, unquote)
         title = meta.search(r'"title":"([^"]*)"', unquote)
         link  = meta.search(r'"url":"([^"]*)"', unquote)
-        image = meta.search(r'"thumbUrl":"([^"]*)"', unquote)
         if title and url:
-            addVideo(req, link, title, image)
+            addVideo(req, link, title)
 
 def search_db(req, q):
     local = os.path.expanduser('~')+'/.voddatabase'
