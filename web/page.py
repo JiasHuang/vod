@@ -133,6 +133,20 @@ def addNextPages(req, q, txt):
     req.write('</tr></table>\n')
     return
 
+def addNextPages_Google(req, q, txt):
+    prefix = 'view.py?s=google&q='+q
+    navcnt = meta.search(r'<div id="navcnt">(.*?)</div>', txt, re.DOTALL|re.MULTILINE)
+    if navcnt:
+        req.write('<table class="pages"><tr>\n')
+        for m in re.finditer(r'<a .*?</a>', navcnt):
+            link = meta.search(r'href="([^"]*)"', m.group())
+            label = meta.search(r'aria-label="Page (\d+)"', m.group()) or meta.search(r'id="pn([^"]*)"', m.group()) or ''
+            start = meta.search(r'start=(\d+)', link)
+            if start:
+                req.write('<td class="pageno"><a href="%s">%s</a></td>\n' %(prefix+'&x='+start, label))
+        req.write('</tr></table>\n')
+    return
+
 def search_youtube(req, q, sp=None):
     url = 'https://www.youtube.com/results?q='+q
     if sp:
@@ -170,6 +184,17 @@ def search_yandex(req, q):
         link  = meta.search(r'"url":"([^"]*)"', unquote)
         if title and url:
             addVideo(req, link, title)
+
+def search_google(req, q, start=None):
+    url = 'http://www.google.com/search?hl=en&q=site%3Adrive.google.com%20'+q
+    if start:
+        url = url+'&start='+start
+    txt = load(url)
+    for m in re.finditer(r'<h3 class="r"><a href="([^"]*)" .*?>(.*?)</a>', txt):
+        link, title = m.group(1), m.group(2)
+        title = re.sub('- Google Drive', '', title)
+        addVideo(req, link, title)
+    addNextPages_Google(req, q, txt)
 
 def search_db(req, q):
     local = os.path.expanduser('~')+'/.voddatabase'
@@ -217,6 +242,8 @@ def search(req, q, s=None, x=None):
         search_youtube(req, q1, x or 'EgIYAg%3D%3D')
     elif s == 'playlist':
         search_youtube(req, q1, x or 'EgIQAw%3D%3D')
+    elif s == 'google':
+        search_google(req, q1, x)
     elif s == 'bing':
         search_bing(req, q1)
     elif s == 'yandex':
