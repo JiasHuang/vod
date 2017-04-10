@@ -1,4 +1,50 @@
 
+var settings_dict = {
+    'Slider':'slider',
+    'Slider-EntryMax':'entryMax',
+    'Format':'format',
+    'YouTube-Username':'username',
+    'Bookmark.json':'bookmark',
+    'Develop':'dev'
+};
+
+var settings_defs = {
+    'slider' : {
+        'yes':'yes',
+        'no':'no',
+        'default':'yes',
+    },
+    'entryMax' : {
+        '3':'3',
+        '4':'4',
+        '5':'5',
+        'default':'5',
+    },
+    'format' : {
+        'http-720p':'best[ext!=webm][protocol^=http][height<=720]/best[ext!=webm]',
+        'http-480p':'best[ext!=webm][protocol^=http][height<=480]/best[ext!=webm]',
+        'http-360p':'best[ext!=webm][protocol^=http][height<=360]/best[ext!=webm]',
+        '720p':'best[ext!=webm][height<=720]/best[ext!=webm]',
+        '480p':'best[ext!=webm][height<=480]/best[ext!=webm]',
+        '360p':'best[ext!=webm][height<=360]/best[ext!=webm]',
+        'audio-only':'bestaudio',
+        'default':'best[ext!=webm][protocol^=http]/best[ext!=webm]',
+    },
+    'username' : {
+        'default':'',
+    },
+    'bookmark' : {
+        'default':'',
+    },
+    'dev' : {
+        'yes':'yes',
+        'no':'no',
+        'default':'no',
+    }
+};
+
+var settings_cookies = ['format', 'dev'];
+
 function getExpire() {
     var expire_days = 3000;
     var d = new Date();
@@ -7,18 +53,17 @@ function getExpire() {
 }
 
 function saveCookie() {
-    var lists = ['format'];
-    var cookie = '';
+    var lists = settings_cookies;
     for (var i=0; i<lists.length; i++) {
-        cookie += lists[i]+'='+document.getElementById(lists[i]).value+'; '
+        document.cookie = lists[i]+'='+document.getElementById(lists[i]).value+';'+getExpire();
     }
-    document.cookie = cookie+getExpire();
 }
 
 function save() {
-    var lists = ['slider', 'entryMax', 'format', 'username', 'bookmark'];
-    for (var i=0; i<lists.length; i++) {
-        localStorage.setItem(lists[i], document.getElementById(lists[i]).value);
+    var dict = settings_dict;
+    for (var key in dict) {
+        console.log(dict[key]);
+        localStorage.setItem(dict[key], document.getElementById(dict[key]).value);
     }
     saveCookie();
     window.location.href = 'view.py';
@@ -29,37 +74,7 @@ function cancel() {
 }
 
 function getDefault(key) {
-    var defs = {
-        'slider' : {
-            'yes':'yes',
-            'no':'no',
-            'default':'yes',
-        },
-        'entryMax' : {
-            '3':'3',
-            '4':'4',
-            '5':'5',
-            'default':'5',
-        },
-        'format' : {
-            'http-720p':'best[ext!=webm][protocol^=http][height<=720]/best[ext!=webm]',
-            'http-480p':'best[ext!=webm][protocol^=http][height<=480]/best[ext!=webm]',
-            'http-360p':'best[ext!=webm][protocol^=http][height<=360]/best[ext!=webm]',
-            '720p':'best[ext!=webm][height<=720]/best[ext!=webm]',
-            '480p':'best[ext!=webm][height<=480]/best[ext!=webm]',
-            '360p':'best[ext!=webm][height<=360]/best[ext!=webm]',
-            'audio-only':'bestaudio',
-            'default':'best[ext!=webm][protocol^=http]/best[ext!=webm]',
-        },
-        'username' : {
-            'default':'',
-        },
-        'bookmark' : {
-            'default':'',
-        }
-    };
-
-    return defs[key];
+    return settings_defs[key];
 }
 
 function getValue(id) {
@@ -90,21 +105,12 @@ function select(id) {
 }
 
 function show() {
-
-    var dict = {
-        'Slider':'slider',
-        'Slider-EntryMax':'entryMax',
-        'Format':'format',
-        'YouTube-Username':'username',
-        'Bookmark.json':'bookmark'
-    };
-
+    var dict = settings_dict;
     var text = '<table>';
     for (var key in dict) {
         text += '<tr><th>'+key+'</th><td>'+select(dict[key])+'</td></tr>';
     }
     text += '</table>';
-
     $('#Result').html(text);
 }
 

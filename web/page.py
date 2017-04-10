@@ -205,7 +205,7 @@ def search_db(req, q):
         if re.search(q, title, re.IGNORECASE):
             addEntry(req, link, title, image)
 
-def search(req, q, s=None, x=None):
+def search(req, q, s=None, x=None, dev=None):
     html = re.split('<!--result-->', loadFile('list.html'))
     req.write(html[0])
 
@@ -216,6 +216,9 @@ def search(req, q, s=None, x=None):
     req.write('<img onload="loadImage()" onclick="startDictation()" src="mic-icon.png" id="ximage" class="topright" />\n')
 
     engines = ['YouTube', 'HD', 'Long', 'Playlist']
+
+    if dev == 'yes':
+        engines.extend(['Google', 'Bing', 'Yandex'])
 
     req.write('<div class="searchbar">\n')
     req.write('<table><tr>\n')
