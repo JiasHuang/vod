@@ -62,7 +62,6 @@ function saveCookie() {
 function save() {
     var dict = settings_dict;
     for (var key in dict) {
-        console.log(dict[key]);
         localStorage.setItem(dict[key], document.getElementById(dict[key]).value);
     }
     saveCookie();
