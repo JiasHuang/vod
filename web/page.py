@@ -122,13 +122,13 @@ def addNextPages(req, q, txt):
             continue
         pageno = meta.search(r'>(\d+)</span>', m.group())
         if pageno:
-            req.write('<td class="pageno"><a href="%s">%s</a></td>\n' %(prefix+'&x='+sp, pageno))
+            req.write('<td class="pageno"><a id="page_%s" href="%s">%s</a></td>\n' %(pageno, prefix+'&x='+sp, pageno))
             continue
         if re.search(r'«', m.group()):
-            req.write('<td class="pageno"><a href="%s">«Prev</a></td>\n' %(prefix+'&x='+sp))
+            req.write('<td class="pageno"><a id="page_prev" href="%s">«Prev</a></td>\n' %(prefix+'&x='+sp))
             continue
         if re.search(r'»', m.group()):
-            req.write('<td class="pageno"><a href="%s">Next»</a></td>\n' %(prefix+'&x='+sp))
+            req.write('<td class="pageno"><a id="page_next" href="%s">Next»</a></td>\n' %(prefix+'&x='+sp))
             continue
     req.write('</tr></table>\n')
     return
@@ -143,7 +143,7 @@ def addNextPages_Google(req, q, txt):
             label = meta.search(r'aria-label="Page (\d+)"', m.group()) or meta.search(r'id="pn([^"]*)"', m.group()) or ''
             start = meta.search(r'start=(\d+)', link)
             if start:
-                req.write('<td class="pageno"><a href="%s">%s</a></td>\n' %(prefix+'&x='+start, label))
+                req.write('<td class="pageno"><a id="page_%s" href="%s">%s</a></td>\n' %(label, prefix+'&x='+start, label))
         req.write('</tr></table>\n')
     return
 
