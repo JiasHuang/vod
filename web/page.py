@@ -215,11 +215,11 @@ def search_xuite(req, q):
             return
         for d in data['rsp']['items']:
             try:
-                video_url = d['video_url'].encode('utf8')
+                vlog_id = d['vlog_id'].encode('utf8')
                 thumb = d['thumb'].encode('utf8')
                 title = d['title'].encode('utf8')
                 duration = d['duration'].encode('utf8')
-                addVideo(req, video_url, title, thumb, duration)
+                addVideo(req, 'http://vlog.xuite.net/play/'+vlog_id, title, thumb, duration)
             except:
                 continue
     return
