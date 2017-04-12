@@ -117,7 +117,7 @@
 .center {
     text-align: center;
     font-size: 32px;
-    padding: 16px;
+    padding: 8px 16px;
 }
 
 .highlight {
@@ -126,7 +126,7 @@
 }
 
 .form {
-    margin: 16px 0px;
+    margin: 8px 0px;
 }
 
 .pages {

@@ -207,6 +207,23 @@ def search_db(req, q):
         if re.search(q, title, re.IGNORECASE):
             addEntry(req, link, title, image)
 
+def search_xuite(req, q):
+    for i in range(3):
+        url = 'http://m.xuite.net/rpc/search?method=vlog&kw='+q+'&offset='+str(i*10+1)
+        data = meta.parseJSON(load(url))
+        if 'rsp' not in data or 'items' not in data['rsp']:
+            return
+        for d in data['rsp']['items']:
+            try:
+                video_url = d['video_url'].encode('utf8')
+                thumb = d['thumb'].encode('utf8')
+                title = d['title'].encode('utf8')
+                duration = d['duration'].encode('utf8')
+                addVideo(req, video_url, title, thumb, duration)
+            except:
+                continue
+    return
+
 def search(req, q, s=None, x=None, dev=None):
     html = re.split('<!--result-->', loadFile('list.html'))
     req.write(html[0])
@@ -218,17 +235,20 @@ def search(req, q, s=None, x=None, dev=None):
     req.write('<img onload="loadImage()" onclick="startDictation()" src="mic-icon.png" id="ximage" class="topright" />\n')
 
     engines = ['YouTube', 'HD', 'Long', 'Playlist']
+    nEngine = len(engines)
 
     if dev == 'yes':
-        engines.extend(['Google', 'Bing', 'Yandex'])
+        engines.extend(['Google', 'Bing', 'Yandex', 'Xuite'])
 
     req.write('<div class="searchbar">\n')
     req.write('<table><tr>\n')
-    for engin in engines:
+    for idx, engine in enumerate(engines):
         css = 'center'
-        if engin.lower() == s:
+        if engine.lower() == s:
             css += ' highlight'
-        req.write('<td class="%s"><a href=view.py?s=%s&q=%s>%s</a></td>\n' %(css, engin.lower(), q1, engin))
+        if idx == nEngine:
+            req.write('</tr></table><table><tr>\n')
+        req.write('<td class="%s"><a href=view.py?s=%s&q=%s>%s</a></td>\n' %(css, engine.lower(), q1, engine))
     req.write('</tr></table>\n')
 
     req.write('<form class="form" action="view.py" method="get" id="xform">\n')
@@ -253,6 +273,8 @@ def search(req, q, s=None, x=None, dev=None):
         search_bing(req, q1)
     elif s == 'yandex':
         search_yandex(req, q1)
+    elif s == 'xuite':
+        search_xuite(req, q1)
 
     onPageEnd(req)
     req.write(html[1])
