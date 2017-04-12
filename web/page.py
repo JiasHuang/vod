@@ -40,7 +40,7 @@ def renderDIR(req, d):
 def load(url):
     return meta.load(url)
 
-def addEntry(req, link, title, image=None, desc=None):
+def addEntry(req, link, title, image=None, desc=None, password=None):
     global entryCnt
     entryCnt = entryCnt + 1
     entryEven = None
@@ -49,7 +49,9 @@ def addEntry(req, link, title, image=None, desc=None):
     req.write('<!--Entry%s-->\n' %(entryCnt))
     req.write('<!-- link="%s" title="%s" image="%s" desc="%s" -->\n' %(link, title, image or '', desc or ''))
     if re.search('view.py\?v=', link):
-        anchor = 'href="%s" target="playVideo"' %(link)
+        if password:
+            password = '&ytdl_password='+password
+        anchor = 'href="%s%s" target="playVideo"' %(link, password or '')
     else:
         anchor = 'href="%s"' %(link)
     if image:
@@ -69,12 +71,12 @@ def addPage(req, link, title, image=None, desc=None):
         return
     addEntry(req, 'view.py?p='+link, title, image, desc)
 
-def addVideo(req, link, title=None, image=None, desc=None):
+def addVideo(req, link, title=None, image=None, desc=None, password=None):
     if not link:
         return
     if re.search(r'^//', link):
         link = re.sub('//', 'http://', link)
-    addEntry(req, 'view.py?v='+link, title or link, image or meta.getImage(link) or 'Movies-icon.png', desc)
+    addEntry(req, 'view.py?v='+link, title or link, image or meta.getImage(link) or 'Movies-icon.png', desc, password)
 
 def addYouTube(req, vid, title=None, desc=None):
     link = 'https://www.youtube.com/watch?v='+vid
@@ -91,9 +93,9 @@ def addPlayList(req, playlist, title, vid=None, desc=None):
             desc = 'Playlist'
     addPage(req, link, title, image, desc)
 
-def addDailyMotion(req, vid, title=None):
+def addDailyMotion(req, vid, password=None):
     link = 'http://www.dailymotion.com/video/'+vid
-    addVideo(req, link, title)
+    addVideo(req, link, password=password)
 
 def addOpenLoad(req, vid, title=None):
     link = 'https://openload.co/embed/'+vid
@@ -376,7 +378,8 @@ def page_lovetv(req, url):
             if re.search(r'-ep([0-9]+).html$', m.group(1)):
                 addPage(req, meta.absURL(domain, m.group(1)), m.group(2))
     else:
-        for m in re.finditer(r'<div id="video_div(|_s[0-9])">.*?\n</div>', load(url), re.DOTALL|re.MULTILINE):
+        txt = load(url)
+        for m in re.finditer(r'<div id="video_div(|_s[0-9])">.*?\n</div>', txt, re.DOTALL|re.MULTILINE):
             meta.comment(req, m.group())
             video_ids  = meta.search(r'video_ids.*?>([^<]*)</div>', m.group())
             video_type = meta.search(r'video_type.*?>([^<]*)</div>', m.group())
@@ -386,7 +389,8 @@ def page_lovetv(req, url):
                 if video_type == '1':
                     addYouTube(req, vid)
                 elif video_type == '2':
-                    addDailyMotion(req, vid)
+                    password = meta.search(r'密碼：(\w+)', txt)
+                    addDailyMotion(req, vid, password=password)
                 elif video_type == '3':
                     addOpenLoad(req, vid)
                 elif video_type == '21':
