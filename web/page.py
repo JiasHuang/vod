@@ -379,6 +379,7 @@ def page_lovetv(req, url):
                 addPage(req, meta.absURL(domain, m.group(1)), m.group(2))
     else:
         txt = load(url)
+        password = meta.search(r'密碼：(\w+)', txt)
         for m in re.finditer(r'<div id="video_div(|_s[0-9])">.*?\n</div>', txt, re.DOTALL|re.MULTILINE):
             meta.comment(req, m.group())
             video_ids  = meta.search(r'video_ids.*?>([^<]*)</div>', m.group())
@@ -389,7 +390,6 @@ def page_lovetv(req, url):
                 if video_type == '1':
                     addYouTube(req, vid)
                 elif video_type == '2':
-                    password = meta.search(r'密碼：(\w+)', txt)
                     addDailyMotion(req, vid, password=password)
                 elif video_type == '3':
                     addOpenLoad(req, vid)
