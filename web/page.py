@@ -115,38 +115,29 @@ def getDescription(attributes, txt):
         return getDuration(desc) or desc
     return None
 
-def addNextPages(req, q, txt):
-    prefix = 'view.py?q='+q
-    req.write('<table class="pages"><tr>\n')
-    for m in re.finditer(r'<a href="/results.*?</a>', txt):
-        sp = meta.search(r'sp=([^"&]*)', m.group())
-        if not sp:
-            continue
-        pageno = meta.search(r'>(\d+)</span>', m.group())
-        if pageno:
-            req.write('<td class="pageno"><a id="page_%s" href="%s">%s</a></td>\n' %(pageno, prefix+'&x='+sp, pageno))
-            continue
-        if re.search(r'«', m.group()):
-            req.write('<td class="pageno"><a id="page_prev" href="%s">«Prev</a></td>\n' %(prefix+'&x='+sp))
-            continue
-        if re.search(r'»', m.group()):
-            req.write('<td class="pageno"><a id="page_next" href="%s">Next»</a></td>\n' %(prefix+'&x='+sp))
-            continue
-    req.write('</tr></table>\n')
-    return
-
-def addNextPages_Google(req, q, txt):
-    prefix = 'view.py?s=google&q='+q
-    navcnt = meta.search(r'<div id="navcnt">(.*?)</div>', txt, re.DOTALL|re.MULTILINE)
-    if navcnt:
-        req.write('<table class="pages"><tr>\n')
-        for m in re.finditer(r'<a .*?</a>', navcnt):
-            link = meta.search(r'href="([^"]*)"', m.group())
-            label = meta.search(r'aria-label="Page (\d+)"', m.group()) or meta.search(r'id="pn([^"]*)"', m.group()) or ''
-            start = meta.search(r'start=(\d+)', link)
-            if start:
-                req.write('<td class="pageno"><a id="page_%s" href="%s">%s</a></td>\n' %(label, prefix+'&x='+start, label))
-        req.write('</tr></table>\n')
+def addNextPage(req, q, txt, engine='youtube'):
+    req.write('<!--NextPage-->\n')
+    if engine == 'youtube':
+        prefix = 'view.py?q='+q
+        for m in re.finditer(r'<a href="/results.*?</a>', txt):
+            sp = meta.search(r'sp=([^"&]*)', m.group())
+            if sp:
+                pageno = meta.search(r'>(\d+)</span>', m.group()) or meta.search(r'(«|»)', m.group())
+                if pageno:
+                    pageno = re.sub('«','prev', pageno)
+                    pageno = re.sub('»','next', pageno)
+                    req.write('<div id="div_page_%s" title="%s" value="%s"></div>\n' %(pageno, pageno, prefix+'&x='+sp))
+    elif engine == 'google':
+        prefix = 'view.py?s=google&q='+q
+        navcnt = meta.search(r'<div id="navcnt">(.*?)</div>', txt, re.DOTALL|re.MULTILINE)
+        if navcnt:
+            for m in re.finditer(r'<a .*?</a>', navcnt):
+                link = meta.search(r'href="([^"]*)"', m.group())
+                label = meta.search(r'aria-label="Page (\d+)"', m.group()) or meta.search(r'id="pn([^"]*)"', m.group()) or ''
+                start = meta.search(r'start=(\d+)', link)
+                if start:
+                    req.write('<div id="div_page_%s" title="%s" value="%s"></div>\n' %(label, label, prefix+'&x='+start))
+    req.write('<!--NextPageEnd-->\n')
     return
 
 def search_youtube(req, q, sp=None):
@@ -165,7 +156,7 @@ def search_youtube(req, q, sp=None):
                 addPlayList(req, playlist, title, vid, desc)
         else:
             addYouTube(req, vid, title, getDescription(m.group(), txt))
-    addNextPages(req, q, txt)
+    addNextPage(req, q, txt)
 
 def search_bing(req, q):
     url = 'https://www.bing.com/search?count=30&q=site:drive.google.com+(mp4+OR+mkv+OR+avi+OR+flv)+'+q
@@ -196,7 +187,7 @@ def search_google(req, q, start=None):
         link, title = m.group(1), m.group(2)
         title = re.sub('- Google Drive', '', title)
         addVideo(req, link, title)
-    addNextPages_Google(req, q, txt)
+    addNextPage(req, q, txt, engine='google')
 
 def search_db(req, q):
     local = os.path.expanduser('~')+'/.voddatabase'
@@ -235,6 +226,8 @@ def search(req, q, s=None, x=None):
     engines = ['YouTube', 'HD', 'Long', 'Playlist']
     enginez = ['Google', 'Bing', 'Yandex', 'Xuite']
 
+    req.write('<!--SearchEngine-->\n')
+
     for e in engines:
         req.write('<div id="div_engines_%s" value="%s"></div>\n' %(e, e))
 
@@ -243,6 +236,8 @@ def search(req, q, s=None, x=None):
 
     req.write('<div id="div_search_s" value="%s"></div>\n' %(s))
     req.write('<div id="div_search_q" value="%s"></div>\n' %(q1))
+
+    req.write('<!--SearchEngineEnd-->\n')
 
     if s == 'youtube':
         search_youtube(req, q1, x)

@@ -46,7 +46,19 @@ function renderSearchBar() {
             $('#select_enginez').addClass('highlight');
         }
     });
+}
 
+function renderNextPages() {
+    var title = $('[id^="div_page_"]').map(function () { return $(this).attr('title'); }).get();
+    var value = $('[id^="div_page_"]').map(function () { return $(this).attr('value'); }).get();
+    var text = '';
+
+    text += '<table class="pages"><tr>';
+    for (var i=0; i<title.length; i++)
+        text += '<td class="page"><a id="page_'+title[i]+'" href="'+value[i]+'">'+title[i]+'</a></td>';
+    text += '<tr></table>';
+
+    $('#nextpageTable').html(text);
 }
 
 function onPageNav(e) {
@@ -69,11 +81,12 @@ function onPageNav(e) {
 
 function onSearchReady() {
 
-    if ($('.pageno').length > 0) {
+    renderSearchBar();
+    renderNextPages();
+
+    if ($('.page').length > 0) {
         $(document).keydown(onPageNav);
     }
-
-    renderSearchBar();
 
     $('#loadingMessage').hide();
 }

@@ -70,10 +70,6 @@ function onReady() {
         $(document).keydown(onKeyDown);
     }
 
-    else if ($('.pageno').length > 0) {
-        $(document).keydown(onPageNav);
-    }
-
     $('#loadingMessage').hide();
 }
 
