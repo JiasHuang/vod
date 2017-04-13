@@ -42,8 +42,10 @@ function renderSearchBar() {
     });
 
     $('#select_enginez').children().each( function () {
-        if ($(this).text().toLowerCase() == search_s)
+        if ($(this).text().toLowerCase() == search_s) {
             $('#select_enginez').val($(this).text());
+            $('#select_enginez').addClass('highlight');
+        }
     });
 
 }
