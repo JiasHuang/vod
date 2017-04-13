@@ -13,24 +13,6 @@ function onKeyDown(e) {
     e.preventDefault(); // prevent the default action
 }
 
-function onPageNav(e) {
-    switch(e.which) {
-        case 37: // left
-            prev = document.getElementById('page_prev');
-            if (prev)
-                window.location.href = prev.href;
-            break;
-        case 39: // right
-            next = document.getElementById('page_next');
-            if (next)
-                window.location.href = next.href;
-            break;
-        default:
-            return;
-    }
-    e.preventDefault(); // prevent the default action
-}
-
 function setEntryCluster(entryMax) {
     for (var i = 1; i <= $('.imageContainer').length; i++) {
         if (i % entryMax == 1) {
