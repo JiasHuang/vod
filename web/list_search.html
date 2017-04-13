@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="referrer" content="no-referrer" />
+
+<link rel="stylesheet" href="style.css">
+
+<script type="text/javascript" src="list.js"></script>
+<script type="text/javascript" src="list_search.js"></script>
+<script type="text/javascript" src="speech.js"></script>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+
+<script type="text/javascript">
+    $(document).ready(onSearchReady);
+</script>
+
+</head>
+
+<div id="loadingMessage">
+<h1>Loading ...<h1>
+</div>
+
+<body bgcolor=silver>
+
+<img onload="loadImage()" onclick="startDictation()" src="mic-icon.png" id="ximage" class="topright" />
+
+<div id="searchbar" class="searchbar">
+    <div id="searchbarTable">
+    </div>
+    <form class="form" action="view.py" method="get" id="xform">
+    <input type="hidden" id="input_s" name="s" value="" class="input"\>
+    <input type="text" id="input_q" name="q" value="" class="input" id="xinput"\>
+    </form>
+</div>
+
+<div class="space"></div>
+
+<!--result-->
+
+</body>
+
+</html>

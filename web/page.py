@@ -224,40 +224,25 @@ def search_xuite(req, q):
                 continue
     return
 
-def search(req, q, s=None, x=None, dev=None):
-    html = re.split('<!--result-->', loadFile('list.html'))
+def search(req, q, s=None, x=None):
+    html = re.split('<!--result-->', loadFile('list_search.html'))
     req.write(html[0])
 
-    s = s or 'youtube'
+    s = (s or 'youtube').lower()
 
     q1 = re.sub(' ', '+', q)
 
-    req.write('<img onload="loadImage()" onclick="startDictation()" src="mic-icon.png" id="ximage" class="topright" />\n')
-
     engines = ['YouTube', 'HD', 'Long', 'Playlist']
-    nEngine = len(engines)
+    enginez = ['Google', 'Bing', 'Yandex', 'Xuite']
 
-    if dev == 'yes':
-        engines.extend(['Google', 'Bing', 'Yandex', 'Xuite'])
+    for e in engines:
+        req.write('<div id="div_engines_%s" value="%s"></div>\n' %(e, e))
 
-    req.write('<div class="searchbar">\n')
-    req.write('<table><tr>\n')
-    for idx, engine in enumerate(engines):
-        css = 'center'
-        if engine.lower() == s:
-            css += ' highlight'
-        if idx == nEngine:
-            req.write('</tr></table><table><tr>\n')
-        req.write('<td class="%s"><a href=view.py?s=%s&q=%s>%s</a></td>\n' %(css, engine.lower(), q1, engine))
-    req.write('</tr></table>\n')
+    for e in enginez:
+        req.write('<div id="div_enginez_%s" value="%s"></div>\n' %(e, e))
 
-    req.write('<form class="form" action="view.py" method="get" id="xform">\n')
-    req.write('<input type="hidden" name="s" value="%s" class="input"\>\n' %(s))
-    req.write('<input type="text" name="q" value="%s" class="input" id="xinput"\>\n' %(q))
-    req.write('</form>\n')
-    req.write('</div>\n')
-
-    req.write('<div class="space"></div>\n')
+    req.write('<div id="div_search_s" value="%s"></div>\n' %(s))
+    req.write('<div id="div_search_q" value="%s"></div>\n' %(q1))
 
     if s == 'youtube':
         search_youtube(req, q1, x)

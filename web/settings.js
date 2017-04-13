@@ -43,7 +43,7 @@ var settings_defs = {
     }
 };
 
-var settings_cookies = ['format', 'dev'];
+var settings_cookies = ['format'];
 
 function getExpire() {
     var expire_days = 3000;

@@ -98,7 +98,7 @@ def index(req):
         page.page(req, p)
 
     elif q:
-        page.search(req, q, s, x, getCookie(req, 'dev'))
+        page.search(req, q, s, x)
 
     elif d:
         page.renderDIR(req, d)
