@@ -114,10 +114,16 @@
     margin: 0px;
 }
 
-.center {
-    text-align: center;
+.engine {
     font-size: 32px;
     padding: 8px 16px;
+}
+
+.engineSelect {
+    font-size: 32px;
+    padding: 8px 16px;
+    background-color: silver;
+    border: none;
 }
 
 .highlight {

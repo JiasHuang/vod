@@ -8,7 +8,7 @@ function onSelectChange() {
 function renderSearchSelect() {
     var enginez = $('[id^="div_enginez_"]').map(function () { return $(this).attr('value'); }).get();
     var text = '';
-    text += '<select id="select_enginez" class="center" onchange="onSelectChange.call(this)">'
+    text += '<select id="select_enginez" class="engineSelect" onchange="onSelectChange.call(this)">'
     text += '<option disabled selected value>select</option>';
     for (var i=0; i<enginez.length; i++)
         text += '<option value="'+enginez[i]+'">'+enginez[i]+'</option>';
@@ -25,10 +25,9 @@ function renderSearchBar() {
     text += '<table><tr>';
 
     for (var i=0; i<engines.length; i++)
-        text += '<td class="center"><a href="view.py?s='+engines[i]+'&q='+search_q+'">'+engines[i]+'</a></td>';
+        text += '<td class="engine"><a href="view.py?s='+engines[i]+'&q='+search_q+'">'+engines[i]+'</a></td>';
 
-    if (localStorage.getItem('dev') == 'yes')
-        text += '<td>'+renderSearchSelect()+'</td>'
+    text += '<td>'+renderSearchSelect()+'</td>'
 
     text += '<tr></table>';
 
@@ -36,7 +35,7 @@ function renderSearchBar() {
     $('#input_s').val(search_s);
     $('#input_q').val(search_q.replace(/\+/g,' '));
 
-    $('.center').each( function() {
+    $('.engine').each( function() {
         if ($(this).children().text().toLowerCase() == search_s)
             $(this).addClass('highlight');
     });
