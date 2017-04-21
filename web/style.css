@@ -153,6 +153,12 @@
     text-align: center;
 }
 
+.result {
+    width: 90vw;
+    word-wrap: break-word;
+    margin: 64px 8px;
+}
+
 #loadingMessage {
     position: fixed;
     width: 100%;
