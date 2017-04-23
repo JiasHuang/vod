@@ -224,7 +224,7 @@ def search(req, q, s=None, x=None):
     q1 = re.sub(' ', '+', q)
 
     engines = ['YouTube', 'HD', 'Long', 'Playlist']
-    enginez = ['Google', 'Bing', 'Yandex', 'Xuite']
+    enginez = ['Google', 'Bing', 'Yandex', 'Xuite', 'Live', 'CC', 'Latest']
 
     req.write('<!--SearchEngine-->\n')
 
@@ -247,6 +247,12 @@ def search(req, q, s=None, x=None):
         search_youtube(req, q1, x or 'EgIYAg%3D%3D')
     elif s == 'playlist':
         search_youtube(req, q1, x or 'EgIQAw%3D%3D')
+    elif s == 'live':
+        search_youtube(req, q1, x or 'EgJAAQ%3D%3D')
+    elif s == 'cc':
+        search_youtube(req, q1, x or 'EgIoAQ%3D%3D')
+    elif s == 'latest':
+        search_youtube(req, q1, x or 'CAI%3D')
     elif s == 'google':
         search_google(req, q1, x)
     elif s == 'bing':

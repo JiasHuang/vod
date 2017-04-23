@@ -9,7 +9,7 @@ function renderSearchSelect() {
     var enginez = $('[id^="div_enginez_"]').map(function () { return $(this).attr('value'); }).get();
     var text = '';
     text += '<select id="select_enginez" class="engineSelect" onchange="onSelectChange.call(this)">'
-    text += '<option disabled selected value>select</option>';
+    text += '<option disabled selected value>Select</option>';
     for (var i=0; i<enginez.length; i++)
         text += '<option value="'+enginez[i]+'">'+enginez[i]+'</option>';
     text += '</select>';
