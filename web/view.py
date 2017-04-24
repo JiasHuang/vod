@@ -66,19 +66,19 @@ def handleCmd(cmd):
 def index(req):
 
     req.content_type = 'text/html; charset=utf-8'
+    form = req.form or util.FieldStorage(req)
 
-    arg  = util.FieldStorage(req)
-    a    = arg.get('a', None) # action
-    n    = arg.get('n', None) # number
-    i    = arg.get('i', None) # input
-    p    = arg.get('p', None) # page
-    v    = arg.get('v', None) # video
-    q    = arg.get('q', None) # query
-    s    = arg.get('s', None) # search
-    d    = arg.get('d', None) # directory
-    f    = arg.get('f', None) # file
-    c    = arg.get('c', None) # command
-    x    = arg.get('x', None) # extra
+    a = form.get('a', None) # action
+    n = form.get('n', None) # number
+    i = form.get('i', None) # input
+    p = form.get('p', None) # page
+    v = form.get('v', None) # video
+    q = form.get('q', None) # query
+    s = form.get('s', None) # search
+    d = form.get('d', None) # directory
+    f = form.get('f', None) # file
+    c = form.get('c', None) # command
+    x = form.get('x', None) # extra
 
     if i:
         i = i.strip()

@@ -39,7 +39,7 @@
 </tr>
 </table>
 
-<form class="form" action="view.py" method="get">
+<form class="form" action="view.py" method="post">
 <button type="submit" onclick="setAct('backward')" class="actbtn"><img src="Actions-media-skip-backward-icon.png" /></button>
 <button type="submit" onclick="setAct('stop')" class="actbtn"><img src="Actions-media-playback-stop-icon.png" /></button>
 <button type="submit" onclick="setAct('pause')" class="actbtn"><img src="Actions-media-playback-start-icon.png" /></button>
@@ -48,7 +48,7 @@
 <input type="hidden" name="a" value="" maxlength="4" class="display" readonly="readonly" />
 </form>
 
-<form class="form" action="view.py" method="get" id="xform">
+<form class="form" action="view.py" method="post" id="xform">
 <input type="text" name="i" value="" class="input" id="xinput" />
 </form>
 
