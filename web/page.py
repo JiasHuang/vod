@@ -435,8 +435,15 @@ def page_youtube(req, url):
                 link = meta.search(r'href="([^"]*)"', m.group())
                 title = meta.search(r'title="([^"]*)"', m.group())
                 if link and title:
-                    addPage(req, 'https://www.youtube.com'+link+'/playlists', title+'/playlists')
-                    addPage(req, 'https://www.youtube.com'+link+'/videos', title+'/videos')
+                    addPage(req, 'https://www.youtube.com'+link, title)
+    elif re.search(r'/channel/([^/]*)$', url):
+        addPage(req, url+'/videos', 'videos')
+        playlists = []
+        for m in re.finditer(r'href="/playlist\?list=([^"]*)"*?>([^<]*)</a>', load(url+'/playlists')):
+            playlist, title = m.group(1), m.group(2)
+            if playlist not in playlists:
+                playlists.append(playlist)
+                addPlayList(req, playlist, title)
     elif re.search(r'playlist\?', url):
         for m in re.finditer(r'<tr (.*?)</tr>', txt, re.DOTALL|re.MULTILINE):
             vid = meta.search(r'data-video-id="([^"]*)"', m.group())
