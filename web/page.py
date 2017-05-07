@@ -305,6 +305,14 @@ def page_xuiteDIR(req, url):
     return
 
 def page_litv(req, url):
+    if re.search(r'/movie/', url):
+        for m in re.finditer(r'<div class="movie_poster play_by_content_id" (.*?)>', load(url)):
+            contentId = meta.search(r'data-content-id="(.*?)"', m.group())
+            title = meta.search(r'title="(.*?)"', m.group())
+            image = meta.search(r'background-image:url\((.*?)\)', m.group())
+            if contentId and title and image:
+                addVideo(req, 'https://www.litv.tv/vod/movie/content.do?id='+contentId, title, image)
+        return
     m = re.search(r'(\?|&)id=([a-zA-Z0-9]*)', url)
     if m:
         _contentId = m.group(2)
