@@ -132,7 +132,7 @@ def extractSUB(url):
             return files
 
     try:
-        cmd = '%s --sub-lang=en --write-sub --skip-download -o %s%s \'%s\'' %(xdef.ytdl, xdef.workdir, sub, url)
+        cmd = '%s --sub-lang=en,en-US,en-GB,en-AU,en-CA --write-sub --write-auto-sub --skip-download -o %s%s \'%s\'' %(xdef.ytdl, xdef.workdir, sub, url)
         start_time = timeit.default_timer()
         output = subprocess.check_output(cmd, shell=True)
         elapsed = timeit.default_timer() - start_time
