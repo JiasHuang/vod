@@ -380,12 +380,16 @@ def page_letv(req, url):
 def page_youku(req, url):
     global entryCnt
     if re.search(r'/v_show/', url):
-        for m in re.finditer(r'name="tvlist"(.*?)</div>', load(url)):
+        txt = load(url)
+        if re.search(r'tvlist', txt):
+            pattern = r'name="tvlist"(.*?)</div>'
+        else:
+            pattern = r'<div class="program(.*?)</div>'
+        for m in re.finditer(pattern, txt):
             url = meta.search(r'href="([^"]*)"', m.group())
             title = meta.search(r'title="([^"]*)"', m.group())
-            addVideo(req, url, title)
-        if entryCnt == 0:
-            addVideo(req, url)
+            if url and title:
+                addVideo(req, url, title)
     else:
         for m in re.finditer(r'<div class="p-thumb">(.*?)</div>', load(url)):
             url = meta.search(r'href="([^"]*)"', m.group())
