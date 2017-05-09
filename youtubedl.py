@@ -36,9 +36,8 @@ def genM3U(url, result):
     local = xdef.workdir+'vod_list_'+hashlib.md5(url).hexdigest()+'.m3u'
     fd = open(local, 'w')
     fd.write('#EXTM3U\n')
-    fd.write('#EXT-X-TARGETDURATION:0\n')
     for r in result:
-        fd.write('#EXTINF:0,0\n')
+        fd.write('#EXTINF:-1,0\n')
         fd.write(r+'\n')
     fd.close()
     return local
@@ -47,13 +46,22 @@ def parseJson(path):
 
     print('\n[ytdl][parseJson]\n')
 
-    data = json.loads(xurl.readLocal(path))
-
     try:
+        data = json.loads(xurl.readLocal(path))
         results = data['url']
     except:
         print('\texception')
-        return None, None
+        txt = xurl.readLocal(path)
+        txt = re.sub(r'"formats"\s*:\s*\[{.*?}\]', '', txt)
+        results = []
+        for m in re.finditer(r'"url"\s*:\s*"(.*?)"', txt):
+            results.append(m.group(1))
+        if len(results) == 1:
+            return results[0], None
+        elif len(results) > 1:
+            return genM3U(path, results), None
+        else:
+            return None, None
 
     try:
         cookies = data['http_headers']['Cookie'].encode('utf8')

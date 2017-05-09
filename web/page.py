@@ -69,6 +69,8 @@ def addEntry(req, link, title, image=None, desc=None, password=None):
 def addPage(req, link, title, image=None, desc=None):
     if not link:
         return
+    if re.search(r'^//', link):
+        link = re.sub('//', 'http://', link)
     addEntry(req, 'view.py?p='+link, title, image, desc)
 
 def addVideo(req, link, title=None, image=None, desc=None, password=None):
@@ -375,6 +377,23 @@ def page_letv(req, url):
             elif re.search(r'/vplay/', obj.url):
                 addVideo(req, obj.url, obj.title, obj.image)
 
+def page_youku(req, url):
+    global entryCnt
+    if re.search(r'/v_show/', url):
+        for m in re.finditer(r'name="tvlist"(.*?)</div>', load(url)):
+            url = meta.search(r'href="([^"]*)"', m.group())
+            title = meta.search(r'title="([^"]*)"', m.group())
+            addVideo(req, url, title)
+        if entryCnt == 0:
+            addVideo(req, url)
+    else:
+        for m in re.finditer(r'<div class="p-thumb">(.*?)</div>', load(url)):
+            url = meta.search(r'href="([^"]*)"', m.group())
+            title = meta.search(r'title="([^"]*)"', m.group())
+            image = meta.search(r'src="([^"]*)"', m.group())
+            addPage(req, url, title, image)
+    return
+
 def page_lovetv(req, url):
     parsed_uri = urlparse.urlparse(url)
     domain = '{uri.scheme}://{uri.netloc}'.format(uri=parsed_uri)
@@ -503,6 +522,9 @@ def page(req, url):
 
     elif re.search(r'xuite', url):
         page_xuite(req, url)
+
+    elif re.search(r'youku', url):
+        page_youku(req, url)
 
     elif re.search(r'i-movie', url):
         page_imovie(req, url)
