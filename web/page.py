@@ -476,6 +476,7 @@ def page_youtube(req, url):
                 playlists.append(playlist)
                 addPlayList(req, playlist, title)
     elif re.search(r'playlist\?', url):
+        addVideo(req, url, 'PLAY ALL')
         for m in re.finditer(r'<tr (.*?)</tr>', txt, re.DOTALL|re.MULTILINE):
             vid = meta.search(r'data-video-id="([^"]*)"', m.group())
             title = meta.search(r'data-title="([^"]*)"', m.group())

@@ -46,41 +46,51 @@ def parseJson(path):
 
     print('\n[ytdl][parseJson]\n')
 
-    try:
-        data = json.loads(xurl.readLocal(path))
-        results = data['url']
-    except:
-        print('\texception')
-        txt = xurl.readLocal(path)
-        txt = re.sub(r'"formats"\s*:\s*\[{.*?}\]', '', txt)
-        results = []
-        for m in re.finditer(r'"url"\s*:\s*"(.*?)"', txt):
-            results.append(m.group(1))
-        if len(results) == 1:
-            return results[0], None
-        elif len(results) > 1:
-            return genM3U(path, results), None
+    results = []
+    cookies = None
+
+    fd = open(path, "r")
+    lines = fd.readlines()
+    fd.close()
+
+    for line in lines:
+
+        try:
+            data = json.loads(line)
+            urls = data['url']
+        except:
+            print('\texception')
+            continue
+
+        try:
+            cookies = data['http_headers']['Cookie'].encode('utf8')
+        except:
+            cookies = None
+
+        if not isinstance(urls, basestring):
+            results.append(urls)
         else:
-            return None, None
+            encoded = re.search(r'data:application/vnd.apple.mpegurl;base64,([a-zA-Z0-9+/=]*)', urls)
+            if encoded:
+                local = xdef.workdir+'vod_list_'+hashlib.md5(path).hexdigest()+'.m3u'
+                decoded = base64.b64decode(encoded.group(1))
+                xurl.saveLocal(local, decoded)
+                results.append(local)
+            else:
+                results.append(urls)
 
-    try:
-        cookies = data['http_headers']['Cookie'].encode('utf8')
-    except:
-        cookies = None
-
-    if not isinstance(results, basestring):
-        results = genM3U(url, results)
+    if len(results) == 0:
+        print('\tNo results')
+        return None, None
+    elif len(results) == 1:
+        print('\tret : %s' %(results[0]))
+        print('\thdr : %s' %(cookies or ''))
+        return results[0], cookies
     else:
-        encoded = re.search(r'data:application/vnd.apple.mpegurl;base64,([a-zA-Z0-9+/=]*)', results)
-        if encoded:
-            local = xdef.workdir+'vod_list_'+hashlib.md5(path).hexdigest()+'.m3u'
-            decoded = base64.b64decode(encoded.group(1))
-            xurl.saveLocal(local, decoded)
-            results = local
-
-    print('\tret : %s' %(results or ''))
-    print('\thdr : %s' %(cookies or ''))
-    return results, cookies
+        m3u = genM3U(path, results)
+        print('\tret : %s' %(m3u))
+        print('\thdr : %s' %(cookies or ''))
+        return m3u, cookies
 
 def extractURL(url):
 
