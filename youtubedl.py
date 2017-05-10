@@ -111,25 +111,24 @@ def extractURL(url):
         print('\tret : %s' %(local))
         return parseJson(local)
 
-    cmd = '%s -f \"%s\" -j --no-playlist %s \'%s\'' %(xdef.ytdl, fmt, arg or '', url)
+    cmd = '%s -f \"%s\" -i -j --no-playlist %s \'%s\' > %s' %(xdef.ytdl, fmt, arg or '', url, local)
 
     try:
         start_time = timeit.default_timer()
         output = subprocess.check_output(cmd, shell=True)
         elapsed = timeit.default_timer() - start_time
     except:
+        elapsed = timeit.default_timer() - start_time
         print('\texception')
-        return None, None
 
     print('\tsec : %s' %(str(elapsed)))
     print('\tret : %s' %(local))
 
-    xurl.saveLocal(local, output)
     return parseJson(local)
 
 def extractSUB(url):
 
-    if not url or not re.search(r'youtube.com', url):
+    if not url or not re.search(r'youtube.com/watch\?v=', url):
         return None
 
     print('\n[ytdl][extracSUB]\n')
