@@ -8,8 +8,10 @@ import hashlib
 import json
 import time
 import base64
-
 import timeit
+
+from optparse import OptionParser
+
 import xdef
 import xurl
 
@@ -92,7 +94,54 @@ def parseJson(path):
         print('\thdr : %s' %(cookies or ''))
         return m3u, cookies
 
+def extractPlayList(local, url):
+    txt = xurl.load2(url)
+    links = []
+    descs = []
+
+    for m in re.finditer(r'<tr (.*?)</tr>', txt, re.DOTALL|re.MULTILINE):
+        video = re.search(r'data-video-id="([^"]*)"', m.group())
+        title = re.search(r'data-title="([^"]*)"', m.group())
+        if video and title:
+            links.append('https://www.youtube.com/watch?v='+video.group(1))
+            descs.append(title.group(1))
+
+    for index,link in enumerate(links):
+        src, cookies = extractURL(link)
+        desc = descs[index]
+        if src:
+            if not os.path.exists(local):
+                fd = open(local, 'w')
+                fd.write('#EXTM3U\n')
+                fd.write('#EXTINF:-1,%s\n' %(desc))
+                fd.write(src+'\n')
+                fd.close()
+            else:
+                fd = open(local, 'a')
+                fd.write('#EXTINF:-1,%s\n' %(desc))
+                fd.write(src+'\n')
+                fd.close()
+
+    if not os.path.exists(local):
+        fd = open(local, 'w')
+        fd.write('#EXTM3U\n')
+        fd.close()
+
+    return
+
+def createSubprocess(url):
+    local = xdef.workdir+'vod_list_'+hashlib.md5(url).hexdigest()+'.m3u'
+    cmd = 'python %s -p %s -l %s' %(os.path.realpath(__file__), url, local)
+    p = subprocess.Popen(cmd, shell=True)
+    while not os.path.exists(local):
+        time.sleep(1)
+    print('\n[ytdl][createSubprocess] %s\n' %(local))
+    return local, None
+
 def extractURL(url):
+
+    if re.search(r'youtube.com/playlist\?list=', url):
+        return createSubprocess(url)
 
     print('\n[ytdl][extractURL]\n')
 
@@ -158,3 +207,15 @@ def extractSUB(url):
 
     return None
 
+
+def main():
+    parser = OptionParser()
+    parser.add_option("-p", "--playlist", dest="playlist")
+    parser.add_option("-l", "--local", dest="local")
+    (options, args) = parser.parse_args()
+    if options.local and options.playlist:
+        extractPlayList(options.local, options.playlist)
+    return
+
+if __name__ == '__main__':
+    main()
