@@ -81,17 +81,18 @@ def parseJson(path):
             else:
                 results.append(urls)
 
+    if cookies:
+        print('\thdr : %s' %(cookies))
+
     if len(results) == 0:
         print('\tNo results')
         return None, None
     elif len(results) == 1:
         print('\tret : %s' %(results[0]))
-        print('\thdr : %s' %(cookies or ''))
         return results[0], cookies
     else:
         m3u = genM3U(path, results)
         print('\tret : %s' %(m3u))
-        print('\thdr : %s' %(cookies or ''))
         return m3u, cookies
 
 def extractPlayList(local, url):
@@ -135,7 +136,8 @@ def createSubprocess(url):
     p = subprocess.Popen(cmd, shell=True)
     while not os.path.exists(local):
         time.sleep(1)
-    print('\n[ytdl][createSubprocess] %s\n' %(local))
+    print('\n[ytdl][createSubprocess]\n')
+    print('\tret : %s' %(local))
     return local, None
 
 def extractURL(url):
