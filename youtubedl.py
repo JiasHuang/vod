@@ -14,6 +14,8 @@ from optparse import OptionParser
 
 import xdef
 import xurl
+import xplay
+import mpv
 
 def checkURL(url):
     site = xurl.findSite(url)
@@ -95,7 +97,7 @@ def parseJson(path):
         print('\tret : %s' %(m3u))
         return m3u, cookies
 
-def extractPlayList(local, url):
+def extractPlayList(local, url, player):
     txt = xurl.load2(url)
     links = []
     descs = []
@@ -114,14 +116,16 @@ def extractPlayList(local, url):
             if not os.path.exists(local):
                 fd = open(local, 'w')
                 fd.write('#EXTM3U\n')
-                fd.write('#EXTINF:-1,%s\n' %(desc))
+                fd.write('#EXTINF:-1, %s\n' %(desc))
                 fd.write(src+'\n')
                 fd.close()
             else:
                 fd = open(local, 'a')
-                fd.write('#EXTINF:-1,%s\n' %(desc))
+                fd.write('#EXTINF:-1, %s\n' %(desc))
                 fd.write(src+'\n')
                 fd.close()
+                if player == 'mpv':
+                    mpv.append(src)
 
     if not os.path.exists(local):
         fd = open(local, 'w')
@@ -131,11 +135,21 @@ def extractPlayList(local, url):
     return
 
 def createSubprocess(url):
+
     local = xdef.workdir+'vod_list_'+hashlib.md5(url).hexdigest()+'.m3u'
-    cmd = 'python %s -p %s -l %s' %(os.path.realpath(__file__), url, local)
+
+    if os.path.exists(local) and not xurl.checkExpire(local):
+        print('\tret : %s' %(local))
+        return local, None
+
+    os.remove(local)
+
+    cmd = 'python %s --url %s --local %s --player %s' %(os.path.realpath(__file__), url, local, xplay.getPlayer())
     p = subprocess.Popen(cmd, shell=True)
+
     while not os.path.exists(local):
         time.sleep(1)
+
     print('\n[ytdl][createSubprocess]\n')
     print('\tret : %s' %(local))
     return local, None
@@ -212,11 +226,11 @@ def extractSUB(url):
 
 def main():
     parser = OptionParser()
-    parser.add_option("-p", "--playlist", dest="playlist")
-    parser.add_option("-l", "--local", dest="local")
+    parser.add_option("--local", dest="local")
+    parser.add_option("--url", dest="url")
+    parser.add_option("--player", dest="player")
     (options, args) = parser.parse_args()
-    if options.local and options.playlist:
-        extractPlayList(options.local, options.playlist)
+    extractPlayList(options.local, options.url, options.player)
     return
 
 if __name__ == '__main__':

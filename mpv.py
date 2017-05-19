@@ -71,3 +71,7 @@ def play(url, ref, cookies=None):
         p.communicate()
 
     return
+
+def append(url):
+    os.system('echo loadfile \"%s\" append > %s' %(url, xdef.fifo))
+    return
