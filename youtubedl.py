@@ -142,7 +142,8 @@ def createSubprocess(url):
         print('\tret : %s' %(local))
         return local, None
 
-    os.remove(local)
+    if os.path.exists(local):
+        os.remove(local)
 
     cmd = 'python %s --url %s --local %s --player %s' %(os.path.realpath(__file__), url, local, xplay.getPlayer())
     p = subprocess.Popen(cmd, shell=True)
