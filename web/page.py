@@ -83,6 +83,7 @@ def addVideo(req, link, title=None, image=None, desc=None, password=None):
 def addYouTube(req, vid, title=None, desc=None):
     link = 'https://www.youtube.com/watch?v='+vid
     addVideo(req, link, title, None, desc)
+    return link
 
 def addPlayList(req, playlist, title, vid=None, desc=None):
     link = 'https://www.youtube.com/playlist?list='+playlist
@@ -476,13 +477,19 @@ def page_youtube(req, url):
                 playlists.append(playlist)
                 addPlayList(req, playlist, title)
     elif re.search(r'playlist\?', url):
-        addVideo(req, url, 'PLAY ALL')
+        m3u = meta.genLocal(url, 'vod_list_', '.youtubedl.m3u')
+        fd = open(m3u, 'w')
+        fd.write('#EXTM3U\n')
+        addVideo(req, m3u, 'PLAY ALL')
         for m in re.finditer(r'<tr (.*?)</tr>', txt, re.DOTALL|re.MULTILINE):
             vid = meta.search(r'data-video-id="([^"]*)"', m.group())
             title = meta.search(r'data-title="([^"]*)"', m.group())
             if vid and title:
                 desc = meta.search(r'<span aria-label=".*?">(.*?)</span>', m.group())
-                addYouTube(req, vid, title, getDuration(desc) or desc)
+                link = addYouTube(req, vid, title, getDuration(desc) or desc)
+                fd.write('#EXTINF:-1, %s\n' %(title))
+                fd.write('%s\n' %(link))
+        fd.close()
     elif re.search(r'list=', url):
         for m in re.finditer(r'<li ([^>]*)>', txt):
             vid = meta.search(r'data-video-id="([^"]*)"', m.group())

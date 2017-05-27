@@ -18,6 +18,8 @@ import xplay
 import mpv
 
 def checkURL(url):
+    if url.endswith(xdef.ytdlm3u):
+        return True
     site = xurl.findSite(url)
     return re.compile('(youtube|dailymotion|facebook|bilibili|vimeo|youku|openload|litv|drive|iqiyi|letv)').search(site)
 
@@ -98,30 +100,31 @@ def parseJson(path):
         return m3u, cookies
 
 def extractPlayList(local, url, player):
-    txt = xurl.load2(url)
+    txt = xurl.readLocal(url)
+    times = []
     links = []
     descs = []
 
-    for m in re.finditer(r'<tr (.*?)</tr>', txt, re.DOTALL|re.MULTILINE):
-        video = re.search(r'data-video-id="([^"]*)"', m.group())
-        title = re.search(r'data-title="([^"]*)"', m.group())
-        if video and title:
-            links.append('https://www.youtube.com/watch?v='+video.group(1))
-            descs.append(title.group(1))
+    for m in re.finditer(r'EXTINF:\s*(.*?),\s*(.*?)\n(.*?)\n', txt, re.DOTALL|re.MULTILINE):
+        time, desc, link = m.group(1), m.group(2), m.group(3)
+        times.append(time)
+        links.append(link)
+        descs.append(desc)
 
     for index,link in enumerate(links):
         src, cookies = extractURL(link)
+        time = times[index]
         desc = descs[index]
         if src:
             if not os.path.exists(local):
                 fd = open(local, 'w')
                 fd.write('#EXTM3U\n')
-                fd.write('#EXTINF:-1, %s\n' %(desc))
+                fd.write('#EXTINF:%s, %s\n' %(time, desc))
                 fd.write(src+'\n')
                 fd.close()
             else:
                 fd = open(local, 'a')
-                fd.write('#EXTINF:-1, %s\n' %(desc))
+                fd.write('#EXTINF:%s, %s\n' %(time, desc))
                 fd.write(src+'\n')
                 fd.close()
                 if player == 'mpv':
@@ -157,7 +160,7 @@ def createSubprocess(url):
 
 def extractURL(url):
 
-    if re.search(r'youtube.com/playlist\?list=', url):
+    if url.endswith(xdef.ytdlm3u):
         return createSubprocess(url)
 
     print('\n[ytdl][extractURL]\n')
@@ -207,7 +210,8 @@ def extractSUB(url):
             return files
 
     try:
-        cmd = '%s --sub-lang=en,en-US,en-GB,en-AU,en-CA --write-sub --write-auto-sub --skip-download -o %s%s \'%s\'' %(xdef.ytdl, xdef.workdir, sub, url)
+        lang = '--sub-lang=en,en-US,en-GB,en-AU,en-CA'
+        cmd = '%s %s -o %s%s \'%s\'' %(xdef.ytdlsub, lang, xdef.workdir, sub, url)
         start_time = timeit.default_timer()
         output = subprocess.check_output(cmd, shell=True)
         elapsed = timeit.default_timer() - start_time

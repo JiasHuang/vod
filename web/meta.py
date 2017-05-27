@@ -58,6 +58,9 @@ def checkExpire(local):
 def dict2str(adict):
     return ''.join('{}{}'.format(key, val) for key, val in adict.items())
 
+def genLocal(url, prefix=None, suffix=None):
+    return conf.workdir+(prefix or 'vod_')+hashlib.md5(url).hexdigest()+(suffix or '')
+
 def load(url, local=None, headers=None, cache=True):
 
     local = local or conf.workdir+'vod_load_'+hashlib.md5(url).hexdigest()
