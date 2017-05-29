@@ -5,7 +5,7 @@ var settings_dict = {
     'Format':'format',
     'YouTube-Username':'username',
     'Bookmark.json':'bookmark',
-    'Develop':'dev'
+    'AutoSub':'autosub'
 };
 
 var settings_defs = {
@@ -36,14 +36,14 @@ var settings_defs = {
     'bookmark' : {
         'default':'',
     },
-    'dev' : {
+    'autosub' : {
         'yes':'yes',
         'no':'no',
         'default':'no',
     }
 };
 
-var settings_cookies = ['format'];
+var settings_cookies = ['format', 'autosub'];
 
 function getExpire() {
     var expire_days = 3000;

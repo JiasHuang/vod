@@ -29,16 +29,24 @@ def renderDIR(req, d):
     for dirName, subdirList, fileList in os.walk(d):
         for subdir in sorted(subdirList):
             if subdir[0] != '.':
-                req.write('<li><img src="/icons/folder.gif"> <a href="view.py?d=%s/%s">%s</a>\n' %(dirName, subdir, subdir))
+                req.write('<li><img src="/icons/folder.gif"> <a href="view.py?d=%s/%s">%s</a>\n' \
+                    %(dirName, subdir, subdir))
         for fname in sorted(fileList):
-            if fname.lower().endswith(('.mkv', '.mp4', '.avi', '.flv', '.rmvb', '.rm', '.f4v', '.wmv', '.m3u', '.m3u8', '.ts')):
-                req.write('<li><img src="/icons/movie.gif"> <a href="view.py?f=%s/%s">%s</a>\n' %(dirName, fname, fname))
+            suffix = ('.mkv', '.mp4', '.avi', '.flv', '.rmvb', '.rm', '.f4v', '.wmv', '.m3u', '.m3u8', '.ts')
+            if fname.lower().endswith(suffix):
+                req.write('<li><img src="/icons/movie.gif"> <a href="view.py?f=%s/%s">%s</a>\n' \
+                    %(dirName, fname, fname))
         break
     req.write('</div>\n')
     req.write(html[1])
 
 def load(url):
     return meta.load(url)
+
+def darg(d, *arg):
+    if len(arg) == 1:
+        return d[arg[0]].encode('utf8')
+    return [d[a].encode('utf8') for a in arg]
 
 def addEntry(req, link, title, image=None, desc=None, password=None):
     global entryCnt
@@ -209,11 +217,8 @@ def search_xuite(req, q):
             return
         for d in data['rsp']['items']:
             try:
-                vlog_id = d['vlog_id'].encode('utf8')
-                thumb = d['thumb'].encode('utf8')
-                title = d['title'].encode('utf8')
-                duration = d['duration'].encode('utf8')
-                addVideo(req, 'http://vlog.xuite.net/play/'+vlog_id, title, thumb, duration)
+                vid, title, image, desc = darg(d, 'vlog_id', 'title', 'thumb', 'duration')
+                addVideo(req, 'http://vlog.xuite.net/play/'+vid, title, image, desc)
             except:
                 continue
     return
@@ -279,7 +284,8 @@ def page_xuite(req, url):
         page_xuiteDIR(req, url)
     else:
         meta.findVideo(req, url)
-        next_page_links = meta.search(r'<!-- Numbered page links -->(.*?)<!-- Next page link -->', load(url), re.DOTALL|re.MULTILINE)
+        next_page_links = meta.search(r'<!-- Numbered page links -->(.*?)<!-- Next page link -->', \
+            load(url), re.DOTALL|re.MULTILINE)
         if next_page_links:
             parsed_uri = urlparse.urlparse(url)
             domain = '{uri.scheme}://{uri.netloc}'.format(uri=parsed_uri)
@@ -301,8 +307,7 @@ def page_xuiteDIR(req, url):
         return
 
     for d in data['content']:
-        t = d['TITLE'].encode('utf8')
-        p = d['PARENT_SEQUENCE'].encode('utf8')
+        t, p = darg(d, 'TITLE', 'PARENT_SEQUENCE')
         l = 'http://vlog.xuite.net/%s?t=cat&p=%s&dir_num=0' %(user, p)
         addPage(req, l, t)
     return
@@ -359,7 +364,8 @@ def page_iqiyi(req, url):
                 if 'vlist' in data['data']:
                     for d in data['data']['vlist']:
                         if 'vurl' in d and 'vn' in d and 'vpic' in d:
-                            addVideo(req, d['vurl'].encode('utf8'), d['vn'].encode('utf8'), d['vpic'].encode('utf8'))
+                            link, title, image = darg(d, 'vurl', 'vn', 'vpic')
+                            addVideo(req, link, title, image)
 
 def page_letv(req, url):
     pages = []
@@ -439,17 +445,18 @@ def page_lovetv(req, url):
 def page_imovie(req, url):
     if url == 'http://i-movie.co/':
         for i in range(1, 5):
-            data = meta.parseJSON(meta.post('http://i-movie.co/sql.php?tag=getMovie', {'page':str(i), 'type':'all', 'sort':'time'}))
+            data = meta.parseJSON(meta.post('http://i-movie.co/sql.php?tag=getMovie', \
+                {'page':str(i), 'type':'all', 'sort':'time'}))
             if 'json' in data:
                 for d in data['json']:
-                    vid, title, image  = d['id'].encode('utf8'), d['name'].encode('utf8'), d['image'].encode('utf8')
+                    vid, title, image = darg(d, 'id', 'name', 'image')
                     addPage(req, 'http://i-movie.co/view.php?id='+vid, title, image)
     else:
         vid = meta.search(r'view.php\?id=([0-9]*)', url)
         if vid:
             data = meta.parseJSON(meta.post('http://i-movie.co/sql.php?tag=getOneMovie', {'id':vid}))
             for d in data:
-                url = d['url'].encode('utf8')
+                url = darg(d, 'url')
                 src = meta.search(r'src="([^"]*)"', url) or url
                 addVideo(req, src)
 

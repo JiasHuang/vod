@@ -133,6 +133,7 @@ def main():
     parser = OptionParser()
     parser.add_option("-p", "--player", dest="player")
     parser.add_option("-f", "--format", dest="format")
+    parser.add_option("--autosub", dest="autosub")
     (options, args) = parser.parse_args()
 
     if options.player:
@@ -140,6 +141,9 @@ def main():
 
     if options.format:
         xdef.ytdlfmt = options.format
+
+    if options.autosub:
+        xdef.autosub = options.autosub
 
     if len(args) >= 1:
         url = args[0]

@@ -210,8 +210,10 @@ def extractSUB(url):
             return files
 
     try:
-        lang = '--sub-lang=en,en-US,en-GB,en-AU,en-CA'
-        cmd = '%s %s -o %s%s \'%s\'' %(xdef.ytdlsub, lang, xdef.workdir, sub, url)
+        opt = ''
+        if xdef.autosub == 'yes':
+            opt += '--write-auto-sub '
+        cmd = '%s %s -o %s%s \'%s\'' %(xdef.ytdlsub, opt, xdef.workdir, sub, url)
         start_time = timeit.default_timer()
         output = subprocess.check_output(cmd, shell=True)
         elapsed = timeit.default_timer() - start_time

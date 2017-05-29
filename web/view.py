@@ -51,9 +51,13 @@ def getCookie(req, key):
 
 def getOption(req):
     fmt = getCookie(req, 'format')
+    autosub = getCookie(req, 'autosub')
+    opt = ''
     if fmt:
-        return '-f \'%s\'' %(fmt)
-    return None
+        opt += '-f \'%s\' ' %(fmt)
+    if autosub:
+        opt += '--autosub %s' %(autosub)
+    return opt
 
 def handleCmd(cmd):
     os.system('rm -f '+conf.workdir+'vod_*')
