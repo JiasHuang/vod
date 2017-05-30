@@ -126,7 +126,7 @@ def getImage(link):
     if m:
         return 'http://img.youtube.com/vi/%s/0.jpg' %(m.group(2))
 
-    m = re.search(r'http://www.dailymotion.com/(embed/|)video/(.*)', link)
+    m = re.search(r'https?://www.dailymotion.com/(embed/|)video/(.*)', link)
     if m:
         return 'http://www.dailymotion.com/thumbnail/video/'+m.group(2)
 

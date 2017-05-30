@@ -217,10 +217,25 @@ def search_xuite(req, q):
             return
         for d in data['rsp']['items']:
             try:
+                prefix = 'http://vlog.xuite.net/play/'
                 vid, title, image, desc = darg(d, 'vlog_id', 'title', 'thumb', 'duration')
-                addVideo(req, 'http://vlog.xuite.net/play/'+vid, title, image, desc)
+                addVideo(req, prefix+vid, title, image, desc)
             except:
                 continue
+    return
+
+def search_dailymotion(req, q):
+    url = 'https://api.dailymotion.com/videos/?search="'+q+'"&limit=100'
+    data = meta.parseJSON(load(url))
+    if 'list' not in data:
+        return
+    for d in data['list']:
+        try:
+            prefix = 'http://www.dailymotion.com/video/'
+            vid, title = darg(d, 'id', 'title')
+            addVideo(req, prefix+vid, title)
+        except:
+            continue
     return
 
 def search(req, q, s=None, x=None):
@@ -232,7 +247,7 @@ def search(req, q, s=None, x=None):
     q1 = re.sub(' ', '+', q)
 
     engines = ['YouTube', 'HD', 'Long', 'Playlist']
-    enginez = ['Google', 'Bing', 'Yandex', 'Xuite', 'Live', 'CC', 'Latest']
+    enginez = ['Google', 'Bing', 'Yandex', 'Xuite', 'Live', 'CC', 'Latest', 'DailyMotion']
 
     req.write('<!--SearchEngine-->\n')
 
@@ -269,15 +284,15 @@ def search(req, q, s=None, x=None):
         search_yandex(req, q1)
     elif s == 'xuite':
         search_xuite(req, q1)
+    elif s == 'dailymotion':
+        search_dailymotion(req, q1)
 
     onPageEnd(req)
     req.write(html[1])
 
 def page_def(req, url):
-    global entryCnt
     meta.findLink(req, url)
-    if entryCnt == 0:
-        meta.findImageLink(req, url, True, False)
+    meta.findImageLink(req, url, True, False)
 
 def page_xuite(req, url):
     if re.search(r'xuite.net/([a-zA-Z0-9]*)($)', url):
@@ -511,6 +526,9 @@ def page_youtube(req, url):
                 desc = getDescription(m.group(), txt)
                 addYouTube(req, vid, title, desc)
 
+def page_dailymotion(req, url):
+    meta.findImageLink(req, url, True, False)
+
 def onPageEnd(req):
     global entryCnt
     if entryCnt == 0:
@@ -538,6 +556,9 @@ def page(req, url):
 
     elif re.search(r'youtube', url):
         page_youtube(req, url)
+
+    elif re.search(r'dailymotion', url):
+        page_dailymotion(req, url)
 
     elif re.search(r'xuite', url):
         page_xuite(req, url)
