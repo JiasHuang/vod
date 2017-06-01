@@ -50,13 +50,16 @@ def getCookie(req, key):
     return None
 
 def getOption(req):
-    fmt = getCookie(req, 'format')
-    autosub = getCookie(req, 'autosub')
+    fmt      = getCookie(req, 'format')
+    autosub  = getCookie(req, 'autosub')
+    autonext = getCookie(req, 'autonext')
     opt = ''
     if fmt:
         opt += '-f \'%s\' ' %(fmt)
     if autosub:
-        opt += '--autosub %s' %(autosub)
+        opt += '--autosub %s ' %(autosub)
+    if autonext:
+        opt += '--autonext %s ' %(autonext)
     return opt
 
 def handleCmd(cmd):

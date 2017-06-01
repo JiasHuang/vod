@@ -5,7 +5,8 @@ var settings_dict = {
     'Format':'format',
     'YouTube-Username':'username',
     'Bookmark.json':'bookmark',
-    'AutoSub':'autosub'
+    'AutoSub':'autosub',
+    'AutoNext':'autonext'
 };
 
 var settings_defs = {
@@ -40,10 +41,15 @@ var settings_defs = {
         'yes':'yes',
         'no':'no',
         'default':'no',
+    },
+    'autonext' : {
+        'yes':'yes',
+        'no':'no',
+        'default':'no',
     }
 };
 
-var settings_cookies = ['format', 'autosub'];
+var settings_cookies = ['format', 'autosub', 'autonext'];
 
 function getExpire() {
     var expire_days = 3000;

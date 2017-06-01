@@ -7,6 +7,7 @@ import subprocess
 
 import xdef
 import xproc
+import xurl
 import mpv
 import omxp
 import ffplay
@@ -34,9 +35,37 @@ def runDBG(url, ref, cookies=None):
     youtubedl.extractSUB(url)
     return
 
-def playURL(url, ref, cookies=None):
+def getNext():
+
+    if xdef.autonext != 'yes':
+        return None
 
     player = getPlayer()
+    if player == 'mpv' and xproc.checkProcessRunning('mpv'):
+        return None
+    if player == 'omxp' and xproc.checkProcessRunning('omxplayer.bin'):
+        return None
+    if player == 'ffplay' and xproc.checkProcessRunning('ffplay'):
+        return None
+
+    playing  = xurl.readLocal(xdef.playing)
+    playlist = xurl.readLocal(xdef.playlist)
+    lines = playlist.splitlines()
+
+    try:
+        index = lines.index(playing)
+        if index < (len(lines) - 1):
+            return lines[index+1]
+    except:
+        return None
+
+    return None
+
+def playURL_(url, ref, cookies=None):
+
+    player = getPlayer()
+
+    xurl.saveLocal(xdef.playing, url)
 
     print('\n[xplay][%s]\n' %(player))
     print('\turl : %s' %(url or ''))
@@ -56,6 +85,21 @@ def playURL(url, ref, cookies=None):
 
     return runDBG(url, ref, cookies)
 
+def playURL(url, ref, cookies=None):
+
+    for i in range(100):
+        local = '/tmp/vod_list_pagelist_%s' %(str(i))
+        txt = xurl.readLocal(local)
+        if url in txt.splitlines():
+            xurl.saveLocal(xdef.playlist, txt)
+            break
+
+    while url != None:
+        playURL_(url, ref, cookies)
+        url = ref = getNext()
+
+    return
+
 def checkActVal(act, val):
 
     if act == 'percent':
@@ -71,6 +115,9 @@ def setAct(act, val):
     if checkActVal(act, val) == False:
         print('\n[xplay][setAct] invalid command: %s %s\n' %(act, val))
         return
+
+    if act == 'stop':
+        xurl.saveLocal(xdef.playlist, '')
 
     player = getPlayer()
     print('\n[xplay][setAct]\n\n\t'+ '%s,%s,%s' %(player, act, val))

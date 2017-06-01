@@ -8,6 +8,7 @@ import urlparse
 import meta
 
 entryCnt = 0
+entryVideos = []
 
 def loadFile(filename):
     path = os.path.dirname(os.path.abspath(__file__))+'/'+filename
@@ -49,7 +50,7 @@ def darg(d, *arg):
     return [d[a].encode('utf8') for a in arg]
 
 def addEntry(req, link, title, image=None, desc=None, password=None):
-    global entryCnt
+    global entryCnt, entryVideos
     entryCnt = entryCnt + 1
     entryEven = None
     if (entryCnt & 1 == 0):
@@ -59,7 +60,9 @@ def addEntry(req, link, title, image=None, desc=None, password=None):
     if re.search('view.py\?v=', link):
         if password:
             password = '&ytdl_password='+password
-        anchor = 'href="%s%s" target="playVideo"' %(link, password or '')
+        source = '%s%s' %(link, password or '')
+        anchor = 'href="%s" target="playVideo"' %(source)
+        entryVideos.append(source[10:])
     else:
         anchor = 'href="%s"' %(link)
     if image:
@@ -91,7 +94,6 @@ def addVideo(req, link, title=None, image=None, desc=None, password=None):
 def addYouTube(req, vid, title=None, desc=None):
     link = 'https://www.youtube.com/watch?v='+vid
     addVideo(req, link, title, None, desc)
-    return link
 
 def addPlayList(req, playlist, title, vid=None, desc=None):
     link = 'https://www.youtube.com/playlist?list='+playlist
@@ -499,19 +501,12 @@ def page_youtube(req, url):
                 playlists.append(playlist)
                 addPlayList(req, playlist, title)
     elif re.search(r'playlist\?', url):
-        m3u = meta.genLocal(url, 'vod_list_', '.youtubedl.m3u')
-        fd = open(m3u, 'w')
-        fd.write('#EXTM3U\n')
-        addVideo(req, m3u, 'PLAY ALL')
         for m in re.finditer(r'<tr (.*?)</tr>', txt, re.DOTALL|re.MULTILINE):
             vid = meta.search(r'data-video-id="([^"]*)"', m.group())
             title = meta.search(r'data-title="([^"]*)"', m.group())
             if vid and title:
                 desc = meta.search(r'<span aria-label=".*?">(.*?)</span>', m.group())
-                link = addYouTube(req, vid, title, getDuration(desc) or desc)
-                fd.write('#EXTINF:-1, %s\n' %(title))
-                fd.write('%s\n' %(link))
-        fd.close()
+                addYouTube(req, vid, title, getDuration(desc) or desc)
     elif re.search(r'list=', url):
         for m in re.finditer(r'<li ([^>]*)>', txt):
             vid = meta.search(r'data-video-id="([^"]*)"', m.group())
@@ -529,11 +524,21 @@ def page_youtube(req, url):
 def page_dailymotion(req, url):
     meta.findImageLink(req, url, True, False)
 
+def saveList():
+    global entryVideos
+    local = '/tmp/vod_list_pagelist_%s' %(str(os.getpid() % 100))
+    fd = open(local, 'w')
+    for v in entryVideos:
+        fd.write(v+'\n')
+    fd.close()
+    return local
+
 def onPageEnd(req):
     global entryCnt
     if entryCnt == 0:
         req.write('<h2>Oops! Not Found</h2>\n')
     req.write('<!--EntryEnd-->\n')
+    saveList()
 
 def page(req, url):
 
