@@ -116,8 +116,8 @@ def setAct(act, val):
         print('\n[xplay][setAct] invalid command: %s %s\n' %(act, val))
         return
 
-    if act == 'stop':
-        xurl.saveLocal(xdef.playlist, '')
+    if act == 'stop' and val != '#':
+        os.remove(xdef.playlist)
 
     player = getPlayer()
     print('\n[xplay][setAct]\n\n\t'+ '%s,%s,%s' %(player, act, val))
