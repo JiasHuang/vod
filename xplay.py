@@ -91,7 +91,8 @@ def playURL(url, ref, cookies=None):
         txt = xurl.readLocal(xdef.pagelist)
         xurl.saveLocal(xdef.playlist, txt)
     else:
-        os.remove(xdef.playlist)
+        if os.path.exists(xdef.playlist):
+            os.remove(xdef.playlist)
 
     while url != None:
         playURL_(url, ref, cookies)
@@ -116,7 +117,8 @@ def setAct(act, val):
         return
 
     if act == 'stop' and val != '#':
-        os.remove(xdef.playlist)
+        if os.path.exists(xdef.playlist):
+            os.remove(xdef.playlist)
 
     player = getPlayer()
     print('\n[xplay][setAct]\n\n\t'+ '%s,%s,%s' %(player, act, val))
