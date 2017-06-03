@@ -524,7 +524,7 @@ def page_youtube(req, url):
 def page_dailymotion(req, url):
     meta.findImageLink(req, url, True, False)
 
-def saveList():
+def savePageList():
     global entryVideos
     local = '/tmp/vod_list_pagelist_%s' %(str(os.getpid() % 100))
     fd = open(local, 'w')
@@ -538,7 +538,7 @@ def onPageEnd(req):
     if entryCnt == 0:
         req.write('<h2>Oops! Not Found</h2>\n')
     req.write('<!--EntryEnd-->\n')
-    saveList()
+    req.write('<div id="pageinfo" pagelist="%s"></div>' %(savePageList()))
 
 def page(req, url):
 

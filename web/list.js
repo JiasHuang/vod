@@ -40,6 +40,12 @@ function setWidthHeight(entryMax) {
     $('h2').css('height', imageHeight);
 };
 
+function onPlayVideo() {
+    pageinfo = document.getElementById('pageinfo');
+    if (pageinfo)
+        saveCookie('pagelist', pageinfo.getAttribute('pagelist'));
+}
+
 function onReady() {
 
     var slider = localStorage.getItem('slider');
@@ -52,6 +58,7 @@ function onReady() {
         $(document).keydown(onKeyDown);
     }
 
+    $( "a[target='playVideo']" ).click(onPlayVideo);
     $('#loadingMessage').hide();
 }
 

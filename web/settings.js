@@ -51,17 +51,10 @@ var settings_defs = {
 
 var settings_cookies = ['format', 'autosub', 'autonext'];
 
-function getExpire() {
-    var expire_days = 3000;
-    var d = new Date();
-    d.setTime(d.getTime() + (expire_days * 24 * 60 * 60 * 1000));
-    return 'expires='+d.toGMTString();
-}
-
-function saveCookie() {
+function saveCookies() {
     var lists = settings_cookies;
     for (var i=0; i<lists.length; i++) {
-        document.cookie = lists[i]+'='+document.getElementById(lists[i]).value+';'+getExpire();
+        saveCookie(lists[i], document.getElementById(lists[i]).value);
     }
 }
 
@@ -70,7 +63,7 @@ function save() {
     for (var key in dict) {
         localStorage.setItem(dict[key], document.getElementById(dict[key]).value);
     }
-    saveCookie();
+    saveCookies();
     window.location.href = 'view.py';
 }
 

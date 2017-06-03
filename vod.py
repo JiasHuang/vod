@@ -135,6 +135,7 @@ def main():
     parser.add_option("-f", "--format", dest="format")
     parser.add_option("--autosub", dest="autosub")
     parser.add_option("--autonext", dest="autonext")
+    parser.add_option("--pagelist", dest="pagelist")
     (options, args) = parser.parse_args()
 
     if options.player:
@@ -148,6 +149,9 @@ def main():
 
     if options.autonext:
         xdef.autonext = options.autonext
+
+    if options.pagelist:
+        xdef.pagelist = options.pagelist
 
     if len(args) >= 1:
         url = args[0]

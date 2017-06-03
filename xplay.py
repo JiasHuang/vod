@@ -87,12 +87,11 @@ def playURL_(url, ref, cookies=None):
 
 def playURL(url, ref, cookies=None):
 
-    for i in range(100):
-        local = '/tmp/vod_list_pagelist_%s' %(str(i))
-        txt = xurl.readLocal(local)
-        if url in txt.splitlines():
-            xurl.saveLocal(xdef.playlist, txt)
-            break
+    if xdef.autonext == 'yes' and xdef.pagelist:
+        txt = xurl.readLocal(xdef.pagelist)
+        xurl.saveLocal(xdef.playlist, txt)
+    else:
+        os.remove(xdef.playlist)
 
     while url != None:
         playURL_(url, ref, cookies)

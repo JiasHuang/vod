@@ -53,6 +53,7 @@ def getOption(req):
     fmt      = getCookie(req, 'format')
     autosub  = getCookie(req, 'autosub')
     autonext = getCookie(req, 'autonext')
+    pagelist = getCookie(req, 'pagelist')
     opt = ''
     if fmt:
         opt += '-f \'%s\' ' %(fmt)
@@ -60,6 +61,8 @@ def getOption(req):
         opt += '--autosub %s ' %(autosub)
     if autonext:
         opt += '--autonext %s ' %(autonext)
+    if pagelist:
+        opt += '--pagelist %s ' %(pagelist)
     return opt
 
 def handleCmd(cmd):

@@ -88,6 +88,7 @@ function onSearchReady() {
         $(document).keydown(onPageNav);
     }
 
+    $( "a[target='playVideo']" ).click(onPlayVideo);
     $('#loadingMessage').hide();
 }
 
