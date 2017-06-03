@@ -7,7 +7,6 @@ player   = 'def'
 workdir  = '/tmp/'
 codedir  = '/opt/vod/'
 dldir    = '/var/tmp/'
-cookies  = workdir+'vod_%s.cookies' %(os.getuid())
 fifo     = codedir+'vod.fifo'
 log      = workdir+'vod_%s.log' %(os.getuid())
 ytdl     = 'youtube-dl --no-warnings'

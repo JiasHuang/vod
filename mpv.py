@@ -2,7 +2,9 @@
 # -*- coding: utf-8 -*-
 
 import os
+import re
 import subprocess
+import time
 
 import xdef
 import xproc
@@ -39,8 +41,10 @@ def play(url, ref, cookies=None):
         print('\n[mpv][play] invalid url\n')
         return
 
-    if cookies:
-        xurl.saveCookies(xdef.cookies, url, cookies)
+    if cookies and re.search(r'google.com', url) and xproc.checkProcessRunning('mpv'):
+        os.system('echo stop > %s' %(xdef.fifo))
+        while xproc.checkProcessRunning('mpv'):
+            time.sleep(1)
 
     if not xproc.checkProcessRunning('mpv'):
 
@@ -50,7 +54,6 @@ def play(url, ref, cookies=None):
         xargs = xargs + ' --user-agent=\'%s\'' %(xdef.ua)
         xargs = xargs + ' --referrer=\'%s\'' %(ref)
         xargs = xargs + ' --input-file=\'%s\'' %(xdef.fifo)
-        xargs = xargs + ' --cookies --cookies-file=\'%s\'' %(xdef.cookies)
 
         if cookies:
             xargs = xargs + ' --http-header-fields="Cookie:%s"' %(cookies)
@@ -60,7 +63,7 @@ def play(url, ref, cookies=None):
         p = subprocess.Popen(cmd, shell=True)
 
     else:
-        os.system('echo loadfile \"%s\" replace cookies-file=%s > %s' %(url, xdef.cookies, xdef.fifo))
+        os.system('echo loadfile \"%s\" > %s' %(url, xdef.fifo))
         os.system('echo sub-remove > %s' %(xdef.fifo))
 
     sub = youtubedl.extractSUB(ref)
