@@ -60,7 +60,7 @@ def play(url, ref, cookies=None):
         p = subprocess.Popen(cmd, shell=True)
 
     else:
-        os.system('echo loadfile \"%s\" > %s' %(url, xdef.fifo))
+        os.system('echo loadfile \"%s\" replace cookies-file=%s > %s' %(url, xdef.cookies, xdef.fifo))
         os.system('echo sub-remove > %s' %(xdef.fifo))
 
     sub = youtubedl.extractSUB(ref)
