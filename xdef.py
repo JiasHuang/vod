@@ -10,7 +10,7 @@ dldir    = '/var/tmp/'
 fifo     = codedir+'vod.fifo'
 log      = workdir+'vod_%s.log' %(os.getuid())
 ytdl     = 'youtube-dl --no-warnings'
-ytdlfmt  = 'best[ext!=webm][protocol^=http]/best[ext!=webm]'
+ytdlfmt  = '22/best[ext!=webm][protocol^=http]'
 ytdlm3u  = '.youtubedl.m3u'
 ytdlsub  = 'youtube-dl --no-warnings --write-sub --skip-download --sub-lang=en,en-US'
 wget     = 'wget -w 10 -T 10 -q -c '

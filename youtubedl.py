@@ -36,7 +36,7 @@ def parseParameters(url):
     return None
 
 def getFmt(url):
-    return xdef.ytdlfmt
+    return xdef.ytdlfmt + '/best[ext!=webm]'
 
 def genM3U(url, result):
     local = xdef.workdir+'vod_list_'+hashlib.md5(url).hexdigest()+'.m3u'
