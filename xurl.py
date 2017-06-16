@@ -138,16 +138,14 @@ def load2(url, local=None, options=None):
     wget(url, local, options)
     return readLocal(local)
 
-def getFrame(url):
+def getIFrame(url):
+    links = []
     frm = re.search(r'<iframe ([^>]*)>', load2(url))
     if frm :
         src = re.search(r'src="([^"]*)"', frm.group())
         if src:
-            link = src.group(1)
-            if re.search(r'^//', link):
-                link = 'http:'+link
-            return link
-    return None
+            links.append(absURL(src.group(1)))
+    return links
 
 def getContentType(url):
     res = urllib.urlopen(url)

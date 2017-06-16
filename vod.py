@@ -18,7 +18,7 @@ import youtubedl
 
 from optparse import OptionParser
 
-def processURL1(url): 
+def processURL1(url):
 
     if re.search('google(video|usercontent).com', url):
         xplay.playURL(url, url)
@@ -49,7 +49,7 @@ def processURL1(url):
         xplay.playURL(src, url)
         return 0
 
-    if re.search(r'(javpub|porn2tube)', url):
+    if jav.checkURL(url):
         src = jav.getSource(url)
         xplay.playURL(src, url)
         return 0

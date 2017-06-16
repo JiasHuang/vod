@@ -180,19 +180,8 @@ def search_bing(req, q):
         if vid:
             addGoogleDrive(req, vid, title)
 
-def search_yandex(req, q):
-    url = 'https://yandex.com/video/search?text=site%3Adrive.google.com%20'+q
-    txt = load(url)
-    for m in re.finditer(r'data-video="([^"]*)"', txt):
-        unquote = re.sub('&quot;', '\"', m.group(1))
-        meta.comment(req, unquote)
-        title = meta.search(r'"title":"([^"]*)"', unquote)
-        link  = meta.search(r'"url":"([^"]*)"', unquote)
-        if title and url:
-            addVideo(req, link, title)
-
 def search_google(req, q, start=None):
-    url = 'http://www.google.com/search?hl=en&q=site%3Adrive.google.com%20'+q
+    url = 'http://www.google.com/search?num=30&hl=en&q=site%3Adrive.google.com%20'+q+'%20AND%20-problem'
     if start:
         url = url+'&start='+start
     txt = load(url)
@@ -248,8 +237,8 @@ def search(req, q, s=None, x=None):
 
     q1 = re.sub(' ', '+', q)
 
-    engines = ['YouTube', 'HD', 'Long', 'Playlist']
-    enginez = ['Google', 'Bing', 'Yandex', 'Xuite', 'Live', 'CC', 'Latest', 'DailyMotion']
+    engines = ['YouTube', 'Long', 'Playlist']
+    enginez = ['Google', 'Bing', 'Xuite', 'Live', 'CC', 'Latest', 'DailyMotion']
 
     req.write('<!--SearchEngine-->\n')
 
@@ -266,8 +255,6 @@ def search(req, q, s=None, x=None):
 
     if s == 'youtube':
         search_youtube(req, q1, x)
-    elif s == 'hd':
-        search_youtube(req, q1, x or 'EgIgAQ%3D%3D')
     elif s == 'long':
         search_youtube(req, q1, x or 'EgIYAg%3D%3D')
     elif s == 'playlist':
@@ -282,8 +269,6 @@ def search(req, q, s=None, x=None):
         search_google(req, q1, x)
     elif s == 'bing':
         search_bing(req, q1)
-    elif s == 'yandex':
-        search_yandex(req, q1)
     elif s == 'xuite':
         search_xuite(req, q1)
     elif s == 'dailymotion':
