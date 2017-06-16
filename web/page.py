@@ -181,7 +181,7 @@ def search_bing(req, q):
             addGoogleDrive(req, vid, title)
 
 def search_google(req, q, start=None):
-    url = 'http://www.google.com/search?num=30&hl=en&q=site%3Adrive.google.com%20'+q+'%20AND%20-problem'
+    url = 'http://www.google.com/search?num=30&hl=en&q=site%3Adrive.google.com%20video%20'+q
     if start:
         url = url+'&start='+start
     txt = load(url)
