@@ -22,7 +22,7 @@ def load(url, local=None, options=None):
 def getSource(url):
     links = xurl.getIFrame(url)
     for link in links:
-        if checkVideoURL(link)
+        if checkVideoURL(link):
             return link
     return None
 
