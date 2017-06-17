@@ -304,14 +304,27 @@ def page_xuiteDIR(req, url):
     if not userSn:
         return
 
-    data = meta.parseJSON(load('http://vlog.xuite.net/default/media/widget?title=dir&userSn=%s' %(userSn)))
+    json = 'http://vlog.xuite.net/default/media/widget?title=dir&userSn='+userSn
+    data = meta.parseJSON(load(json))
     if 'content' not in data:
         return
 
+    if (len(data['content']) <= 3):
+        json = 'http://vlog.xuite.net/default/media/widget?title=media&type=latest&userSn='+userSn
+        data = meta.parseJSON(load(json))
+        if 'content' not in data:
+            return
+        for d in data['content']:
+            title, vid, image = darg(d, 'TITLE', 'FILE_NAME', 'THUMBNAIL')
+            link = 'http://vlog.xuite.net/play/'+vid
+            addVideo(req, link, title, image)
+        return
+
     for d in data['content']:
-        t, p = darg(d, 'TITLE', 'PARENT_SEQUENCE')
-        l = 'http://vlog.xuite.net/%s?t=cat&p=%s&dir_num=0' %(user, p)
-        addPage(req, l, t)
+        title, parent = darg(d, 'TITLE', 'PARENT_SEQUENCE')
+        link = 'http://vlog.xuite.net/%s?t=cat&p=%s&dir_num=0' %(user, parent)
+        addPage(req, link, title)
+
     return
 
 def page_litv(req, url):
