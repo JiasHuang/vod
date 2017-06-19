@@ -39,8 +39,12 @@ def getSource(url):
     for link in links:
         if checkVideoURL(link):
             return link
-    link = decryptJSCode(url)
-    if link:
-        return link
+    for link in links:
+        dec = decryptJSCode(link)
+        if dec:
+            return dec
+    dec = decryptJSCode(url)
+    if dec:
+        return dec
     return None
 
