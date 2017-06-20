@@ -8,6 +8,7 @@ import hashlib
 
 import xurl
 import jsunpack
+import jwplayer
 
 def checkURL(url):
     site = xurl.findSite(url)
@@ -23,15 +24,15 @@ def load(url, local=None, options=None):
 def decryptJSCode(url):
     txt = load(url)
     if re.search(r'<script src="https://jqd.cdn-qdnetwork.com', txt):
-        m = re.search(r'_fallback = \'(.*?)\'', txt)
-        if m:
-            _fallback = m.group(1)
+        jsonurl = re.sub('/embed/', '/stream/v6/', url)
+        jsontxt = load(jsonurl)
+        if jsontxt != '':
             token = 'avcms.co'
             dirname = os.path.dirname(os.path.realpath(__file__))
             jscode = xurl.readLocal(dirname+'/cryptoJSAESJson.js') + '\n'
-            jscode += 'console.log(CryptoJSAESdecrypt(\'%s\', \'%s\'));' %(_fallback, token)
+            jscode += 'console.log(CryptoJSAESdecrypt(\'%s\', \'%s\'));' %(jsontxt, token)
             output = jsunpack.executeJSCode(jscode)
-            return output
+            return jwplayer.parseSetup(output)
     return None
 
 def getSource(url):
