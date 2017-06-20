@@ -37,9 +37,9 @@ def parseCode(code):
 
 def showAll(code, output):
     print('\n----------------------------------------------------- [packed] -------------------------------------------------------------\n\n')
-    print(code)
+    print(code or '')
     print('\n----------------------------------------------------- [unpack] -------------------------------------------------------------\n\n')
-    print(output)
+    print(output or '')
     print('\n----------------------------------------------------------------------------------------------------------------------------\n\n')
 
 def unpack(txt):
@@ -56,8 +56,11 @@ def unpack(txt):
 def executeJSCode(code):
     local = xdef.workdir+'vod_code_'+str(os.getuid())
     xurl.saveLocal(local, code)
-    output = subprocess.check_output('nodejs '+local, shell=True).rstrip('\n')
-    output = output.replace("\/", "/")
-    showAll(code, output)
-    return output
+    try:
+        output = subprocess.check_output('nodejs '+local, shell=True).rstrip('\n')
+        output = output.replace("\/", "/")
+        showAll(code, output)
+        return output
+    except:
+        return None
 

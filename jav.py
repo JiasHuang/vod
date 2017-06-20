@@ -26,6 +26,7 @@ def decryptJSCode(url):
     if re.search(r'<script src="https://jqd.cdn-qdnetwork.com', txt):
         jsonurl = re.sub('/embed/', '/stream/v6/', url)
         jsontxt = load(jsonurl)
+        print jsontxt
         if jsontxt != '':
             token = 'avcms.co'
             dirname = os.path.dirname(os.path.realpath(__file__))
