@@ -35,8 +35,27 @@ def parseParameters(url):
         return '--video-password ' + match.group(2)
     return None
 
-def getFmt(url):
-    return xdef.ytdlfmt + '/best[ext!=webm]'
+def getFormat(url):
+    formats = []
+    m = re.search(r'^(\d+)p($)', xdef.ytdlfmt, re.IGNORECASE)
+    if m:
+        h = int(m.group(1))
+        if h >= 1080:
+            formats.append('37')
+        if h >= 720:
+            formats.append('22')
+        if h >= 480:
+            formats.append('59')
+            formats.append('35')
+        if h >= 360:
+            formats.append('18')
+            formats.append('34')
+        formats.append('best[ext!=webm][protocol^=http][height<=%s]' %(h))
+        formats.append('best[ext!=webm][height<=%s]' %(h))
+    else:
+        formats.append(xdef.ytdlfmt)
+    formats.append('best[ext!=webm]')
+    return '/'.join(formats)
 
 def genM3U(url, result):
     local = xdef.workdir+'vod_list_'+hashlib.md5(url).hexdigest()+'.m3u'
@@ -167,7 +186,7 @@ def extractURL(url):
 
     url = redirectURL(url)
     arg = parseParameters(url)
-    fmt = getFmt(url)
+    fmt = getFormat(url)
     local = xdef.workdir+'vod_list_'+hashlib.md5(url+fmt).hexdigest()+'.json'
 
     if arg:
