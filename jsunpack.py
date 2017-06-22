@@ -58,9 +58,9 @@ def executeJSCode(code):
     xurl.saveLocal(local, code)
     try:
         output = subprocess.check_output('nodejs '+local, shell=True).rstrip('\n')
-        output = output.replace("\/", "/")
-        showAll(code, output)
-        return output
     except:
         return None
+    output = output.replace("\/", "/")
+    showAll(code, output)
+    return output
 
