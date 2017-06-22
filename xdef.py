@@ -23,4 +23,4 @@ autonext = 'no'
 pagelist = None
 playlist = workdir+'vod_%s_playlist' %(os.getuid())
 playing  = workdir+'vod_%s_playing' %(os.getuid())
-listhash = None
+hashfile = workdir+'vod_%s_hashfile' %(os.getuid())

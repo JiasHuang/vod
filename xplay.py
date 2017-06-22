@@ -14,6 +14,8 @@ import omxp
 import ffplay
 import youtubedl
 
+hashnum = None
+
 def getPlayer():
 
     if xdef.player != 'def':
@@ -37,6 +39,7 @@ def runDBG(url, ref, cookies=None):
     return
 
 def getNext():
+    global hashnum
 
     if xdef.autonext != 'yes':
         return None
@@ -52,7 +55,7 @@ def getNext():
     playing  = xurl.readLocal(xdef.playing)
     playlist = xurl.readLocal(xdef.playlist)
 
-    if xdef.listhash != hashlib.md5(playlist).hexdigest():
+    if hashnum != xurl.readLocal(xdef.hashfile):
         return None
 
     lines = playlist.splitlines()
@@ -67,9 +70,12 @@ def getNext():
     return None
 
 def playURL_core(url, ref, cookies=None):
+    global hashnum
 
     player = getPlayer()
 
+    hashnum = hashlib.md5(url+str(os.getpid())).hexdigest()
+    xurl.saveLocal(xdef.hashfile, hashnum)
     xurl.saveLocal(xdef.playing, url)
 
     print('\n[xplay][%s]\n' %(player))
@@ -95,7 +101,6 @@ def playURL(url, ref, cookies=None):
     if xdef.autonext == 'yes' and xdef.pagelist:
         txt = xurl.readLocal(xdef.pagelist)
         xurl.saveLocal(xdef.playlist, txt)
-        xdef.listhash = hashlib.md5(txt).hexdigest()
     else:
         if os.path.exists(xdef.playlist):
             os.remove(xdef.playlist)
