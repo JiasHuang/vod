@@ -4,6 +4,7 @@
 import os
 import re
 import subprocess
+import hashlib
 
 import xdef
 import xproc
@@ -50,6 +51,10 @@ def getNext():
 
     playing  = xurl.readLocal(xdef.playing)
     playlist = xurl.readLocal(xdef.playlist)
+
+    if xdef.listhash != hashlib.md5(playlist).hexdigest():
+        return None
+
     lines = playlist.splitlines()
 
     try:
@@ -61,7 +66,7 @@ def getNext():
 
     return None
 
-def playURL_(url, ref, cookies=None):
+def playURL_core(url, ref, cookies=None):
 
     player = getPlayer()
 
@@ -90,12 +95,13 @@ def playURL(url, ref, cookies=None):
     if xdef.autonext == 'yes' and xdef.pagelist:
         txt = xurl.readLocal(xdef.pagelist)
         xurl.saveLocal(xdef.playlist, txt)
+        xdef.listhash = hashlib.md5(txt).hexdigest()
     else:
         if os.path.exists(xdef.playlist):
             os.remove(xdef.playlist)
 
     while url != None:
-        playURL_(url, ref, cookies)
+        playURL_core(url, ref, cookies)
         url = ref = getNext()
 
     return
