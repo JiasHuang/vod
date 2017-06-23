@@ -6,6 +6,7 @@ import re
 import subprocess
 import hashlib
 
+import xarg
 import xdef
 import xproc
 import xurl
@@ -13,8 +14,6 @@ import mpv
 import omxp
 import ffplay
 import youtubedl
-
-hashnum = None
 
 def getPlayer():
 
@@ -39,7 +38,6 @@ def runDBG(url, ref, cookies=None):
     return
 
 def getNext():
-    global hashnum
 
     if xdef.autonext != 'yes':
         return None
@@ -55,7 +53,7 @@ def getNext():
     playing  = xurl.readLocal(xdef.playing)
     playlist = xurl.readLocal(xdef.playlist)
 
-    if hashnum != xurl.readLocal(xdef.hashfile):
+    if xarg.playlist_hashnum != hashlib.md5(playlist).hexdigest():
         return None
 
     lines = playlist.splitlines()
@@ -70,12 +68,9 @@ def getNext():
     return None
 
 def playURL_core(url, ref, cookies=None):
-    global hashnum
 
     player = getPlayer()
 
-    hashnum = hashlib.md5(url+str(os.getpid())).hexdigest()
-    xurl.saveLocal(xdef.hashfile, hashnum)
     xurl.saveLocal(xdef.playing, url)
 
     print('\n[xplay][%s]\n' %(player))
@@ -98,9 +93,13 @@ def playURL_core(url, ref, cookies=None):
 
 def playURL(url, ref, cookies=None):
 
-    if xdef.autonext == 'yes' and xdef.pagelist:
-        txt = xurl.readLocal(xdef.pagelist)
+    if os.path.exists(xdef.playlist):
+        setAct('stop', None)
+
+    if xdef.autonext == 'yes' and xarg.pagelist:
+        txt = xurl.readLocal(xarg.pagelist)
         xurl.saveLocal(xdef.playlist, txt)
+        xarg.playlist_hashnum = hashlib.md5(txt).hexdigest()
     else:
         if os.path.exists(xdef.playlist):
             os.remove(xdef.playlist)

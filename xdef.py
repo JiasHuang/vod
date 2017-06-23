@@ -20,7 +20,5 @@ omxp     = 'omxplayer -b -o both -I'
 ffplay   = 'ffplay -fs -window_title ffplay'
 autosub  = 'no'
 autonext = 'no'
-pagelist = None
 playlist = workdir+'vod_%s_playlist' %(os.getuid())
 playing  = workdir+'vod_%s_playing' %(os.getuid())
-hashfile = workdir+'vod_%s_hashfile' %(os.getuid())

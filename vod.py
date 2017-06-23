@@ -5,6 +5,7 @@ import os
 import re
 import urllib
 
+import xarg
 import xdef
 import xurl
 import xplay
@@ -151,7 +152,7 @@ def main():
         xdef.autonext = options.autonext
 
     if options.pagelist:
-        xdef.pagelist = options.pagelist
+        xarg.pagelist = options.pagelist
 
     if len(args) >= 1:
         url = args[0]
