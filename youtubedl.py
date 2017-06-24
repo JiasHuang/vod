@@ -12,6 +12,7 @@ import timeit
 
 from optparse import OptionParser
 
+import xarg
 import xdef
 import xurl
 import xplay
@@ -37,7 +38,7 @@ def parseParameters(url):
 
 def getFormat(url):
     formats = []
-    m = re.search(r'^(\d+)p($)', xdef.ytdlfmt, re.IGNORECASE)
+    m = re.search(r'^(\d+)p($)', xarg.ytdlfmt, re.IGNORECASE)
     if m:
         h = int(m.group(1))
         if h >= 1080:
@@ -53,7 +54,7 @@ def getFormat(url):
         formats.append('best[ext!=webm][protocol^=http][height<=%s]' %(h))
         formats.append('best[ext!=webm][height<=%s]' %(h))
     else:
-        formats.append(xdef.ytdlfmt)
+        formats.append(xarg.ytdlfmt)
     formats.append('best[ext!=webm]')
     return '/'.join(formats)
 
@@ -230,7 +231,7 @@ def extractSUB(url):
 
     try:
         opt = ''
-        if xdef.autosub == 'yes':
+        if xarg.autosub == 'yes':
             opt += '--write-auto-sub '
         cmd = '%s %s -o %s%s \'%s\'' %(xdef.ytdlsub, opt, xdef.workdir, sub, url)
         start_time = timeit.default_timer()

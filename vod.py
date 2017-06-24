@@ -140,16 +140,16 @@ def main():
     (options, args) = parser.parse_args()
 
     if options.player:
-        xdef.player = options.player
+        xarg.player = options.player
 
     if options.format:
-        xdef.ytdlfmt = options.format
+        xarg.ytdlfmt = options.format
 
     if options.autosub:
-        xdef.autosub = options.autosub
+        xarg.autosub = options.autosub
 
     if options.autonext:
-        xdef.autonext = options.autonext
+        xarg.autonext = options.autonext
 
     if options.pagelist:
         xarg.pagelist = options.pagelist

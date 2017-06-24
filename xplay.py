@@ -17,8 +17,8 @@ import youtubedl
 
 def getPlayer():
 
-    if xdef.player != 'def':
-        return xdef.player
+    if xarg.player != 'def':
+        return xarg.player
 
     if re.search(r'raspberrypi', subprocess.check_output('uname -a', shell=True)):
         return 'omxp'
@@ -39,7 +39,7 @@ def runDBG(url, ref, cookies=None):
 
 def getNext():
 
-    if xdef.autonext != 'yes':
+    if xarg.autonext != 'yes':
         return None
 
     player = getPlayer()
@@ -96,7 +96,7 @@ def playURL(url, ref, cookies=None):
     if os.path.exists(xdef.playlist):
         setAct('stop', None)
 
-    if xdef.autonext == 'yes' and xarg.pagelist:
+    if xarg.autonext == 'yes' and xarg.pagelist:
         txt = xurl.readLocal(xarg.pagelist)
         xurl.saveLocal(xdef.playlist, txt)
         xarg.playlist_hashnum = hashlib.md5(txt).hexdigest()

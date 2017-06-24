@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import xdef
+import xarg
 import xplay
 
 from optparse import OptionParser
@@ -16,7 +16,7 @@ def main():
     (options, args) = parser.parse_args()
 
     if options.player:
-        xdef.player = options.player
+        xarg.player = options.player
 
     if len(args) >= 1:
         act = args[0]

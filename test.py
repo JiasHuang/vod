@@ -4,7 +4,7 @@
 import re
 import sys
 
-import xdef
+import xarg
 import vod
 
 def main():
@@ -18,7 +18,7 @@ def main():
     else:
         url = sys.argv[1]
 
-    xdef.player = 'dbg'
+    xarg.player = 'dbg'
     vod.playURL(url, None)
     return
 
