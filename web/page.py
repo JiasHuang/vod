@@ -494,7 +494,7 @@ def page_youtube(req, url):
                 if link and title:
                     addPage(req, 'https://www.youtube.com'+link, title)
     elif re.search(r'/channel/([^/]*)$', url):
-        addPage(req, url+'/videos', 'videos')
+        addPage(req, url+'/videos', 'VIDEOS')
         playlists = []
         for m in re.finditer(r'href="/playlist\?list=([^"]*)"*?>([^<]*)</a>', load(url+'/playlists')):
             playlist, title = m.group(1), m.group(2)
@@ -525,6 +525,14 @@ def page_youtube(req, url):
 def page_dailymotion(req, url):
     meta.findImageLink(req, url, True, False)
 
+def page_gdrive(req, url):
+    txt = load(url)
+    drive_ivd = re.search(r'window\[\'_DRIVE_ivd\'\] = \'(.*?)\'', txt, re.DOTALL|re.MULTILINE)
+    if drive_ivd:
+        drive_ivd_txt = drive_ivd.group(1).decode('string_escape')
+        for m in re.finditer(r'\["([a-zA-Z0-9]*)"\s*,\s*\[(.*?)\]\s*,\s*"(.*?)",', drive_ivd_txt, re.DOTALL|re.MULTILINE):
+            addGoogleDrive(req, m.group(1), m.group(3))
+
 def savePageList():
     global entryVideos
     local = '/tmp/vod_list_pagelist_%s' %(str(os.getpid() % 100))
@@ -554,7 +562,7 @@ def page(req, url):
     elif re.search(r'iqiyi', url):
         page_iqiyi(req, url)
 
-    elif re.search(r'(le.com|letv)', url):
+    elif re.search(r'(\.le.com|letv)', url):
         page_letv(req, url)
 
     elif re.search(r'lovetv', url):
@@ -574,6 +582,9 @@ def page(req, url):
 
     elif re.search(r'i-movie', url):
         page_imovie(req, url)
+
+    elif re.search(r'drive\.google\.com', url):
+        page_gdrive(req, url)
 
     else:
         page_def(req, url)
