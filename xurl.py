@@ -140,9 +140,8 @@ def load2(url, local=None, options=None):
 
 def getIFrame(url):
     links = []
-    frm = re.search(r'<iframe ([^>]*)>', load2(url))
-    if frm :
-        src = re.search(r'src="([^"]*)"', frm.group())
+    for m in re.finditer(r'<iframe ([^>]*)>', load2(url)):
+        src = re.search(r'src="([^"]*)"', m.group(1))
         if src:
             links.append(absURL(src.group(1)))
     return links
