@@ -530,8 +530,20 @@ def page_gdrive(req, url):
     drive_ivd = re.search(r'window\[\'_DRIVE_ivd\'\] = \'(.*?)\'', txt, re.DOTALL|re.MULTILINE)
     if drive_ivd:
         drive_ivd_txt = drive_ivd.group(1).decode('string_escape')
-        for m in re.finditer(r'\["([a-zA-Z0-9]*)"\s*,\s*\[(.*?)\]\s*,\s*"(.*?)",', drive_ivd_txt, re.DOTALL|re.MULTILINE):
-            addGoogleDrive(req, m.group(1), m.group(3))
+        drive_ivd_txt = re.sub('null', 'None', drive_ivd_txt)
+        try:
+            for d in eval(drive_ivd_txt):
+                if not isinstance(d, list):
+                    continue
+                for item in d:
+                    if len(item) < 4:
+                        continue
+                    vid, parent, title, mimeType = item[0], item[1], item[2], item[3]
+                    if mimeType == 'video\/mp4':
+                        addGoogleDrive(req, vid, title)
+        except:
+            meta.comment(req, 'exception in page_gdrive')
+            return
 
 def savePageList():
     global entryVideos
