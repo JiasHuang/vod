@@ -189,6 +189,7 @@ def search_google(req, q, start=None):
     txt = load(url)
     for m in re.finditer(r'<h3 class="r"><a href="([^"]*)" .*?>(.*?)</a>', txt):
         link, title = m.group(1), m.group(2)
+        link = re.sub('preview', 'view', link)
         title = re.sub('- Google Drive', '', title)
         addVideo(req, link, title)
     addNextPage(req, q, txt, engine='google')
@@ -539,8 +540,12 @@ def page_gdrive(req, url):
                     if len(item) < 4:
                         continue
                     vid, parent, title, mimeType = item[0], item[1], item[2], item[3]
-                    if mimeType == 'video\/mp4':
+                    if not isinstance(mimeType, str):
+                        continue
+                    if mimeType.startswith('video'):
                         addGoogleDrive(req, vid, title)
+                    if mimeType.endswith('folder'):
+                        addPage(req, 'https://drive.google.com/drive/folders/'+vid, title, 'folder-video-icon.png')
         except:
             meta.comment(req, 'exception in page_gdrive')
             return
