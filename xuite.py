@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 import os
 import sys
@@ -7,33 +8,44 @@ import datetime
 import xurl
 import xdef
 
-def getKey(url):
-    if re.search('m.xuite.net/vlog/amwkx/', url):
-        return '0409'
-    if re.search('m.xuite.net/vlog/isaac.ntnu/', url):
+def getKey(url, mURL):
+
+    user = None
+    m = re.search(r'm.xuite.net/vlog/(.*?)/', mURL, re.DOTALL)
+    if m:
+        user = m.group(1)
+
+    if user == 'isaac.ntnu':
         return '0314'
-    if re.search('m.xuite.net/vlog/derriest520/', url):
+
+    if user == 'derriest520':
         return '1688'
-    if re.search('m.xuite.net/vlog/polosm0429/', url):
-        return '0912'
-    if re.search('m.xuite.net/vlog/andy23.hsu/', url):
-        return '1216'
+
+    if user == 'pao62pao62':
+        date = re.search(r'<span>上傳日期：</span>(\d{4})-(\d{2})-(\d{2})', xurl.load(url))
+        if date:
+            yyyy, mm, dd = date.group(1), date.group(2), date.group(3)
+            return mm+dd
+
     return None
 
 def getSource(url):
 
+    mURL = None
     if re.search(r'^http://vlog.xuite.net/play/', url):
         txt = xurl.load(url)
         m = re.search(r'http://m.xuite.net/vlog/([^"]*)', txt)
         if m:
-            url = m.group(0)
+            mURL = m.group(0)
 
-    os.chdir(xdef.workdir)
-    key = getKey(url)
+    if mURL == None:
+        return ''
+
+    key = getKey(url, mURL)
     if key:
-        txt = xurl.post(url, {'pwInput': key})
+        txt = xurl.post(mURL, {'pwInput': key})
     else:
-        txt = xurl.load(url)
+        txt = xurl.load(mURL)
     m = re.search(r'data-original="([^"]*)"', txt)
     if m:
         src = m.group(1)
