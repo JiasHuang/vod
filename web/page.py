@@ -352,7 +352,7 @@ def page_litv(req, url):
             if subtitle:
                 addVideo(req, re.sub(_contentId, contentId, url), subtitle, imageFile)
     else:
-        meta.findVideoLink(req, url, True, True, 'content')
+        meta.findVideoLink(req, url, True, True, ImagePattern=r'\"([^ ]*jpg)\"')
 
 def page_iqiyi(req, url):
     if re.search(r'list.', url):

@@ -151,14 +151,17 @@ def comment(req, msg):
     req.write('\n-->\n')
     return
 
-def findVideoLink(req, url, showPage=False, showImage=False, ImageSrc='src', ImageExt='jpg'):
+def findVideoLink(req, url, showPage=False, showImage=False, ImageSrc='src', ImageExt='jpg', ImagePattern=None):
     parsed_uri = urlparse.urlparse(url)
     domain = '{uri.scheme}://{uri.netloc}'.format(uri=parsed_uri)
     txt = load(url)
     for m in re.finditer(r'<a .*?</a>', txt, re.DOTALL):
         link = search(r'href="([^"]*)"', m.group(0))
         title = search(r'title="([^"]*)"', m.group(0))
-        image = search(re.escape(ImageSrc)+r'="([^"]*)"', m.group(0))
+        if ImagePattern:
+            image = search(ImagePattern, m.group(0))
+        else:
+            image = search(re.escape(ImageSrc)+r'="([^"]*)"', m.group(0))
         if image and ImageExt and not image.endswith(ImageExt):
             continue
         if link and title and image:
