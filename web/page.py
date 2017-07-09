@@ -191,7 +191,12 @@ def search_google(req, q, start=None):
         link, title = m.group(1), m.group(2)
         link = re.sub('preview', 'view', link)
         title = re.sub('- Google Drive', '', title)
-        addVideo(req, link, title)
+        for x in re.split(' ', q):
+            if not re.search(re.escape(x), title):
+                link = title = None
+                break
+        if link and title:
+            addVideo(req, link, title)
     addNextPage(req, q, txt, engine='google')
 
 def search_db(req, q):
