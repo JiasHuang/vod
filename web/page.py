@@ -191,8 +191,8 @@ def search_google(req, q, start=None):
         link, title = m.group(1), m.group(2)
         link = re.sub('preview', 'view', link)
         title = re.sub('- Google Drive', '', title)
-        for x in re.split(' ', q):
-            if not re.search(re.escape(x), title):
+        for x in re.split('\+', q):
+            if not re.search(re.escape(x), title, re.IGNORECASE):
                 link = title = None
                 break
         if link and title:
