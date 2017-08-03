@@ -186,7 +186,7 @@ def search_google(req, q, start=None):
     url = 'http://www.google.com/search?num=30&hl=en&q=site%3Adrive.google.com%20video%20'+q
     if start:
         url = url+'&start='+start
-    txt = load(url)
+    txt = meta.load(url)
     for m in re.finditer(r'<h3 class="r"><a href="([^"]*)" .*?>(.*?)</a>', txt):
         link, title = m.group(1), m.group(2)
         link = re.sub('preview', 'view', link)
