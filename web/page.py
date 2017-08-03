@@ -348,24 +348,19 @@ def page_litv(req, url):
     m = re.search(r'(\?|&)id=([a-zA-Z0-9]*)', url)
     if m:
         _contentId = m.group(2)
-        seriesId = meta.search(r'"seriesId":"(.*?)"', load(url))
+        dataURL = 'https://www.litv.tv/vod/ajax/getProgramInfo?contentId='+_contentId
+        data = load(dataURL)
+        seriesId = meta.search(r'"seriesId":"(.*?)"', load(dataURL))
         if seriesId:
             dataURL = 'https://www.litv.tv/vod/ajax/getSeriesTree?seriesId='+seriesId
-        else:
-            dataURL = 'https://www.litv.tv/vod/ajax/getProgramInfo?contentId='+_contentId
+            data = load(dataURL)
         meta.comment(req, dataURL)
-        data = load(dataURL)
         meta.comment(req, data)
         for m in re.finditer(r'{"contentId":"([^"]*)",.*?}', data, re.DOTALL):
             contentId = m.group(1)
-            if seriesId:
-                subtitle = meta.search(r'"secondaryMark":"([^"]*)"', m.group()) or meta.search(r'"episode":"([^"]*)"', m.group())
-                imageFile = meta.search(r'"videoImage":"([^"]*)"', m.group())
-            else:
-                subtitle = meta.search(r'"subtitle":"([^"]*)"', m.group())
-                imageFile = meta.search(r'"imageFile":"([^"]*)"', m.group())
-            if subtitle:
-                addVideo(req, re.sub(_contentId, contentId, url), subtitle, imageFile)
+            subtitle = meta.search(r'"subtitle":"([^"]*)"', m.group()) or meta.search(r'"episode":"([^"]*)"', m.group())
+            imageFile = meta.search(r'"videoImage":"([^"]*)"', m.group())
+            addVideo(req, re.sub(_contentId, contentId, url), subtitle, imageFile)
     else:
         meta.findVideoLink(req, url, True, True, ImagePattern=r'\"([^ ]*jpg)\"')
 
