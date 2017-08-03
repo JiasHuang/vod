@@ -82,8 +82,14 @@ def load(url, local=None, headers=None, cache=True):
             txt = f.read()
         saveLocal(txt, local)
         return txt
-    except:
-        return ''
+    except urllib2.HTTPError, e:
+        return 'Exception HTTPError: ' + str(e.code)
+    except urllib2.URLError, e:
+        return 'Exception URLError: ' + str(e.reason)
+    except httplib.HTTPException, e:
+        return 'Exception HTTPException'
+    except :
+        return 'Exception'
 
 def post(url, payload, local=None, cache=True):
 
@@ -102,6 +108,20 @@ def post(url, payload, local=None, cache=True):
     except:
         return ''
 
+def wget(url, local, options=None):
+    cmd = '%s -U \'%s\' -O %s \'%s\' %s' %(conf.wget, conf.ua, local, url, options or '')
+    os.system(cmd)
+    return
+
+def load2(url, local=None, options=None, cache=True):
+
+    local = local or conf.workdir+'vod_load_'+hashlib.md5(url).hexdigest()
+    if cache and os.path.exists(local) and not checkExpire(local):
+        return readLocal(local)
+
+    wget(url, local, options)
+    return readLocal(local)
+
 def getContentType(url):
     res = urllib.urlopen(url)
     info = res.info()
@@ -118,7 +138,7 @@ def absURL(domain, url):
     return url
 
 def findPoster(link):
-    return search(r'poster="([^"]*)"', load(link))
+    return search(r'poster="([^"]*)"', load2(link))
 
 def getImage(link):
 
@@ -154,7 +174,7 @@ def comment(req, msg):
 def findVideoLink(req, url, showPage=False, showImage=False, ImageSrc='src', ImageExt='jpg', ImagePattern=None):
     parsed_uri = urlparse.urlparse(url)
     domain = '{uri.scheme}://{uri.netloc}'.format(uri=parsed_uri)
-    txt = load(url)
+    txt = load2(url)
     for m in re.finditer(r'<a .*?</a>', txt, re.DOTALL):
         link = search(r'href="([^"]*)"', m.group(0))
         title = search(r'title="([^"]*)"', m.group(0))
@@ -177,7 +197,7 @@ def findVideoLink(req, url, showPage=False, showImage=False, ImageSrc='src', Ima
 def findImageLink(req, url, unquote=False, showPage=False):
     parsed_uri = urlparse.urlparse(url)
     domain = '{uri.scheme}://{uri.netloc}'.format(uri=parsed_uri)
-    txt = load(url)
+    txt = load2(url)
     objs = []
     for m in re.finditer(r'<a\s.*?</a>', txt, re.DOTALL|re.MULTILINE):
         link = search(r'href\s*=\s*"([^"]*)"', m.group(0))
@@ -207,7 +227,7 @@ def findPage(req, url, showImage=False):
 
 def findLink(req, url):
     link = ''
-    txt = load(url)
+    txt = load2(url)
     for m in re.finditer(r'"http(s|)://(www.|)(redirector.googlevideo|dailymotion|videomega|videowood|youtube|openload)(.com|.tv|.co)([^"]*)', txt):
         if m.group()[1:-1] != link:
             link = m.group()[1:-1]
@@ -215,7 +235,7 @@ def findLink(req, url):
             page.addVideo(req, link, link, image)
 
 def findFrame(req, url):
-    for m in re.finditer(r'<iframe (.*?)</iframe>', load(url)):
+    for m in re.finditer(r'<iframe (.*?)</iframe>', load2(url)):
         src = re.search(r'src="([^"]*)"', m.group(1))
         if src:
             page.addVideo(req, src.group(1))

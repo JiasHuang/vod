@@ -42,7 +42,7 @@ def renderDIR(req, d):
     req.write(html[1])
 
 def load(url):
-    return meta.load(url)
+    return meta.load2(url)
 
 def darg(d, *arg):
     if len(arg) == 1:
@@ -350,16 +350,16 @@ def page_litv(req, url):
         _contentId = m.group(2)
         seriesId = meta.search(r'"seriesId":"(.*?)"', load(url))
         if seriesId:
-            _url = 'https://www.litv.tv/vod/ajax/getSeriesTree?seriesId='+seriesId
+            dataURL = 'https://www.litv.tv/vod/ajax/getSeriesTree?seriesId='+seriesId
         else:
-            _url = 'https://www.litv.tv/vod/ajax/getProgramInfo?contentId='+_contentId
-        headers = [('Accept', 'application/json, text/javascript, */*; q=0.01')]
-        data = meta.load(_url, None, headers)
+            dataURL = 'https://www.litv.tv/vod/ajax/getProgramInfo?contentId='+_contentId
+        meta.comment(req, dataURL)
+        data = load(dataURL)
         meta.comment(req, data)
         for m in re.finditer(r'{"contentId":"([^"]*)",.*?}', data, re.DOTALL):
             contentId = m.group(1)
             if seriesId:
-                subtitle = meta.search(r'"secondaryMark":"([^"]*)"', m.group())
+                subtitle = meta.search(r'"secondaryMark":"([^"]*)"', m.group()) or meta.search(r'"episode":"([^"]*)"', m.group())
                 imageFile = meta.search(r'"videoImage":"([^"]*)"', m.group())
             else:
                 subtitle = meta.search(r'"subtitle":"([^"]*)"', m.group())
