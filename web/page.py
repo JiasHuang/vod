@@ -394,6 +394,8 @@ def page_iqiyi(req, url):
                         if 'vurl' in d and 'vn' in d and 'vpic' in d:
                             link, title, image = darg(d, 'vurl', 'vn', 'vpic')
                             addVideo(req, link, title, image)
+            else:
+                meta.findImageLink(req, url, True, False)
 
 def page_letv(req, url):
     pages = []
