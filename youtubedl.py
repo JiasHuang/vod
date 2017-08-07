@@ -200,7 +200,7 @@ def extractURL(url):
         print('\tret : %s' %(local))
         return parseJson(local)
 
-    cmd = '%s -f \"%s\" -i -j --no-playlist %s \'%s\' > %s' %(xdef.ytdl, fmt, arg or '', url, local)
+    cmd = '%s %s -f \"%s\" -i -j --no-playlist %s \'%s\' > %s' %(xdef.ytdlcmd(), xdef.ytdlarg, fmt, arg or '', url, local)
 
     try:
         start_time = timeit.default_timer()
@@ -233,7 +233,8 @@ def extractSUB(url):
         opt = ''
         if xarg.autosub == 'yes':
             opt += '--write-auto-sub '
-        cmd = '%s %s -o %s%s \'%s\'' %(xdef.ytdlsub, opt, xdef.workdir, sub, url)
+        cmd = '%s %s %s -o %s%s \'%s\'' %(xdef.ytdlcmd(), xdef.ytdlsub, opt, xdef.workdir, sub, url)
+
         start_time = timeit.default_timer()
         output = subprocess.check_output(cmd, shell=True)
         elapsed = timeit.default_timer() - start_time
