@@ -96,9 +96,8 @@ def addYouTube(req, vid, title=None, desc=None):
         link = 'https://www.youtube.com/watch?v='+vid
         addVideo(req, link, title, None, desc)
 
-def addPlayList(req, playlist, title, vid=None, desc=None):
+def addPlayList(req, playlist, title, vid=None, desc=None, image=None):
     link = 'https://www.youtube.com/playlist?list='+playlist
-    image = None
     if vid:
         image = 'http://img.youtube.com/vi/'+vid+'/0.jpg'
         if not desc:
@@ -502,10 +501,21 @@ def page_youtube(req, url):
                 addPlayList(req, playlist, title)
     elif re.search(r'/channels$', url):
         for m in re.finditer(r'class="yt-uix-sessionlink yt-uix-tile-link ([^>]*)', txt):
-                link = meta.search(r'href="([^"]*)"', m.group())
-                title = meta.search(r'title="([^"]*)"', m.group())
-                if link and title:
-                    addPage(req, 'https://www.youtube.com'+link, title)
+            link = meta.search(r'href="([^"]*)"', m.group())
+            title = meta.search(r'title="([^"]*)"', m.group())
+            if link and title:
+                 addPage(req, 'https://www.youtube.com'+link, title)
+    elif re.search(r'/featured$', url):
+        for m in re.finditer(r'class="yt-uix-sessionlink yt-uix-tile-link ([^>]*)', txt):
+            link = meta.search(r'href="([^"]*)"', m.group())
+            title = meta.search(r'title="([^"]*)"', m.group())
+            vid = meta.search(r'v=(.{11})', link)
+            playlist = meta.search(r'list=([^"]*)', link)
+            if link and title:
+                if playlist:
+                    addPlayList(req, playlist, title, desc='Playlist', image='Movies-icon.png')
+                elif vid:
+                    addYouTube(req, vid, title)
     elif re.search(r'/channel/([^/]*)$', url):
         addPage(req, url+'/videos', 'VIDEOS')
         playlists = []
