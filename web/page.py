@@ -96,8 +96,10 @@ def addYouTube(req, vid, title=None, desc=None):
         link = 'https://www.youtube.com/watch?v='+vid
         addVideo(req, link, title, None, desc)
 
-def addPlayList(req, playlist, title, vid=None, desc=None, image=None):
+def addPlayList(req, playlist, title, vid=None, desc=None, image=None, txt=None):
     link = 'https://www.youtube.com/playlist?list='+playlist
+    if txt and not vid:
+        vid = meta.search(r'watch\?v=(.{11})&amp;list='+re.escape(playlist), txt)
     if vid:
         image = 'http://img.youtube.com/vi/'+vid+'/0.jpg'
         if not desc:
@@ -491,14 +493,14 @@ def page_imovie(req, url):
 
 def page_youtube(req, url):
     headers = [('cookie', 'PREF=hl=en')]
-    txt = meta.load(url, headers = headers)
+    txt = meta.load(url, headers = headers, cache=False)
     if re.search(r'/playlists$', url):
         playlists = []
         for m in re.finditer(r'href="/playlist\?list=([^"]*)"*?>([^<]*)</a>', txt):
             playlist, title = m.group(1), m.group(2)
             if playlist not in playlists:
                 playlists.append(playlist)
-                addPlayList(req, playlist, title)
+                addPlayList(req, playlist, title, txt=txt)
     elif re.search(r'/channels$', url):
         for m in re.finditer(r'class="yt-uix-sessionlink yt-uix-tile-link ([^>]*)', txt):
             link = meta.search(r'href="([^"]*)"', m.group())
@@ -513,7 +515,7 @@ def page_youtube(req, url):
             playlist = meta.search(r'list=([^"]*)', link)
             if link and title:
                 if playlist:
-                    addPlayList(req, playlist, title, desc='Playlist', image='Movies-icon.png')
+                    addPlayList(req, playlist, title, desc='Playlist', image='Movies-icon.png', txt=txt)
                 elif vid:
                     addYouTube(req, vid, title)
     elif re.search(r'/channel/([^/]*)$', url):
