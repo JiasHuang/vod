@@ -388,13 +388,13 @@ def page_iqiyi(req, url):
         if albumId:
             avlist = load('http://cache.video.qiyi.com/jp/avlist/%s/' %(albumId))
             avlist = re.sub('var tvInfoJs=', '', avlist)
+            meta.comment(req, avlist)
             data = meta.parseJSON(avlist)
-            if 'data' in data:
-                if 'vlist' in data['data']:
-                    for d in data['data']['vlist']:
-                        if 'vurl' in d and 'vn' in d and 'vpic' in d:
-                            link, title, image = darg(d, 'vurl', 'vn', 'vpic')
-                            addVideo(req, link, title, image)
+            if 'data' in data and 'vlist' in data['data'] and len(data['data']['vlist']) > 0:
+                for d in data['data']['vlist']:
+                    if 'vurl' in d and 'vn' in d and 'vpic' in d:
+                        link, title, image = darg(d, 'vurl', 'vn', 'vpic')
+                        addVideo(req, link, title, image)
             else:
                 meta.findImageLink(req, url, True, False)
 
