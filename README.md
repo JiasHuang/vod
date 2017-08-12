@@ -2,6 +2,7 @@
 
 - Play online streaming videos on RaspberryPi.
 - Control playback on your mobile phone or tablet.
+- demo on ubuntu: https://www.youtube.com/watch?v=nKMpzaaDPuw
 
 # Requirement
 
