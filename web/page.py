@@ -44,6 +44,17 @@ def renderDIR(req, d):
 def load(url):
     return meta.load2(url)
 
+def loadYouTube(req, url):
+    headers = [('cookie', 'PREF=hl=en')]
+    txt = meta.load(url, headers = headers)
+    for i in range(3):
+        if re.search(r'Long Task Observer', txt):
+            meta.comment(req, 'Reload '+url)
+            txt = meta.load(url, headers = headers, cache=False)
+        else:
+            break
+    return txt
+
 def darg(d, *arg):
     if len(arg) == 1:
         return d[arg[0]].encode('utf8')
@@ -92,7 +103,7 @@ def addVideo(req, link, title=None, image=None, desc=None, password=None):
     addEntry(req, 'view.py?v='+link, title or link, image or meta.getImage(link) or 'Movies-icon.png', desc, password)
 
 def addYouTube(req, vid, title=None, desc=None):
-    if title not in ['[Deleted video]', '[Private video]', '[已刪除影片]', '[私人影片]']:
+    if title not in ['[Deleted video]', '[Private video]']:
         link = 'https://www.youtube.com/watch?v='+vid
         addVideo(req, link, title, None, desc)
 
@@ -159,7 +170,7 @@ def search_youtube(req, q, sp=None):
     url = 'https://www.youtube.com/results?q='+q
     if sp:
         url = url+'&sp='+sp
-    txt = load(url)
+    txt = loadYouTube(req, url)
     playlists = []
     for m in re.finditer(r'href="/watch\?v=(.{11})([^"]*)".*?>([^<]*)</a>', txt):
         vid, args, title = m.group(1), m.group(2), m.group(3)
@@ -473,7 +484,7 @@ def page_lovetv(req, url):
                     addGoogleDrive(req, vid)
 
 def page_youtube(req, url):
-    txt = load(url)
+    txt = loadYouTube(req, url)
     if re.search(r'/playlists$', url):
         playlists = []
         for m in re.finditer(r'href="/playlist\?list=([^"]*)"*?>([^<]*)</a>', txt):
