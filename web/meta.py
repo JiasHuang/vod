@@ -253,9 +253,9 @@ def parseJSON(txt):
 
 def showDebugLog(req):
     global gDebugLog
-    req.write('\n\n\n\n')
+    req.write('\n\n')
+    req.write('<!--DebugLog-->\n')
     req.write('<!--\n')
-    req.write('DebugLog\n')
     for l in gDebugLog:
         req.write(l+'\n')
     req.write('-->\n')

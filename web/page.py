@@ -159,8 +159,7 @@ def search_youtube(req, q, sp=None):
     url = 'https://www.youtube.com/results?q='+q
     if sp:
         url = url+'&sp='+sp
-    headers = [('cookie', 'PREF=hl=en')]
-    txt = meta.load(url, headers = headers)
+    txt = load(url)
     playlists = []
     for m in re.finditer(r'href="/watch\?v=(.{11})([^"]*)".*?>([^<]*)</a>', txt):
         vid, args, title = m.group(1), m.group(2), m.group(3)
@@ -473,24 +472,6 @@ def page_lovetv(req, url):
                 elif video_type == '21':
                     addGoogleDrive(req, vid)
 
-def page_imovie(req, url):
-    if url == 'http://i-movie.co/':
-        for i in range(1, 5):
-            data = meta.parseJSON(meta.post('http://i-movie.co/sql.php?tag=getMovie', \
-                {'page':str(i), 'type':'all', 'sort':'time'}))
-            if 'json' in data:
-                for d in data['json']:
-                    vid, title, image = darg(d, 'id', 'name', 'image')
-                    addPage(req, 'http://i-movie.co/view.php?id='+vid, title, image)
-    else:
-        vid = meta.search(r'view.php\?id=([0-9]*)', url)
-        if vid:
-            data = meta.parseJSON(meta.post('http://i-movie.co/sql.php?tag=getOneMovie', {'id':vid}))
-            for d in data:
-                url = darg(d, 'url')
-                src = meta.search(r'src="([^"]*)"', url) or url
-                addVideo(req, src)
-
 def page_youtube(req, url):
     txt = load(url)
     if re.search(r'/playlists$', url):
@@ -620,9 +601,6 @@ def page(req, url):
 
     elif re.search(r'youku', url):
         page_youku(req, url)
-
-    elif re.search(r'i-movie', url):
-        page_imovie(req, url)
 
     elif re.search(r'drive\.google\.com', url):
         page_gdrive(req, url)
