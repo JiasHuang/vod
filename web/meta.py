@@ -16,6 +16,8 @@ import gzip
 import conf
 import page
 
+gDebugLog = []
+
 class entryObj(object):
     url = None
     title = None
@@ -59,16 +61,19 @@ def dict2str(adict):
     return ''.join('{}{}'.format(key, val) for key, val in adict.items())
 
 def genLocal(url, prefix=None, suffix=None):
-    return conf.workdir+(prefix or 'vod_')+hashlib.md5(url).hexdigest()+(suffix or '')
+    global gDebugLog
+    local = conf.workdir+(prefix or 'vod_load_')+hashlib.md5(url).hexdigest()+(suffix or '')
+    gDebugLog.append('%s -> %s' %(url, local))
+    return local
 
 def load(url, local=None, headers=None, cache=True):
 
-    local = local or conf.workdir+'vod_load_'+hashlib.md5(url).hexdigest()
+    local = local or genLocal(url)
     if cache and os.path.exists(local) and not checkExpire(local):
         return readLocal(local)
 
     opener = urllib2.build_opener()
-    opener.addheaders = [('User-agent', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36')]
+    opener.addheaders = [('User-agent', conf.ua)]
 
     if headers:
         opener.addheaders += headers
@@ -93,7 +98,7 @@ def load(url, local=None, headers=None, cache=True):
 
 def post(url, payload, local=None, cache=True):
 
-    local = local or conf.workdir+'vod_post_'+hashlib.md5(dict2str(payload)).hexdigest()
+    local = local or genLocal(url)
     if cache and os.path.exists(local) and not checkExpire(local):
         return readLocal(local)
 
@@ -115,7 +120,7 @@ def wget(url, local, options=None):
 
 def load2(url, local=None, options=None, cache=True):
 
-    local = local or conf.workdir+'vod_load_'+hashlib.md5(url).hexdigest()
+    local = local or genLocal(url)
     if cache and os.path.exists(local) and not checkExpire(local):
         return readLocal(local)
 
@@ -245,4 +250,13 @@ def parseJSON(txt):
         return json.loads(txt)
     except:
         return {}
+
+def showDebugLog(req):
+    global gDebugLog
+    req.write('\n\n\n\n')
+    req.write('<!--\n')
+    req.write('DebugLog\n')
+    for l in gDebugLog:
+        req.write(l+'\n')
+    req.write('-->\n')
 

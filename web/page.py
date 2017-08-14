@@ -92,7 +92,7 @@ def addVideo(req, link, title=None, image=None, desc=None, password=None):
     addEntry(req, 'view.py?v='+link, title or link, image or meta.getImage(link) or 'Movies-icon.png', desc, password)
 
 def addYouTube(req, vid, title=None, desc=None):
-    if title not in ['[Deleted video]', '[Private video]']:
+    if title not in ['[Deleted video]', '[Private video]', '[已刪除影片]', '[私人影片]']:
         link = 'https://www.youtube.com/watch?v='+vid
         addVideo(req, link, title, None, desc)
 
@@ -492,8 +492,7 @@ def page_imovie(req, url):
                 addVideo(req, src)
 
 def page_youtube(req, url):
-    headers = [('cookie', 'PREF=hl=en')]
-    txt = meta.load(url, headers = headers, cache=False)
+    txt = load(url)
     if re.search(r'/playlists$', url):
         playlists = []
         for m in re.finditer(r'href="/playlist\?list=([^"]*)"*?>([^<]*)</a>', txt):
@@ -589,6 +588,7 @@ def onPageEnd(req):
         req.write('<h2>Oops! Not Found</h2>\n')
     req.write('<!--EntryEnd-->\n')
     req.write('<div id="pageinfo" pagelist="%s"></div>' %(savePageList()))
+    meta.showDebugLog(req)
 
 def page(req, url):
 
