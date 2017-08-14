@@ -12,4 +12,4 @@ log  = workdir+'view.log'
 json = workdir+'view.json'
 
 wget = 'wget -T 10 -q -c '
-ua   = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Safari/537.36'
+ua   = 'Mozilla/5.0 (X11; Linux x86_64; rv:10.0) Gecko/20150101 Firefox/47.0 (Chrome)'
