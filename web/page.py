@@ -454,12 +454,12 @@ def page_lovetv(req, url):
             meta.comment(req, m.group())
             if re.search(r'special-drama-([0-9-]+).html$', m.group(1)):
                 addPage(req, meta.absURL(domain, m.group(1)), m.group(2))
-    elif re.search(r'drama-list.html$', url):
-        for m in re.finditer(r'<a href="([^"]*)">([^<]*)</a>', load(url)):
+    elif re.search(r'(drama-list.html|/)$', url):
+        for m in re.finditer(r'<a href=[\'|"]([^\'"]*)[\'|"]>([^<]*)</a>', load(url)):
             meta.comment(req, m.group())
-            if re.search(r'-list.html$', m.group(1)):
+            if re.search(r'-list', m.group(1)):
                 addPage(req, meta.absURL(domain, m.group(1)), m.group(2))
-    elif re.search(r'-list.html$', url):
+    elif re.search(r'-list', url):
         for m in re.finditer(r'<a href="([^"]*)">([^<]*)</a>', load(url)):
             meta.comment(req, m.group())
             if re.search(r'-ep([0-9]+).html$', m.group(1)):
