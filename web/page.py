@@ -467,7 +467,7 @@ def page_lovetv(req, url):
     else:
         txt = load(url)
         password = meta.search(r'密碼：(\w+)', txt)
-        for m in re.finditer(r'<div id="video_div(|_s[0-9])">.*?\n</div>', txt, re.DOTALL|re.MULTILINE):
+        for m in re.finditer(r'<div id="video_div(|_s[0-9])">.*?</div>\n*</div>', txt, re.DOTALL|re.MULTILINE):
             meta.comment(req, m.group())
             video_ids  = meta.search(r'video_ids.*?>([^<]*)</div>', m.group())
             video_type = meta.search(r'video_type.*?>([^<]*)</div>', m.group())
@@ -482,6 +482,55 @@ def page_lovetv(req, url):
                     addOpenLoad(req, vid)
                 elif video_type == '21':
                     addGoogleDrive(req, vid)
+
+def page_maplestage(req, url):
+    if re.search(r'/drama/', url):
+        pageProps = meta.search(r'var pageProps = (.*?});', load(url))
+        if pageProps:
+            data = meta.parseJSON(pageProps)
+            meta.comment(req, str(data))
+            prefix = ['熱門戲劇 : ', '最新戲劇 : ', '']
+            for index, category in enumerate(['hotShows', 'latestShows', 'shows']):
+                try:
+                    for show in data[category]:
+                        meta.comment(req, str(show))
+                        slug, cover = darg(show, 'slug', 'cover')
+                        link = 'http://maplestage.com/show/' + slug
+                        addPage(req, link, prefix[index]+slug)
+                except:
+                    meta.comment(req, 'Exception: '+category)
+    elif re.search(r'/show/', url):
+        pageData = meta.search(r'var pageData = (.*?});', load(url));
+        if pageData:
+            data = meta.parseJSON(pageData)
+            meta.comment(req, str(data))
+            try:
+                for ep in data['props'][0]['value']['episodes']:
+                    meta.comment(req, str(ep))
+                    shortId, slug, thumb, numStr = darg(ep, 'shortId', 'slug', 'thumb', 'numStr')
+                    link = 'http://maplestage.com/episode/'+shortId+'/'+numStr # FIXME
+                    addPage(req, link, slug+numStr, thumb)
+            except:
+                meta.comment(req, 'Exception')
+    elif re.search(r'/episode/', url):
+        pageData = meta.search(r'var pageData = (.*?});', load(url));
+        if pageData:
+            data =  meta.parseJSON(pageData)
+            meta.comment(req, str(data))
+            for prop in data['props']:
+                if 'value' in prop and 'videoSources' in prop['value']:
+                    try:
+                        for videoSrc in prop['value']['videoSources']:
+                            meta.comment(req, str(videoSrc))
+                            for video in videoSrc['videos']:
+                                v_type, v_id = darg(video, 'type', 'id')
+                                if v_type == 'youtube':
+                                    addYouTube(req, v_id)
+                                elif v_type == 'dailymotion':
+                                    addDailyMotion(req, v_id)
+                    except:
+                        meta.comment(req, 'Exception')
+
 
 def page_youtube(req, url):
     txt = loadYouTube(req, url)
@@ -600,6 +649,9 @@ def page(req, url):
 
     elif re.search(r'lovetv', url):
         page_lovetv(req, url);
+
+    elif re.search(r'maplestage', url):
+        page_maplestage(req, url);
 
     elif re.search(r'youtube', url):
         page_youtube(req, url)
