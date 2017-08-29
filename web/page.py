@@ -75,7 +75,7 @@ def addEntry(req, link, title, image=None, desc=None, password=None):
         anchor = 'href="%s" target="playVideo"' %(source)
         entryVideos.append(source[10:])
     else:
-        anchor = 'href="%s"' %(link)
+        anchor = 'href="%s" onclick="onPageClick.call(this);" title="%s"' %(link, title)
     if image:
         req.write('<div class="imageWrapper">\n')
         req.write('<div class="imageContainer">\n')
