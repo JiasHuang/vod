@@ -52,7 +52,6 @@ function genCustomTable() {
 
     if (username && username.length > 0) {
         links = [
-            {'title' : 'featured', 'link' : 'https://www.youtube.com/user/'+username+'/featured'},
             {'title' : 'videos', 'link' : 'https://www.youtube.com/user/'+username+'/videos'},
             {'title' : 'playlists', 'link' : 'https://www.youtube.com/user/'+username+'/playlists'},
             {'title' : 'channels', 'link': 'https://www.youtube.com/user/'+username+'/channels'}
