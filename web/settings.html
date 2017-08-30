@@ -4,11 +4,15 @@
 
 <title>VOD</title>
 
+<link rel="stylesheet" href="style.css">
 <link rel="stylesheet" href="settings.css">
 
-<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-<script type="text/javascript" src="utils.js?v=20170603"></script>
+<script type="text/javascript" src="utils.js?v=20170830"></script>
+<script type="text/javascript" src="speech.js"></script>
 <script type="text/javascript" src="settings.js?v=20170603"></script>
+
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script type="text/javascript" src="https://www.w3schools.com/lib/w3.js"></script>
 
 <script type="text/javascript">
     window.onload = show;
@@ -18,7 +22,11 @@
 
 <body bgcolor=silver>
 
-<div id="Result"></div>
+    <div w3-include-html="menubox.html"></div>
+    <script>w3.includeHTML();</script>
+    <div style="height: 128px;"></div>
+
+    <div id="Result" class="settings"></div>
 
 <div class="menubar">
     <button class="btn" onclick="cancel()">CANCEL</button>

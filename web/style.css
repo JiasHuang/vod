@@ -30,6 +30,13 @@
     z-index: 30;
 }
 
+.menuicon {
+    position: fixed;
+    top: 0px;
+    right: 0px;
+    z-index: 30;
+}
+
 .botright {
     position: fixed;
     bottom: 32px;
@@ -42,10 +49,10 @@
     top: 30vh;
     left: 20vw;
     width: 60vw;
-    height: 40vh;
     z-index: 30;
     background-color: white;
     border: 4px solid orange;
+    padding: 16px;
 }
 
 .searchbar {

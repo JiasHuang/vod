@@ -35,6 +35,15 @@ function onPageClick() {
     return true;
 }
 
+function onMenuClick() {
+    event.stopPropagation();
+}
+
+function closeMenu() {
+    var menubox = document.getElementById('menubox');
+    menubox.style.display = "none";
+}
+
 function toggleMenu() {
     var menubox = document.getElementById('menubox');
     if (menubox.style.display == "block") {
@@ -42,4 +51,6 @@ function toggleMenu() {
     } else {
         menubox.style.display = "block";
     }
+    $('html').click(closeMenu);
+    event.stopPropagation();
 }
