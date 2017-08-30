@@ -35,3 +35,11 @@ function onPageClick() {
     return true;
 }
 
+function toggleMenu() {
+    var menubox = document.getElementById('menubox');
+    if (menubox.style.display == "block") {
+        menubox.style.display = "none";
+    } else {
+        menubox.style.display = "block";
+    }
+}

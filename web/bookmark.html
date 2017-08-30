@@ -4,9 +4,15 @@
 <meta charset="UTF-8">
 
 <link rel="stylesheet" href="bookmark.css">
+<link rel="stylesheet" href="style.css">
+
+<script type="text/javascript" src="utils.js"></script>
+<script type="text/javascript" src="speech.js"></script>
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
 <script type="text/javascript" src="bookmark.js?ver=1"></script>
+
+<script src="https://www.w3schools.com/lib/w3.js"></script>
 
 <script type="text/javascript">
     window.onload = loadAll;
@@ -16,8 +22,10 @@
 
 <body bgcolor=silver>
 
-<div id="result">
-</div>
+    <div w3-include-html="menubox.html"></div>
+    <script>w3.includeHTML();</script>
+
+<div id="result"></div>
 
 </body>
 

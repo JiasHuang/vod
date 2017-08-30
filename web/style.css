@@ -30,6 +30,24 @@
     z-index: 30;
 }
 
+.botright {
+    position: fixed;
+    bottom: 32px;
+    right: 32px;
+    z-index: 30;
+}
+
+.menubox {
+    position: fixed;
+    top: 30vh;
+    left: 20vw;
+    width: 60vw;
+    height: 40vh;
+    z-index: 30;
+    background-color: white;
+    border: 4px solid orange;
+}
+
 .searchbar {
     position: fixed;
     top: 0px;

@@ -13,7 +13,8 @@
 <script type="text/javascript" src="list_search.js"></script>
 <script type="text/javascript" src="speech.js"></script>
 
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+<script type="text/javascript" src="https://www.w3schools.com/lib/w3.js"></script>
 
 <script type="text/javascript">
     $(document).ready(onSearchReady);
@@ -27,7 +28,8 @@
 
 <body bgcolor=silver>
 
-<img onload="loadImage()" onclick="startDictation()" src="mic-icon.png" id="ximage" class="topright" />
+    <div w3-include-html="menubox.html"></div>
+    <script>w3.includeHTML();</script>
 
 <div id="searchbar" class="searchbar">
     <div id="searchbarTable">
