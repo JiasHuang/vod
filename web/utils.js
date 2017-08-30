@@ -11,27 +11,27 @@ function saveCookie(name, value) {
 }
 
 function onPageClick() {
-    var links = [];
-    var descs = [];
-    var page_links = localStorage.getItem("page_links");
-    var page_descs = localStorage.getItem("page_descs");
-    if (page_links) {
-        links = JSON.parse(page_links);
-        descs = JSON.parse(page_descs);
-        var index = links.indexOf($(this).attr("href"));
-        if (index > -1) {
-            links.splice(index, 1);
-            descs.splice(index, 1);
+    var link = $(this).attr("href");
+    var title = $(this).attr("title");
+    var data = {};
+    var pages = [];
+    var pages_str = localStorage.getItem("pages");
+    if (pages_str) {
+        pages = JSON.parse(pages_str);
+    }
+    for (var i = 0; i < pages.length; i++) {
+        if (pages[i].link == link) {
+            pages.splice(i, 1);
+            break;
         }
     }
-    links.splice(0, 0, $(this).attr("href"));
-    descs.splice(0, 0, $(this).attr("title"));
-    if (links.length > 30) {
-        links.pop();
-        descs.pop();
+    data.link = link
+    data.title = title;
+    pages.splice(0, 0, data);
+    if (pages.length > 30) {
+        pages.pop();
     }
-    localStorage.setItem("page_links", JSON.stringify(links));
-    localStorage.setItem("page_descs", JSON.stringify(descs));
+    localStorage.setItem("pages", JSON.stringify(pages));
     return true;
 }
 

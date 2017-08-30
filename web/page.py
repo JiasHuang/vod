@@ -509,7 +509,7 @@ def page_maplestage(req, url):
                     meta.comment(req, str(ep))
                     shortId, slug, thumb, numStr = darg(ep, 'shortId', 'slug', 'thumb', 'numStr')
                     link = 'http://maplestage.com/episode/'+shortId+'/'+numStr # FIXME
-                    addPage(req, link, slug+numStr, thumb)
+                    addPage(req, link, slug+'('+numStr+')', thumb)
             except:
                 meta.comment(req, 'Exception')
     elif re.search(r'/episode/', url):

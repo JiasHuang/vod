@@ -1,15 +1,14 @@
 
 function show() {
-    var page_links = localStorage.getItem("page_links");
-    var page_descs = localStorage.getItem("page_descs");
-    if (page_links === null) {
+    var pages_str = localStorage.getItem("pages");
+    if (pages_str === null) {
         return;
     }
-    var links = JSON.parse(page_links);
-    var descs = JSON.parse(page_descs);
+    var pages = JSON.parse(pages_str);
     var text = '';
-    for (var i=0; i<links.length; i++) {
-        text += '<h2><a href="'+links[i]+'">'+descs[i]+'</a></h2>';
+    var css = ["entryTitle", "entryTitle entryEven"];
+    for (var i=0; i<pages.length; i++) {
+        text += '<h2 class="'+css[i&1]+'"><a href="'+pages[i].link+'">'+pages[i].title+'</a></h2>';
     }
     $('#Result').html(text);
 }
