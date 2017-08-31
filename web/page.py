@@ -47,18 +47,16 @@ def load(url):
 def loadYouTube(req, url):
     headers = [('cookie', 'PREF=hl=en')]
     txt = meta.load(url, headers = headers)
-    for i in range(3):
-        if re.search(r'Long Task Observer', txt):
-            meta.comment(req, 'Reload '+url)
-            txt = meta.load(url, headers = headers, cache=False)
-        else:
-            break
     return txt
 
 def darg(d, *arg):
     if len(arg) == 1:
         return d[arg[0]].encode('utf8')
     return [d[a].encode('utf8') for a in arg]
+
+def getEntryCnt():
+    global entryCnt
+    return entryCnt
 
 def addEntry(req, link, title, image=None, desc=None, password=None):
     global entryCnt, entryVideos
@@ -171,18 +169,23 @@ def search_youtube(req, q, sp=None):
     if sp:
         url = url+'&sp='+sp
     txt = loadYouTube(req, url)
-    playlists = []
-    for m in re.finditer(r'href="/watch\?v=(.{11})([^"]*)".*?>([^<]*)</a>', txt):
-        vid, args, title = m.group(1), m.group(2), m.group(3)
-        playlist = meta.search(r'list=([^"]*)', args)
-        if playlist:
-            if playlist not in playlists:
-                playlists.append(playlist)
-                desc = meta.search(r'<a href="/playlist\?list='+re.escape(playlist)+'" .*?\((.*?)\)</a>', txt)
-                addPlayList(req, playlist, title, vid, desc)
-        else:
-            addYouTube(req, vid, title, getDescription(m.group(), txt))
-    addNextPage(req, q, txt)
+    ytInitialData = meta.search(r'window\["ytInitialData"\] = (.*?});', txt)
+    if ytInitialData:
+        data = meta.parseJSON(ytInitialData)
+        for x in meta.findItem(data, ['videoRenderer', 'playlistRenderer']):
+            try:
+                if 'videoId' in x:
+                    vid = x['videoId'].encode('utf8')
+                    title = x['title']['simpleText'].encode('utf8')
+                    desc = x['lengthText']['simpleText'].encode('utf8')
+                    addYouTube(req, vid, title, desc)
+                elif 'playlistId' in x:
+                    playlistId = x['playlistId'].encode('utf8')
+                    title = x['title']['simpleText'].encode('utf8')
+                    image = x['thumbnails'][0]['thumbnails'][0]['url'].encode('utf8')
+                    addPage(req, 'https://www.youtube.com/playlist?list='+playlistId, title, image, 'Playlist')
+            except:
+                meta.comment(req, str(x))
 
 def search_bing(req, q):
     url = 'https://www.bing.com/search?count=30&q=site:drive.google.com+(mp4+OR+mkv+OR+avi+OR+flv)+'+q
@@ -258,7 +261,7 @@ def search(req, q, s=None, x=None):
     q1 = re.sub(' ', '+', q)
 
     engines = ['YouTube', 'Long', 'Playlist']
-    enginez = ['Google', 'Bing', 'Xuite', 'Live', 'CC', 'Latest', 'DailyMotion']
+    enginez = ['Google', 'Bing', 'Xuite', 'Live', 'CC', 'DailyMotion']
 
     req.write('<!--SearchEngine-->\n')
 
@@ -276,15 +279,13 @@ def search(req, q, s=None, x=None):
     if s == 'youtube':
         search_youtube(req, q1, x)
     elif s == 'long':
-        search_youtube(req, q1, x or 'EgIYAg%3D%3D')
+        search_youtube(req, q1, x or 'EgIYAlAU')
     elif s == 'playlist':
-        search_youtube(req, q1, x or 'EgIQAw%3D%3D')
+        search_youtube(req, q1, x or 'EgIQA1AU')
     elif s == 'live':
-        search_youtube(req, q1, x or 'EgJAAQ%3D%3D')
+        search_youtube(req, q1, x or 'EgJAAVAU')
     elif s == 'cc':
-        search_youtube(req, q1, x or 'EgIoAQ%3D%3D')
-    elif s == 'latest':
-        search_youtube(req, q1, x or 'CAI%3D')
+        search_youtube(req, q1, x or 'EgIoAVAU')
     elif s == 'google':
         search_google(req, q1, x)
     elif s == 'bing':
@@ -531,61 +532,79 @@ def page_maplestage(req, url):
                     except:
                         meta.comment(req, 'Exception')
 
+def page_youtube_videos(req, url):
+    txt = loadYouTube(req, url)
+    ytInitialData = meta.search(r'window\["ytInitialData"\] = (.*?});', txt)
+    if ytInitialData:
+        data = meta.parseJSON(ytInitialData)
+        for x in meta.findItem(data, ['gridVideoRenderer']):
+            try:
+                vid = x['videoId'].encode('utf8')
+                title = x['title']['simpleText'].encode('utf8')
+                desc = None
+                infos = meta.findItem(x, 'thumbnailOverlayTimeStatusRenderer')
+                if len(infos) > 0:
+                    desc = infos[0]['text']['simpleText'].encode('utf8')
+                addYouTube(req, vid, title, desc)
+            except:
+                meta.comment(req, str(x))
+
+def page_youtube_channels(req, url):
+    txt = loadYouTube(req, url)
+    ytInitialData = meta.search(r'window\["ytInitialData"\] = (.*?});', txt)
+    if ytInitialData:
+        data = meta.parseJSON(ytInitialData)
+        for x in meta.findItem(data, ['gridChannelRenderer']):
+            try:
+                channelId = x['channelId'].encode('utf8')
+                title = x['title']['simpleText'].encode('utf8')
+                image = x['thumbnail']['thumbnails'][0]['url'].encode('utf8')
+                addPage(req, 'https://www.youtube.com/channel/'+channelId, title, image)
+            except:
+                meta.comment(req, str(x))
+
+def page_youtube_playlists(req, url):
+    txt = loadYouTube(req, url)
+    ytInitialData = meta.search(r'window\["ytInitialData"\] = (.*?});', txt)
+    if ytInitialData:
+        data = meta.parseJSON(ytInitialData)
+        for x in meta.findItem(data, ['gridPlaylistRenderer']):
+            try:
+                playlistId = x['playlistId'].encode('utf8')
+                title = x['title']['simpleText'].encode('utf8')
+                image = x['thumbnail']['thumbnails'][0]['url'].encode('utf8')
+                addPage(req, 'https://www.youtube.com/playlist?list='+playlistId, title, image, 'Playlist')
+            except:
+                meta.comment(req, str(x))
+
+def page_youtube_playlistVideo(req, url):
+    txt = loadYouTube(req, url)
+    ytInitialData = meta.search(r'window\["ytInitialData"\] = (.*?});', txt)
+    if ytInitialData:
+        data = meta.parseJSON(ytInitialData)
+        for x in meta.findItem(data, ['playlistVideoRenderer']):
+            try:
+                videoId = x['videoId'].encode('utf8')
+                title = x['title']['simpleText'].encode('utf8')
+                addYouTube(req, videoId, title)
+            except:
+                meta.comment(req, str(x))
+
+def page_youtube_channel(req, url):
+   addPage(req, url+'/videos', 'VIDEOS', 'Movies-icon.png')
+   page_youtube_playlists(req, url+'/playlists')
 
 def page_youtube(req, url):
-    txt = loadYouTube(req, url)
     if re.search(r'/playlists$', url):
-        playlists = []
-        for m in re.finditer(r'href="/playlist\?list=([^"]*)"*?>([^<]*)</a>', txt):
-            playlist, title = m.group(1), m.group(2)
-            if playlist not in playlists:
-                playlists.append(playlist)
-                addPlayList(req, playlist, title, txt=txt)
+        page_youtube_playlists(req, url)
     elif re.search(r'/channels$', url):
-        for m in re.finditer(r'class="yt-uix-sessionlink yt-uix-tile-link ([^>]*)', txt):
-            link = meta.search(r'href="([^"]*)"', m.group())
-            title = meta.search(r'title="([^"]*)"', m.group())
-            if link and title:
-                 addPage(req, 'https://www.youtube.com'+link, title)
-    elif re.search(r'/featured$', url):
-        for m in re.finditer(r'class="yt-uix-sessionlink yt-uix-tile-link ([^>]*)', txt):
-            link = meta.search(r'href="([^"]*)"', m.group())
-            title = meta.search(r'title="([^"]*)"', m.group())
-            vid = meta.search(r'v=(.{11})', link)
-            playlist = meta.search(r'list=([^"]*)', link)
-            if link and title:
-                if playlist:
-                    addPlayList(req, playlist, title, desc='Playlist', image='Movies-icon.png', txt=txt)
-                elif vid:
-                    addYouTube(req, vid, title)
+        page_youtube_channels(req, url)
     elif re.search(r'/channel/([^/]*)$', url):
-        addPage(req, url+'/videos', 'VIDEOS')
-        playlists = []
-        for m in re.finditer(r'href="/playlist\?list=([^"]*)"*?>([^<]*)</a>', load(url+'/playlists')):
-            playlist, title = m.group(1), m.group(2)
-            if playlist not in playlists:
-                playlists.append(playlist)
-                addPlayList(req, playlist, title)
-    elif re.search(r'playlist\?', url):
-        for m in re.finditer(r'<tr (.*?)</tr>', txt, re.DOTALL|re.MULTILINE):
-            vid = meta.search(r'data-video-id="([^"]*)"', m.group())
-            title = meta.search(r'data-title="([^"]*)"', m.group())
-            if vid and title:
-                desc = meta.search(r'<span aria-label=".*?">(.*?)</span>', m.group())
-                addYouTube(req, vid, title, getDuration(desc) or desc)
+        page_youtube_channel(req, url)
     elif re.search(r'list=', url):
-        for m in re.finditer(r'<li ([^>]*)>', txt):
-            vid = meta.search(r'data-video-id="([^"]*)"', m.group())
-            title = meta.search(r'data-video-title="([^"]*)"', m.group())
-            if vid and title:
-                addYouTube(req, vid, title)
+        page_youtube_playlistVideo(req, url)
     else:
-        for m in re.finditer(r'<a (.*?)</a>', txt, re.DOTALL|re.MULTILINE):
-            vid = meta.search(r'href="/watch\?v=(.{11})', m.group())
-            title = meta.search(r'title="([^"]*)"', m.group())
-            if vid and title:
-                desc = getDescription(m.group(), txt)
-                addYouTube(req, vid, title, desc)
+        page_youtube_videos(req, url)
 
 def page_dailymotion(req, url):
     meta.findImageLink(req, url, True, False)
