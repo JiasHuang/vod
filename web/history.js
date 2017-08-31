@@ -2,6 +2,7 @@
 function show() {
     var pages_str = localStorage.getItem("pages");
     if (pages_str === null) {
+        $('#Result').html('<h2>Oops! Not Found</h2>');
         return;
     }
     var pages = JSON.parse(pages_str);
