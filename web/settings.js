@@ -65,6 +65,15 @@ function save() {
     window.location.href = 'view.py';
 }
 
+function resetSettings() {
+    var dict = settings_dict;
+    for (var key in dict) {
+        localStorage.removeItem(dict[key]);
+    }
+    saveCookies();
+    location.reload();
+}
+
 function cancel() {
     window.location.href = 'view.py';
 }
@@ -79,6 +88,22 @@ function getValue(id) {
         val = getDefault(id)['default'];
     }
     return val;
+}
+
+function onActinSelect()
+{
+    var r = confirm("Are you sure ?");
+    if (r == true) {
+        cmd = $(this).val();
+        if (cmd == 'ClearHistory') {
+            localStorage.removeItem('pages');
+        } else if (cmd == 'ResetSettings') {
+            resetSettings();
+        } else if (cmd == 'Update') {
+            window.location.href = 'view.py?c=update';
+        }
+    }
+    $(this).val('');
 }
 
 function onSelectChange() {
