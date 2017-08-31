@@ -525,7 +525,7 @@ def page_youtube_channels(req, url):
                 channelId = x['channelId'].encode('utf8')
                 title = x['title']['simpleText'].encode('utf8')
                 image = x['thumbnail']['thumbnails'][0]['url'].encode('utf8')
-                addPage(req, 'https://www.youtube.com/channel/'+channelId, title, image)
+                addPage(req, 'https://www.youtube.com/channel/'+channelId, title, image, 'Channel')
             except:
                 meta.comment(req, 'Exception:\n'+str(x))
 
