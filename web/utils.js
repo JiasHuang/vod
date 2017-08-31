@@ -27,6 +27,19 @@ function onPageClick() {
     }
     data.link = link
     data.title = title;
+
+    var pos = window.location.href.search(/view.py\?p=/);
+    if (pos > 0) {
+        var plink = decodeURIComponent(window.location.href.substring(pos));
+        for (var i = 0; i < pages.length; i++) {
+            if (pages[i].link == plink) {
+                data.plink = pages[i].link;
+                data.ptitle = pages[i].title;
+                break;
+            }
+        }
+    }
+
     pages.splice(0, 0, data);
     if (pages.length > 30) {
         pages.pop();

@@ -8,7 +8,11 @@ function show() {
     var text = '';
     var css = ["entryTitle", "entryTitle entryEven"];
     for (var i=0; i<pages.length; i++) {
-        text += '<h2 class="'+css[i&1]+'"><a href="'+pages[i].link+'">'+pages[i].title+'</a></h2>';
+        text += '<h2 class="'+css[i&1]+'">';
+        if (pages[i].plink && pages[i].ptitle) {
+            text += '<a href="'+pages[i].plink+'">'+pages[i].ptitle+'</a>  /  ';
+        }
+        text += '<a href="'+pages[i].link+'">'+pages[i].title+'</a></h2>';
     }
     $('#Result').html(text);
 }
