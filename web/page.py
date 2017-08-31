@@ -44,19 +44,10 @@ def renderDIR(req, d):
 def load(url):
     return meta.load2(url)
 
-def loadYouTube(req, url):
-    headers = [('cookie', 'PREF=hl=en')]
-    txt = meta.load(url, headers = headers)
-    return txt
-
 def darg(d, *arg):
     if len(arg) == 1:
         return d[arg[0]].encode('utf8')
     return [d[a].encode('utf8') for a in arg]
-
-def getEntryCnt():
-    global entryCnt
-    return entryCnt
 
 def addEntry(req, link, title, image=None, desc=None, password=None):
     global entryCnt, entryVideos
@@ -101,21 +92,8 @@ def addVideo(req, link, title=None, image=None, desc=None, password=None):
     addEntry(req, 'view.py?v='+link, title or link, image or meta.getImage(link) or 'Movies-icon.png', desc, password)
 
 def addYouTube(req, vid, title=None, desc=None):
-    if title not in ['[Deleted video]', '[Private video]']:
-        link = 'https://www.youtube.com/watch?v='+vid
-        addVideo(req, link, title, None, desc)
-
-def addPlayList(req, playlist, title, vid=None, desc=None, image=None, txt=None):
-    link = 'https://www.youtube.com/playlist?list='+playlist
-    if txt and not vid:
-        vid = meta.search(r'watch\?v=(.{11})&amp;list='+re.escape(playlist), txt)
-    if vid:
-        image = 'http://img.youtube.com/vi/'+vid+'/0.jpg'
-        if not desc:
-            # Some playlist URLs don't actually serve a playlist
-            link = 'https://www.youtube.com/watch?v=%s&list=%s' %(vid, playlist)
-            desc = 'Playlist'
-    addPage(req, link, title, image, desc)
+    link = 'https://www.youtube.com/watch?v='+vid
+    addVideo(req, link, title, None, desc)
 
 def addDailyMotion(req, vid, password=None):
     link = 'http://www.dailymotion.com/video/'+vid
@@ -139,28 +117,17 @@ def getDescription(attributes, txt):
         return getDuration(desc) or desc
     return None
 
-def addNextPage(req, q, txt, engine='youtube'):
+def addGoogleNextPage(req, q, txt):
     req.write('<!--NextPage-->\n')
-    if engine == 'youtube':
-        prefix = 'view.py?q='+q
-        for m in re.finditer(r'<a href="/results.*?</a>', txt):
-            sp = meta.search(r'sp=([^"&]*)', m.group())
-            if sp:
-                pageno = meta.search(r'>(\d+)</span>', m.group()) or meta.search(r'(«|»)', m.group())
-                if pageno:
-                    pageno = re.sub('«','prev', pageno)
-                    pageno = re.sub('»','next', pageno)
-                    req.write('<div id="div_page_%s" title="%s" value="%s"></div>\n' %(pageno, pageno, prefix+'&x='+sp))
-    elif engine == 'google':
-        prefix = 'view.py?s=google&q='+q
-        navcnt = meta.search(r'<div id="navcnt">(.*?)</div>', txt, re.DOTALL|re.MULTILINE)
-        if navcnt:
-            for m in re.finditer(r'<a .*?</a>', navcnt):
-                link = meta.search(r'href="([^"]*)"', m.group())
-                label = meta.search(r'aria-label="Page (\d+)"', m.group()) or meta.search(r'id="pn([^"]*)"', m.group()) or ''
-                start = meta.search(r'start=(\d+)', link)
-                if start:
-                    req.write('<div id="div_page_%s" title="%s" value="%s"></div>\n' %(label, label, prefix+'&x='+start))
+    prefix = 'view.py?s=google&q='+q
+    navcnt = meta.search(r'<div id="navcnt">(.*?)</div>', txt, re.DOTALL|re.MULTILINE)
+    if navcnt:
+        for m in re.finditer(r'<a .*?</a>', navcnt):
+            link = meta.search(r'href="([^"]*)"', m.group())
+            label = meta.search(r'aria-label="Page (\d+)"', m.group()) or meta.search(r'id="pn([^"]*)"', m.group()) or ''
+            start = meta.search(r'start=(\d+)', link)
+            if start:
+                req.write('<div id="div_page_%s" title="%s" value="%s"></div>\n' %(label, label, prefix+'&x='+start))
     req.write('<!--NextPageEnd-->\n')
     return
 
@@ -168,7 +135,7 @@ def search_youtube(req, q, sp=None):
     url = 'https://www.youtube.com/results?q='+q
     if sp:
         url = url+'&sp='+sp
-    txt = loadYouTube(req, url)
+    txt = load(url)
     ytInitialData = meta.search(r'window\["ytInitialData"\] = (.*?});', txt)
     if ytInitialData:
         data = meta.parseJSON(ytInitialData)
@@ -212,7 +179,7 @@ def search_google(req, q, start=None):
                 break
         if link and title:
             addVideo(req, link, title)
-    addNextPage(req, q, txt, engine='google')
+    addGoogleNextPage(req, q, txt)
 
 def search_db(req, q):
     local = os.path.expanduser('~')+'/.voddatabase'
@@ -533,7 +500,7 @@ def page_maplestage(req, url):
                         meta.comment(req, 'Exception')
 
 def page_youtube_videos(req, url):
-    txt = loadYouTube(req, url)
+    txt = load(url)
     ytInitialData = meta.search(r'window\["ytInitialData"\] = (.*?});', txt)
     if ytInitialData:
         data = meta.parseJSON(ytInitialData)
@@ -542,15 +509,14 @@ def page_youtube_videos(req, url):
                 vid = x['videoId'].encode('utf8')
                 title = x['title']['simpleText'].encode('utf8')
                 desc = None
-                infos = meta.findItem(x, 'thumbnailOverlayTimeStatusRenderer')
-                if len(infos) > 0:
-                    desc = infos[0]['text']['simpleText'].encode('utf8')
+                for timeStatus in meta.findItem(x, ['thumbnailOverlayTimeStatusRenderer']):
+                    desc = timeStatus['text']['simpleText'].encode('utf8')
                 addYouTube(req, vid, title, desc)
             except:
-                meta.comment(req, str(x))
+                meta.comment(req, 'Exception:\n'+str(x))
 
 def page_youtube_channels(req, url):
-    txt = loadYouTube(req, url)
+    txt = load(url)
     ytInitialData = meta.search(r'window\["ytInitialData"\] = (.*?});', txt)
     if ytInitialData:
         data = meta.parseJSON(ytInitialData)
@@ -561,10 +527,10 @@ def page_youtube_channels(req, url):
                 image = x['thumbnail']['thumbnails'][0]['url'].encode('utf8')
                 addPage(req, 'https://www.youtube.com/channel/'+channelId, title, image)
             except:
-                meta.comment(req, str(x))
+                meta.comment(req, 'Exception:\n'+str(x))
 
 def page_youtube_playlists(req, url):
-    txt = loadYouTube(req, url)
+    txt = load(url)
     ytInitialData = meta.search(r'window\["ytInitialData"\] = (.*?});', txt)
     if ytInitialData:
         data = meta.parseJSON(ytInitialData)
@@ -575,10 +541,10 @@ def page_youtube_playlists(req, url):
                 image = x['thumbnail']['thumbnails'][0]['url'].encode('utf8')
                 addPage(req, 'https://www.youtube.com/playlist?list='+playlistId, title, image, 'Playlist')
             except:
-                meta.comment(req, str(x))
+                meta.comment(req, 'Exception:\n'+str(x))
 
 def page_youtube_playlistVideo(req, url):
-    txt = loadYouTube(req, url)
+    txt = load(url)
     ytInitialData = meta.search(r'window\["ytInitialData"\] = (.*?});', txt)
     if ytInitialData:
         data = meta.parseJSON(ytInitialData)
@@ -588,11 +554,23 @@ def page_youtube_playlistVideo(req, url):
                 title = x['title']['simpleText'].encode('utf8')
                 addYouTube(req, videoId, title)
             except:
-                meta.comment(req, str(x))
+                meta.comment(req, 'Exception:\n'+str(x))
 
 def page_youtube_channel(req, url):
-   addPage(req, url+'/videos', 'VIDEOS', 'Movies-icon.png')
-   page_youtube_playlists(req, url+'/playlists')
+    txt = load(url+'/videos')
+    ytInitialData = meta.search(r'window\["ytInitialData"\] = (.*?});', txt)
+    if ytInitialData:
+        data = meta.parseJSON(ytInitialData)
+        for x in meta.findItem(data, ['gridVideoRenderer']):
+            try:
+                vid = x['videoId'].encode('utf8')
+                title = x['title']['simpleText'].encode('utf8')
+                image = x['thumbnail']['thumbnails'][0]['url'].encode('utf8')
+                addPage(req, url+'/videos', 'VIDEOS', image, 'Videos')
+                break
+            except:
+                meta.comment(req, 'Exception:\n'+str(x))
+    page_youtube_playlists(req, url+'/playlists')
 
 def page_youtube(req, url):
     if re.search(r'/playlists$', url):

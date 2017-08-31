@@ -261,20 +261,20 @@ def showDebugLog(req):
         req.write(l+'\n')
     req.write('-->\n')
 
-def findItem_(obj, keys):
+def findItem_reentry(obj, keys):
     global itemResult
     if type(obj) is dict:
         for x in obj:
             if x in keys:
                 itemResult.append(obj[x])
             else:
-                findItem_(obj[x], keys)
+                findItem_reentry(obj[x], keys)
     elif type(obj) is list:
         for x in obj:
-            findItem_(x, keys)
+            findItem_reentry(x, keys)
 
 def findItem(obj, keys):
     global itemResult
     itemResult = []
-    findItem_(obj, keys)
+    findItem_reentry(obj, keys)
     return itemResult
