@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 import os
 import re
@@ -115,12 +116,12 @@ def index(req):
 
     elif f:
         playURL(f)
-        page.render(req, 'panel', '<h1>playURL %s</h1>' %(f))
+        page.render(req, 'panel', '<h1>開始播放 | playURL %s</h1>' %(f))
 
     elif v:
         v = getUnparsedURL(req) or v
         playURL(v, getOption(req))
-        page.render(req, 'panel', '<h1>playURL <a target=_blank href=%s>%s</a><h1>' %(v, v))
+        page.render(req, 'panel', '<h1>開始播放 | playURL <a target=_blank href=%s>%s</a><h1>' %(v, v))
 
     elif a:
         sendACT(a, n)
