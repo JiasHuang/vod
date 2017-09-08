@@ -1,12 +1,12 @@
 
 var settings_dict = {
-    'Slider':'slider',
-    'Slider-EntryMax':'entryMax',
-    'Format':'format',
-    'YouTube-Username':'username',
-    'Bookmark.json':'bookmark',
-    'AutoSub':'autosub',
-    'AutoNext':'autonext'
+    'slider'    :   '翻頁模式 | Slider',
+    'entryMax'  :   '條目數量 | Slider-EntryMax',
+    'format'    :   '視訊格式 | Format',
+    'username'  :   '使用名稱 | YouTube-Username',
+    'bookmark'  :   '書籤來源 | Bookmark.json',
+    'autosub'   :   '自動字幕 | AutoSub',
+    'autonext'  :   '循序播放 | AutoNext'
 };
 
 var settings_defs = {
@@ -59,7 +59,7 @@ function saveCookies() {
 function save() {
     var dict = settings_dict;
     for (var key in dict) {
-        localStorage.setItem(dict[key], document.getElementById(dict[key]).value);
+        localStorage.setItem(key, document.getElementById(key).value);
     }
     saveCookies();
     window.location.href = 'view.py';
@@ -68,7 +68,7 @@ function save() {
 function resetSettings() {
     var dict = settings_dict;
     for (var key in dict) {
-        localStorage.removeItem(dict[key]);
+        localStorage.removeItem(key);
     }
     saveCookies();
     location.reload();
@@ -129,7 +129,7 @@ function show() {
     var dict = settings_dict;
     var text = '<table>';
     for (var key in dict) {
-        text += '<tr><th>'+key+'</th><td>'+select(dict[key])+'</td></tr>';
+        text += '<tr><th>'+dict[key]+'</th><td>'+select(key)+'</td></tr>';
     }
     text += '</table>';
     $('#Result').html(text);

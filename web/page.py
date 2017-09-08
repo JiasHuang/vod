@@ -227,16 +227,12 @@ def search(req, q, s=None, x=None):
 
     q1 = re.sub(' ', '+', q)
 
-    engines = ['YouTube', 'Long', 'Playlist']
-    enginez = ['Google', 'Bing', 'Xuite', 'Live', 'CC', 'DailyMotion']
+    engines = ['YouTube', 'Long', 'Playlist', 'Google', 'Bing', 'Xuite', 'Live', 'CC', 'DailyMotion']
 
     req.write('<!--SearchEngine-->\n')
 
     for e in engines:
-        req.write('<div id="div_engines_%s" value="%s"></div>\n' %(e, e))
-
-    for e in enginez:
-        req.write('<div id="div_enginez_%s" value="%s"></div>\n' %(e, e))
+        req.write('<div id="div_engine_%s" value="%s"></div>\n' %(e, e))
 
     req.write('<div id="div_search_s" value="%s"></div>\n' %(s))
     req.write('<div id="div_search_q" value="%s"></div>\n' %(q1))

@@ -59,13 +59,13 @@
     top: 0px;
     left: 0px;
     width: 100%;
-    height: 200px;
     z-index: 20;
     background-color: silver;
+    padding: 16px 32px;
 }
 
 .space {
-    height: 200px;
+    height: 120px;
 }
 
 .actbtn {
@@ -144,16 +144,9 @@
     padding: 8px 16px;
 }
 
-.engine {
-    font-size: 32px;
-    padding: 8px 16px;
-}
-
 .engineSelect {
     font-size: 32px;
     padding: 8px 16px;
-    background-color: silver;
-    border: none;
 }
 
 .highlight {

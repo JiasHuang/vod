@@ -6,44 +6,23 @@ function onSelectChange() {
 }
 
 function renderSearchSelect() {
-    var enginez = $('[id^="div_enginez_"]').map(function () { return $(this).attr('value'); }).get();
+    var engines = $('[id^="div_engine_"]').map(function () { return $(this).attr('value'); }).get();
     var text = '';
-    text += '<select id="select_enginez" class="engineSelect" onchange="onSelectChange.call(this)">'
-    text += '<option disabled selected value>Select</option>';
-    for (var i=0; i<enginez.length; i++)
-        text += '<option value="'+enginez[i]+'">'+enginez[i]+'</option>';
-    text += '</select>';
+    for (var i=0; i<engines.length; i++)
+        text += '<option value="'+engines[i]+'">'+engines[i]+'</option>';
     return text;
 }
 
 function renderSearchBar() {
-    var engines = $('[id^="div_engines_"]').map(function () { return $(this).attr('value'); }).get();
     var search_s = $('#div_search_s').attr('value');
     var search_q = $('#div_search_q').attr('value');
-    var text = '';
-
-    text += '<table><tr>';
-
-    for (var i=0; i<engines.length; i++)
-        text += '<td class="engine"><a href="view.py?s='+engines[i]+'&q='+search_q+'">'+engines[i]+'</a></td>';
-
-    text += '<td>'+renderSearchSelect()+'</td>'
-
-    text += '<tr></table>';
-
-    $('#searchbarTable').html(text);
+    $('#select_engine').html(renderSearchSelect());
     $('#input_s').val(search_s);
     $('#input_q').val(search_q.replace(/\+/g,' '));
 
-    $('.engine').each( function() {
-        if ($(this).children().text().toLowerCase() == search_s)
-            $(this).addClass('highlight');
-    });
-
-    $('#select_enginez').children().each( function () {
+    $('#select_engine').children().each( function () {
         if ($(this).text().toLowerCase() == search_s) {
-            $('#select_enginez').val($(this).text());
-            $('#select_enginez').addClass('highlight');
+            $('#select_engine').val($(this).text());
         }
     });
 }
