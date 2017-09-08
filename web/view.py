@@ -109,6 +109,7 @@ def index(req):
         page.page(req, p)
 
     elif q:
+        s = s or getCookie(req, 'engine')
         page.search(req, q, s, x)
 
     elif d:

@@ -1,7 +1,8 @@
 
 function onSelectChange() {
     var search_q = $('#input_q').val();
-    var href = 'view.py?s='+$(this).val()+'&q='+search_q;
+    var href = 'view.py?q='+search_q;
+    saveCookie('engine', $(this).val());
     window.location.href = href;
 }
 
@@ -17,14 +18,12 @@ function renderSearchBar() {
     var search_s = $('#div_search_s').attr('value');
     var search_q = $('#div_search_q').attr('value');
     $('#select_engine').html(renderSearchSelect());
-    $('#input_s').val(search_s);
-    $('#input_q').val(search_q.replace(/\+/g,' '));
-
     $('#select_engine').children().each( function () {
         if ($(this).text().toLowerCase() == search_s) {
             $('#select_engine').val($(this).text());
         }
     });
+    $('#input_q').val(search_q.replace(/\+/g,' '));
 }
 
 function renderNextPages() {
