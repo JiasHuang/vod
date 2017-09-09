@@ -2,10 +2,8 @@
 .input {
     font-size:32px;
     width:480px;
-    height:48px;
-    border: 2px solid;
-    padding-left: 16px;
-    padding-right: 16px;
+    padding: 2px 16px;
+    border: 2px solid black;
     margin: 8px;
 }
 
@@ -58,14 +56,13 @@
     position: fixed;
     top: 0px;
     left: 0px;
-    width: 100%;
+    width: 100vw;
     z-index: 20;
     background-color: silver;
-    padding: 16px 32px;
 }
 
 .space {
-    height: 120px;
+    height: 72px;
 }
 
 .actbtn {
@@ -146,16 +143,12 @@
 
 .engineSelect {
     font-size: 32px;
-    padding: 8px 16px;
-}
-
-.highlight {
-    font-size: 36px;
-    font-weight: bold;
+    padding: 2px 16px;
+    border: 2px solid black;
 }
 
 .form {
-    margin: 8px 0px;
+    margin: 8px;
 }
 
 .pages {

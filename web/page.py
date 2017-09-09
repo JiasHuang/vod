@@ -227,7 +227,7 @@ def search(req, q, s=None, x=None):
 
     q1 = re.sub(' ', '+', q)
 
-    engines = ['YouTube', 'Long', 'Playlist', 'Google', 'Bing', 'Xuite', 'Live', 'CC', 'DailyMotion']
+    engines = ['YouTube', 'Long', 'Playlist', 'Live', 'CC', 'Google', 'Bing', 'Xuite', 'DailyMotion']
 
     req.write('<!--SearchEngine-->\n')
 
