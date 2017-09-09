@@ -1,0 +1,24 @@
+
+.searchbar {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 100vw;
+    z-index: 20;
+    background-color: silver;
+}
+
+.searchbar input {
+    width:480px;
+}
+
+.searchbar input, select {
+    font-size:48px;
+    padding: 4px 16px;
+    border: 2px solid black;
+    margin: 8px;
+}
+
+.space {
+    height: 100px;
+}

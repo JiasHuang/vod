@@ -6,12 +6,12 @@
 
 <title>VOD</title>
 
-<link rel="stylesheet" href="style.css?v=20170909">
-<link rel="stylesheet" href="settings.css?v=20170909">
+<link rel="stylesheet" href="settings.css?v=20170910">
+<link rel="stylesheet" href="menubox.css?v=20170910">
 
-<script type="text/javascript" src="utils.js?v=20170909"></script>
-<script type="text/javascript" src="speech.js?v=20170909"></script>
-<script type="text/javascript" src="settings.js?v=20170909"></script>
+<script type="text/javascript" src="utils.js?v=20170910"></script>
+<script type="text/javascript" src="speech.js?v=20170910"></script>
+<script type="text/javascript" src="settings.js?v=20170910"></script>
 
 <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 <script type="text/javascript" src="https://www.w3schools.com/lib/w3.js"></script>
@@ -28,19 +28,20 @@
     <script>w3.includeHTML();</script>
     <div style="height: 128px;"></div>
 
-    <div id="Result" class="settings"></div>
+    <div class="settings">
+        <div id="Result"></div>
+        <hr>
+        <select onchange="onActinSelect.call(this)">
+            <option disabled selected value>更多選項 | More Actions </option>
+            <option value="ClearHistory">清除紀錄 | Clear History</option>
+            <option value="ResetSettings">重置設定 | Reset Settings</option>
+            <option value="Update">更新版本 | Update Version</option>
+        </select>
+    </div>
 
-    <hr>
-    <select onchange="onActinSelect.call(this)" class="center">
-        <option disabled selected value>更多選項 | More Actions </option>
-        <option value="ClearHistory">清除紀錄 | Clear History</option>
-        <option value="ResetSettings">重置設定 | Reset Settings</option>
-        <option value="Update">更新版本 | Update Version</option>
-    </select>
-
-    <div class="menubar">
-        <button class="btn" onclick="cancel()">CANCEL</button>
-        <button class="btn" onclick="save()">SAVE</button>
+    <div class="editbar">
+        <button onclick="cancel()">CANCEL</button>
+        <button onclick="save()">SAVE</button>
     </div>
 
 </body>

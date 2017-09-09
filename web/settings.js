@@ -1,50 +1,45 @@
 
-var settings_dict = {
-    'slider'    :   '翻頁模式 | Slider',
-    'entryMax'  :   '條目數量 | Slider-EntryMax',
-    'format'    :   '視訊格式 | Format',
-    'username'  :   '使用名稱 | YouTube-Username',
-    'bookmark'  :   '書籤來源 | Bookmark.json',
-    'autosub'   :   '自動字幕 | AutoSub',
-    'autonext'  :   '循序播放 | AutoNext'
-};
-
-var settings_defs = {
+var settings = {
     'slider' : {
-        'yes':'yes',
-        'no':'no',
-        'default':'yes',
+        'desc' : '翻頁模式 | Slider',
+        'type' : 'select',
+        'vals' : ['yes', 'no'],
+        'defs' :'yes',
     },
     'entryMax' : {
-        '3':'3',
-        '4':'4',
-        '5':'5',
-        'default':'5',
+        'desc' : '條目數量 | EntryMax',
+        'type' : 'select',
+        'vals' : ['3', '4', '5'],
+        'defs' : '5',
     },
     'format' : {
-        '1080p':'1080p',
-        '720p':'720p',
-        '480p':'480p',
-        '360p':'360p',
-        'audio-only':'bestaudio',
-        'default':'720p',
-    },
-    'username' : {
-        'default':'',
-    },
-    'bookmark' : {
-        'default':'',
+        'desc' : '視訊格式 | Format',
+        'type' : 'select',
+        'vals' : ['1080p', '720p', '480p', '360p', 'bestaudio'],
+        'defs' : '720p',
     },
     'autosub' : {
-        'yes':'yes',
-        'no':'no',
-        'default':'no',
+        'desc' : '自動字幕 | AutoSub',
+        'type' : 'select',
+        'vals' : ['yes', 'no'],
+        'defs' : 'no',
     },
     'autonext' : {
-        'yes':'yes',
-        'no':'no',
-        'default':'no',
-    }
+        'desc' : '循序播放 | AutoNext',
+        'type' : 'select',
+        'vals' : ['yes', 'no'],
+        'defs' : 'no',
+    },
+    'youtubeID' : {
+        'desc' : '使用名稱 | YouTubeID',
+        'type' : 'input',
+        'defs' : '',
+    },
+    'bookmark' : {
+        'desc' : '書籤來源 | Bookmark',
+        'type' : 'input',
+        'defs' : '',
+    },
 };
 
 var settings_cookies = ['format', 'autosub', 'autonext'];
@@ -57,18 +52,16 @@ function saveCookies() {
 }
 
 function save() {
-    var dict = settings_dict;
-    for (var key in dict) {
-        localStorage.setItem(key, document.getElementById(key).value);
+    for (var id in settings) {
+        localStorage.setItem(id, document.getElementById(id).value);
     }
     saveCookies();
     window.location.href = 'view.py';
 }
 
 function resetSettings() {
-    var dict = settings_dict;
-    for (var key in dict) {
-        localStorage.removeItem(key);
+    for (var id in settings) {
+        localStorage.removeItem(id);
     }
     saveCookies();
     location.reload();
@@ -78,14 +71,10 @@ function cancel() {
     window.location.href = 'view.py';
 }
 
-function getDefault(key) {
-    return settings_defs[key];
-}
-
 function getValue(id) {
     var val = localStorage.getItem(id);
     if (val === null) {
-        val = getDefault(id)['default'];
+        val = settings[id]['defs'];
     }
     return val;
 }
@@ -106,32 +95,33 @@ function onActinSelect()
     $(this).val('');
 }
 
-function onSelectChange() {
-    $(this).siblings('input').val($(this).val());
-}
-
 function select(id) {
-    var dict = getDefault(id);
     var text = '';
-    text += '<div>';
-    text += '<input type="text" name="data" class="datatext" id="'+id+'" value="'+getValue(id)+'">';
-    text += '<select onchange="onSelectChange.call(this)" class="contentselect">';
-    text += '<option disabled selected value>-select-</option>';
-    for (var key in dict) {
-        text += '<option value="'+dict[key]+'">'+key+'</option>';
+    text += '<select class="input" id="'+id+'" >';
+    for (var i in settings[id]['vals']) {
+        text += '<option value="'+settings[id]['vals'][i]+'">'+settings[id]['vals'][i]+'</option>';
     }
     text += '</select>';
-    text += '</div>';
     return text;
 }
 
+function input(id) {
+    return '<input type="text" class="input" id="'+id+'" >';
+}
+
 function show() {
-    var dict = settings_dict;
     var text = '<table>';
-    for (var key in dict) {
-        text += '<tr><th>'+dict[key]+'</th><td>'+select(key)+'</td></tr>';
+    for (var id in settings) {
+        if (settings[id]['type'] == 'select') {
+            text += '<tr><th>'+settings[id]['desc']+'</th><td>'+select(id)+'</td></tr>';
+        } else {
+            text += '<tr><th>'+settings[id]['desc']+'</th><td>'+input(id)+'</td></tr>';
+        }
     }
     text += '</table>';
     $('#Result').html(text);
+    for (var id in settings) {
+        $('#'+id).val(getValue(id));
+    }
 }
 

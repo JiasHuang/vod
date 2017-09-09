@@ -1,0 +1,35 @@
+
+.menuicon {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    z-index: 30;
+}
+
+.menubox {
+    position: fixed;
+    right: 0px;
+    z-index: 25;
+    background-color: white;
+    border: 20px solid deepskyblue;
+    padding: 64px 64px 32px;
+}
+
+.menubox input {
+    font-size: 48px;
+    width: 480px;
+    padding: 8px 16px;
+    border: 2px solid black;
+    margin: 8px;
+}
+
+.menubox tr td {
+    text-align: center;
+    font-size: 32px;
+    padding: 8px 16px;
+}
+
+.menubox img {
+    display: block;
+    margin: 32px;
+}

@@ -154,15 +154,6 @@ def search_youtube(req, q, sp=None):
             except:
                 meta.comment(req, str(x))
 
-def search_bing(req, q):
-    url = 'https://www.bing.com/search?count=30&q=site:drive.google.com+(mp4+OR+mkv+OR+avi+OR+flv)+'+q
-    txt = re.sub('(<strong>|</strong>)', '', load(url))
-    for m in re.finditer(r'<h2><a href="([^"]*)".*?>(.*?)</a></h2>', txt):
-        link, title = m.group(1), m.group(2)
-        vid = meta.search(r'drive.google.com/file/d/(\w*)', link)
-        if vid:
-            addGoogleDrive(req, vid, title)
-
 def search_google(req, q, start=None):
     url = 'http://www.google.com/search?num=30&hl=en&q=site%3Adrive.google.com%20video%20'+q
     if start:
@@ -227,7 +218,7 @@ def search(req, q, s=None, x=None):
 
     q1 = re.sub(' ', '+', q)
 
-    engines = ['YouTube', 'Long', 'Playlist', 'Live', 'CC', 'Google', 'Bing', 'Xuite', 'DailyMotion']
+    engines = ['YouTube', 'Long', 'Playlist', 'Google', 'Xuite', 'DailyMotion']
 
     req.write('<!--SearchEngine-->\n')
 
@@ -245,14 +236,8 @@ def search(req, q, s=None, x=None):
         search_youtube(req, q1, x or 'EgIYAlAU')
     elif s == 'playlist':
         search_youtube(req, q1, x or 'EgIQA1AU')
-    elif s == 'live':
-        search_youtube(req, q1, x or 'EgJAAVAU')
-    elif s == 'cc':
-        search_youtube(req, q1, x or 'EgIoAVAU')
     elif s == 'google':
         search_google(req, q1, x)
-    elif s == 'bing':
-        search_bing(req, q1)
     elif s == 'xuite':
         search_xuite(req, q1)
     elif s == 'dailymotion':

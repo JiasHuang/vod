@@ -48,15 +48,15 @@ function genTemplateTable(channel, links) {
 
 function genCustomTable() {
     var text = '';
-    var username = localStorage.getItem('username');
+    var youtubeID = localStorage.getItem('youtubeID');
 
-    if (username && username.length > 0) {
+    if (youtubeID && youtubeID.length > 0) {
         links = [
-            {'title' : 'videos', 'link' : 'https://www.youtube.com/user/'+username+'/videos'},
-            {'title' : 'playlists', 'link' : 'https://www.youtube.com/user/'+username+'/playlists'},
-            {'title' : 'channels', 'link': 'https://www.youtube.com/user/'+username+'/channels'}
+            {'title' : 'videos', 'link' : 'https://www.youtube.com/user/'+youtubeID+'/videos'},
+            {'title' : 'playlists', 'link' : 'https://www.youtube.com/user/'+youtubeID+'/playlists'},
+            {'title' : 'channels', 'link': 'https://www.youtube.com/user/'+youtubeID+'/channels'}
         ];
-        text += genTemplateTable(username, links);
+        text += genTemplateTable(youtubeID, links);
     }
 
     return text;

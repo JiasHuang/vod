@@ -9,26 +9,14 @@ from time import gmtime, strftime
 
 def main():
 
-    '''
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="keypad.css">
-
-    <script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
-    <script type="text/javascript" src="panel.js"></script>
-    <script type="text/javascript" src="speech.js"></script>
-
-    '''
-
     os.chdir('web')
     ver = strftime("%Y%m%d", gmtime())
 
+    files = glob.glob("*.js") + glob.glob("*.css")
+
     for html in glob.glob("*.html"):
-
-        for js in glob.glob("*.js"):
-            os.system('sed -i -r \'s/%s([^"]*)/%s\?v=%s/g\' %s' %(js, js, ver, html))
-
-        for css in glob.glob("*.css"):
-            os.system('sed -i -r \'s/%s([^"]*)/%s\?v=%s/g\' %s' %(css, css, ver, html))
+        for f in files:
+            os.system('sed -i -r \'s/%s([^"]*)/%s\?v=%s/g\' %s' %(f, f, ver, html))
 
     return
 

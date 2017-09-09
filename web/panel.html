@@ -3,60 +3,64 @@
 
 <head>
 
-<link rel="stylesheet" href="style.css?v=20170909">
-<link rel="stylesheet" href="keypad.css?v=20170909">
+<link rel="stylesheet" href="style.css?v=20170910">
+<link rel="stylesheet" href="panel.css?v=20170910">
 
 <script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
-<script type="text/javascript" src="panel.js?v=20170909"></script>
-<script type="text/javascript" src="speech.js?v=20170909"></script>
+<script type="text/javascript" src="panel.js?v=20170910"></script>
+<script type="text/javascript" src="speech.js?v=20170910"></script>
 
 <body bgcolor=silver>
 
-<img src="mic-icon.png" onload="loadImage()" onclick="startDictation()" id="ximage" class="topright" />
-
 <center>
 
-<table id="keypad" cellpadding="5" cellspacing="3">
-<tr>
-    <td onclick="addCode('1');">1</td>
-    <td onclick="addCode('2');">2</td>
-    <td onclick="addCode('3');">3</td>
-</tr>
-<tr>
-    <td onclick="addCode('4');">4</td>
-    <td onclick="addCode('5');">5</td>
-    <td onclick="addCode('6');">6</td>
-</tr>
-<tr>
-    <td onclick="addCode('7');">7</td>
-    <td onclick="addCode('8');">8</td>
-    <td onclick="addCode('9');">9</td>
-</tr>
-<tr>
-    <td onclick="addCode('*')">*</td>
-    <td onclick="addCode('0');">0</td>
-    <td onclick="addCode('#');">#</td>
-</tr>
-</table>
+<div class="keypad">
 
-<form class="form" action="view.py" method="post">
-<button type="submit" onclick="setAct('backward')" class="actbtn"><img src="Actions-media-skip-backward-icon.png" /></button>
-<button type="submit" onclick="setAct('stop')" class="actbtn"><img src="Actions-media-playback-stop-icon.png" /></button>
-<button type="submit" onclick="setAct('pause')" class="actbtn"><img src="Actions-media-playback-start-icon.png" /></button>
-<button type="submit" onclick="setAct('forward')" class="actbtn"><img src="Actions-media-skip-forward-icon.png" /></button>
-<input type="hidden" name="n" value="" maxlength="4" class="display" readonly="readonly" />
-<input type="hidden" name="a" value="" maxlength="4" class="display" readonly="readonly" />
-</form>
+    <table cellpadding="5" cellspacing="3">
+    <tr>
+        <td onclick="addCode('1');">1</td>
+        <td onclick="addCode('2');">2</td>
+        <td onclick="addCode('3');">3</td>
+    </tr>
+    <tr>
+        <td onclick="addCode('4');">4</td>
+        <td onclick="addCode('5');">5</td>
+        <td onclick="addCode('6');">6</td>
+    </tr>
+    <tr>
+        <td onclick="addCode('7');">7</td>
+        <td onclick="addCode('8');">8</td>
+        <td onclick="addCode('9');">9</td>
+    </tr>
+    <tr>
+        <td onclick="addCode('*')">*</td>
+        <td onclick="addCode('0');">0</td>
+        <td onclick="addCode('#');">#</td>
+    </tr>
+    </table>
 
-<form class="form" action="view.py" method="post" id="xform">
-<input type="text" name="i" value="" class="input" id="xinput" />
-</form>
+    <form action="view.py" method="post">
+        <button type="submit" onclick="setAct('backward')"><img src="Actions-media-skip-backward-icon.png" /></button>
+        <button type="submit" onclick="setAct('stop')"><img src="Actions-media-playback-stop-icon.png" /></button>
+        <button type="submit" onclick="setAct('pause')"><img src="Actions-media-playback-start-icon.png" /></button>
+        <button type="submit" onclick="setAct('forward')" ><img src="Actions-media-skip-forward-icon.png" /></button>
+        <input type="hidden" name="n" value="" maxlength="4" readonly="readonly" />
+        <input type="hidden" name="a" value="" maxlength="4" readonly="readonly" />
+    </form>
 
-<table><tr>
-    <td class="center"><a href=bookmark.html>Bookmark</a></td>
-    <td class="center"><a href=settings.html>Settings</a></td>
-    <td class="center"><a href=history.html>History</a></td>
-</tr></table>
+</div>
+
+<div class="menu">
+    <form action="view.py" method="post" id="xform">
+        <input type="text" name="i" value="" id="xinput" />
+    </form>
+    <table><tr>
+        <td><a href=bookmark.html>Bookmark</a></td>
+        <td><a href=settings.html>Settings</a></td>
+        <td><a href=history.html>History</a></td>
+    </tr></table>
+    <img src="mic-icon.png" onload="loadImage()" onclick="startDictation()" id="ximage" />
+</div>
 
 </center>
 
