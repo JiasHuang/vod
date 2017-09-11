@@ -607,7 +607,7 @@ def savePageList():
 def onPageEnd(req):
     global entryCnt
     if entryCnt == 0:
-        req.write('<div id="NotFound"></div>\n')
+        req.write('<div class="message" id="NotFound"></div>\n')
     req.write('<!--EntryEnd-->\n')
     req.write('<div id="pageinfo" pagelist="%s"></div>' %(savePageList()))
     meta.showDebugLog(req)
