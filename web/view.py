@@ -129,7 +129,7 @@ def index(req):
         page.render(req, 'panel', '<h1>%s %s</h1>' %(a, n or ''))
 
     elif c:
-        page.render(req, handleCmd(c), None)
+        page.render(req, 'status', '<div class="message" id="%s"></div>' %(handleCmd(c)))
 
     else:
         page.render(req, 'panel', None)

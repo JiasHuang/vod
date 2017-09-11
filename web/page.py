@@ -604,7 +604,7 @@ def savePageList():
 def onPageEnd(req):
     global entryCnt
     if entryCnt == 0:
-        req.write('<h2>抱歉，找不到您要的資料 | Oops! Not Found</h2>\n')
+        req.write('<div id="NotFound"></div>\n')
     req.write('<!--EntryEnd-->\n')
     req.write('<div id="pageinfo" pagelist="%s"></div>' %(savePageList()))
     meta.showDebugLog(req)

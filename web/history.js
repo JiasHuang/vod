@@ -2,7 +2,7 @@
 function show() {
     var pages_str = localStorage.getItem("pages");
     if (pages_str === null) {
-        $('#Result').html('<h2>抱歉，找不到您要的資料 | Oops! Not Found</h2>');
+        $('#Result').html('<h2>'+getLangLog('NotFound')+'</h2>');
         return;
     }
     var pages = JSON.parse(pages_str);

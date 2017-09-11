@@ -6,12 +6,12 @@
 
 <title>VOD</title>
 
-<link rel="stylesheet" href="settings.css?v=20170910">
-<link rel="stylesheet" href="menubox.css?v=20170910">
+<link rel="stylesheet" href="settings.css?v=201709111539">
+<link rel="stylesheet" href="menubox.css?v=201709111539">
 
-<script type="text/javascript" src="utils.js?v=20170910"></script>
-<script type="text/javascript" src="speech.js?v=20170910"></script>
-<script type="text/javascript" src="settings.js?v=20170910"></script>
+<script type="text/javascript" src="utils.js?v=201709111539"></script>
+<script type="text/javascript" src="speech.js?v=201709111539"></script>
+<script type="text/javascript" src="settings.js?v=201709111539"></script>
 
 <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 <script type="text/javascript" src="https://www.w3schools.com/lib/w3.js"></script>
@@ -28,14 +28,20 @@
     <script>w3.includeHTML();</script>
     <div style="height: 128px;"></div>
 
-    <div class="settings">
-        <div id="Result"></div>
-        <hr>
-        <select onchange="onActinSelect.call(this)">
-            <option disabled selected value>更多選項 | More Actions </option>
-            <option value="ClearHistory">清除紀錄 | Clear History</option>
-            <option value="ResetSettings">重置設定 | Reset Settings</option>
-            <option value="Update">更新版本 | Update Version</option>
+    <div class="lang">
+        <label><input type="radio" name="lang" value="en" id="en" onclick="onLangSelect.call(this)" />English</label>
+        <label><input type="radio" name="lang" value="ch" id="ch" onclick="onLangSelect.call(this)" />中文</label>
+    </div>
+
+    <div class="settings" id="Result">
+    </div>
+
+    <div class="action">
+        <select id="actionSelect" onchange="onActinSelect.call(this)">
+            <option disabled selected value="MoreActions"></option>
+            <option value="ClearHistory"></option>
+            <option value="ResetSettings"></option>
+            <option value="Update"></option>
         </select>
     </div>
 

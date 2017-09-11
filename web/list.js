@@ -60,5 +60,6 @@ function onReady() {
 
     $( "a[target='playVideo']" ).click(onPlayVideo);
     $('#loadingMessage').hide();
+    showServerMessage();
 }
 

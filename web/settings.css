@@ -1,5 +1,11 @@
 
+.lang label {
+    font-size: 36px;
+    display: inline-block;
+}
+
 .settings {
+    margin: 16px 0px;
 }
 
 .settings table {
@@ -15,6 +21,13 @@
 }
 
 .settings input, select {
+    margin: 0px;
+    font-size: 36px;
+    padding: 8px 16px;
+    width: 100%;
+}
+
+.action select {
     margin: 0px;
     font-size: 36px;
     padding: 8px 16px;

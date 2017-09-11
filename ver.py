@@ -10,7 +10,7 @@ from time import gmtime, strftime
 def main():
 
     os.chdir('web')
-    ver = strftime("%Y%m%d", gmtime())
+    ver = strftime("%Y%m%d%M%S", gmtime())
 
     files = glob.glob("*.js") + glob.glob("*.css")
 

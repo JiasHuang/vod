@@ -1,42 +1,35 @@
 
 var settings = {
     'slider' : {
-        'desc' : '翻頁模式 | Slider',
         'type' : 'select',
         'vals' : ['yes', 'no'],
         'defs' :'yes',
     },
     'entryMax' : {
-        'desc' : '條目數量 | EntryMax',
         'type' : 'select',
         'vals' : ['3', '4', '5'],
         'defs' : '5',
     },
     'format' : {
-        'desc' : '視訊格式 | Format',
         'type' : 'select',
         'vals' : ['1080p', '720p', '480p', '360p', 'bestaudio'],
         'defs' : '720p',
     },
     'autosub' : {
-        'desc' : '自動字幕 | AutoSub',
         'type' : 'select',
         'vals' : ['yes', 'no'],
         'defs' : 'no',
     },
     'autonext' : {
-        'desc' : '循序播放 | AutoNext',
         'type' : 'select',
         'vals' : ['yes', 'no'],
         'defs' : 'no',
     },
     'youtubeID' : {
-        'desc' : '使用名稱 | YouTubeID',
         'type' : 'input',
         'defs' : '',
     },
-    'bookmark' : {
-        'desc' : '書籤來源 | Bookmark',
+    'bookmarkURL' : {
         'type' : 'input',
         'defs' : '',
     },
@@ -79,6 +72,12 @@ function getValue(id) {
     return val;
 }
 
+function onLangSelect()
+{
+    localStorage.setItem("lang", $(this).val());
+    show();
+}
+
 function onActinSelect()
 {
     var r = confirm("Are you sure ?");
@@ -97,7 +96,7 @@ function onActinSelect()
 
 function select(id) {
     var text = '';
-    text += '<select class="input" id="'+id+'" >';
+    text += '<select id="'+id+'">';
     for (var i in settings[id]['vals']) {
         text += '<option value="'+settings[id]['vals'][i]+'">'+settings[id]['vals'][i]+'</option>';
     }
@@ -106,22 +105,35 @@ function select(id) {
 }
 
 function input(id) {
-    return '<input type="text" class="input" id="'+id+'" >';
+    return '<input type="text" id="'+id+'">';
 }
 
-function show() {
+function result() {
     var text = '<table>';
     for (var id in settings) {
         if (settings[id]['type'] == 'select') {
-            text += '<tr><th>'+settings[id]['desc']+'</th><td>'+select(id)+'</td></tr>';
-        } else {
-            text += '<tr><th>'+settings[id]['desc']+'</th><td>'+input(id)+'</td></tr>';
+            text += '<tr><th>'+getLangLog(id)+'</th><td>'+select(id)+'</td></tr>';
+        } else if (settings[id]['type'] == 'input') {
+            text += '<tr><th>'+getLangLog(id)+'</th><td>'+input(id)+'</td></tr>';
         }
     }
     text += '</table>';
-    $('#Result').html(text);
+    return text;
+}
+
+function show() {
+
+    document.getElementById(getLangLog('lang')).checked = true;
+
+    $('#Result').html(result());
     for (var id in settings) {
         $('#'+id).val(getValue(id));
     }
+
+    var actionSelect = document.getElementById('actionSelect');
+    for (var i=0; i < actionSelect.length; i++) {
+        actionSelect.options[i].text = getLangLog(actionSelect.options[i].value);
+    }
+
 }
 

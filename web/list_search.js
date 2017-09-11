@@ -68,5 +68,6 @@ function onSearchReady() {
 
     $( "a[target='playVideo']" ).click(onPlayVideo);
     $('#loadingMessage').hide();
+    showServerMessage();
 }
 
