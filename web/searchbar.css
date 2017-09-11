@@ -9,14 +9,14 @@
 }
 
 .searchbar input {
-    width:480px;
+    width: 480px;
 }
 
 .searchbar input, select {
-    font-size:48px;
+    font-size: 40px;
     padding: 4px 16px;
     border: 2px solid black;
-    margin: 8px;
+    margin: 16px 0px 0px 8px;
 }
 
 .space {

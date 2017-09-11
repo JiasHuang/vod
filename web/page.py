@@ -533,7 +533,10 @@ def page_youtube_playlistVideo(req, url):
             try:
                 videoId = x['videoId'].encode('utf8')
                 title = x['title']['simpleText'].encode('utf8')
-                addYouTube(req, videoId, title)
+                desc = None
+                for timeStatus in meta.findItem(x, ['thumbnailOverlayTimeStatusRenderer']):
+                    desc = timeStatus['text']['simpleText'].encode('utf8')
+                addYouTube(req, videoId, title, desc)
             except:
                 meta.comment(req, 'Exception:\n'+str(x))
 
