@@ -480,10 +480,10 @@ def page_maplestage(req, url):
                             meta.comment(req, str(videoSrc))
                             for index, video in enumerate(videoSrc['videos'], 1):
                                 v_type, v_id = darg(video, 'type', 'id')
+                                desc = str(index) + '/' + str(len(videoSrc['videos']))
                                 if v_type == 'youtube':
-                                    addYouTube(req, v_id)
+                                    addYouTube(req, v_id, desc=desc)
                                 elif v_type == 'dailymotion':
-                                    desc = str(index) + '/' + str(len(videoSrc['videos']))
                                     addDailyMotion(req, v_id, desc=desc)
                     except:
                         meta.comment(req, 'Exception')
