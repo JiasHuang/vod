@@ -44,6 +44,13 @@ def renderDIR(req, d):
 def load(url):
     return meta.load2(url)
 
+# FIXME
+def loadYouTube(url):
+    txt = load(url)
+    if not re.search(r'ytInitialData', txt):
+        txt = meta.load2(url, cache=False)
+    return txt
+
 def darg(d, *arg):
     if len(arg) == 1:
         return d[arg[0]].encode('utf8')
@@ -135,7 +142,7 @@ def search_youtube(req, q, sp=None):
     url = 'https://www.youtube.com/results?q='+q
     if sp:
         url = url+'&sp='+sp
-    txt = load(url)
+    txt = loadYouTube(url)
     ytInitialData = meta.search(r'window\["ytInitialData"\] = (.*?});', txt)
     if ytInitialData:
         data = meta.parseJSON(ytInitialData)
@@ -481,7 +488,7 @@ def page_maplestage(req, url):
                         meta.comment(req, 'Exception')
 
 def page_youtube_videos(req, url):
-    txt = load(url)
+    txt = loadYouTube(url)
     ytInitialData = meta.search(r'window\["ytInitialData"\] = (.*?});', txt)
     if ytInitialData:
         data = meta.parseJSON(ytInitialData)
@@ -497,7 +504,7 @@ def page_youtube_videos(req, url):
                 meta.comment(req, 'Exception:\n'+str(x))
 
 def page_youtube_channels(req, url):
-    txt = load(url)
+    txt = loadYouTube(url)
     ytInitialData = meta.search(r'window\["ytInitialData"\] = (.*?});', txt)
     if ytInitialData:
         data = meta.parseJSON(ytInitialData)
@@ -511,7 +518,7 @@ def page_youtube_channels(req, url):
                 meta.comment(req, 'Exception:\n'+str(x))
 
 def page_youtube_playlists(req, url):
-    txt = load(url)
+    txt = loadYouTube(url)
     ytInitialData = meta.search(r'window\["ytInitialData"\] = (.*?});', txt)
     if ytInitialData:
         data = meta.parseJSON(ytInitialData)
@@ -525,7 +532,7 @@ def page_youtube_playlists(req, url):
                 meta.comment(req, 'Exception:\n'+str(x))
 
 def page_youtube_playlistVideo(req, url):
-    txt = load(url)
+    txt = loadYouTube(url)
     ytInitialData = meta.search(r'window\["ytInitialData"\] = (.*?});', txt)
     if ytInitialData:
         data = meta.parseJSON(ytInitialData)
@@ -541,7 +548,7 @@ def page_youtube_playlistVideo(req, url):
                 meta.comment(req, 'Exception:\n'+str(x))
 
 def page_youtube_channel(req, url):
-    txt = load(url+'/videos')
+    txt = loadYouTube(url+'/videos')
     ytInitialData = meta.search(r'window\["ytInitialData"\] = (.*?});', txt)
     if ytInitialData:
         data = meta.parseJSON(ytInitialData)
@@ -607,7 +614,7 @@ def savePageList():
 def onPageEnd(req):
     global entryCnt
     if entryCnt == 0:
-        req.write('<div class="message" id="NotFound"></div>\n')
+        req.write('<h1><span class="message" id="NotFound"></span></h1>\n')
     req.write('<!--EntryEnd-->\n')
     req.write('<div id="pageinfo" pagelist="%s"></div>' %(savePageList()))
     meta.showDebugLog(req)
