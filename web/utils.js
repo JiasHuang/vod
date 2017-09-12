@@ -7,14 +7,24 @@ var logs = {
     'format'        : ['Format', '視訊格式'],
     'autosub'       : ['AutoSub', '自動字幕'],
     'autonext'      : ['AutoNext', '循序播放'],
-    'youtubeID'     : ['YouTubeID', '使用名稱'],
-    'bookmarkURL'   : ['BookMarkURL', '書籤來源'],
+    'youtubeID'     : ['YouTubeID', 'YouTube使用名稱'],
+    'bookmarkURL'   : ['BookmarkURL', '書籤來源'],
     'MoreActions'   : ['More Actions', '更多選項'],
     'ClearHistory'  : ['Clear History', '清除紀錄'],
     'ResetSettings' : ['Reset Settings', '重置設定'],
     'Update'        : ['Update Version', '更新版本'],
     'success'       : ['Success', '成功'],
     'error'         : ['Error', '錯誤'],
+    'playing'       : ['Playing', '開始播放'],
+    'pause'         : ['Play/Pause', '播放/暫停'],
+    'forward'       : ['Forward', '快進'],
+    'backward'      : ['Backward', '快退'],
+    'stop'          : ['Stop', '停止'],
+    'percent'       : ['Percent', '進度'],
+    'home'          : ['Home', '首頁'],
+    'bookmark'      : ['Bookmark', '書籤'],
+    'settings'      : ['Settings/設定', 'settings/設定'],
+    'history'       : ['History', '紀錄'],
 };
 
 function getExpire() {
@@ -81,6 +91,7 @@ function toggleMenu() {
         menubox.style.display = "none";
     } else {
         menubox.style.display = "block";
+        showMenuLink();
     }
     $('html').click(closeMenu);
     event.stopPropagation();
@@ -88,6 +99,9 @@ function toggleMenu() {
 
 function getLangLog(key)
 {
+    if (!(key in logs)) {
+        return '&lt;'+key+'&gt;';
+    }
     var idx = logs['lang'].indexOf(localStorage.getItem("lang"));
     if (idx < 0) {
         idx = 0;
@@ -99,6 +113,14 @@ function showServerMessage()
 {
     var x = document.getElementsByClassName("message");
     for (var i=0; i<x.length; i++) {
-        $(x[i]).html('<h1>'+getLangLog(x[i].id)+'</h1>');
+        $(x[i]).html(getLangLog(x[i].id));
+    }
+}
+
+function showMenuLink()
+{
+    var x = document.getElementsByClassName("menulink");
+    for (var i=0; i<x.length; i++) {
+        $(x[i]).html(getLangLog(x[i].id));
     }
 }

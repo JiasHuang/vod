@@ -74,6 +74,12 @@ def handleCmd(cmd):
         return 'error'
     return 'success'
 
+def msgID(ID):
+    return '<span class="message" id="%s"></span>' %(ID)
+
+def msgLink(link):
+    return '<a target=_blank href=%s>%s</a>' %(link, link)
+
 def index(req):
 
     req.content_type = 'text/html; charset=utf-8'
@@ -117,19 +123,19 @@ def index(req):
 
     elif f:
         playURL(f)
-        page.render(req, 'panel', '<h1>開始播放 | playURL %s</h1>' %(f))
+        page.render(req, 'panel', '<h1>%s %s</h1>' %(msgID('playing'), f))
 
     elif v:
         v = getUnparsedURL(req) or v
         playURL(v, getOption(req))
-        page.render(req, 'panel', '<h1>開始播放 | playURL <a target=_blank href=%s>%s</a><h1>' %(v, v))
+        page.render(req, 'panel', '<h1>%s %s</h1>' %(msgID('playing'), msgLink(v)))
 
     elif a:
         sendACT(a, n)
-        page.render(req, 'panel', '<h1>%s %s</h1>' %(a, n or ''))
+        page.render(req, 'panel', '<h1>%s %s</h1>' %(msgID(a), n or ''))
 
     elif c:
-        page.render(req, 'status', '<div class="message" id="%s"></div>' %(handleCmd(c)))
+        page.render(req, 'status', '<h1>%s</h1>' %(msgID(handleCmd(c))))
 
     else:
         page.render(req, 'panel', None)

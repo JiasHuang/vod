@@ -8,6 +8,16 @@
 <script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>
 <script type="text/javascript" src="panel.js?v=20170911_1005"></script>
 <script type="text/javascript" src="speech.js?v=20170911_1005"></script>
+<script type="text/javascript" src="utils.js?v=20170911_1005"></script>
+
+<script type="text/javascript">
+    window.onload = function() {
+        showMenuLink();
+        showServerMessage();
+    }
+</script>
+
+</head>
 
 <body bgcolor=silver>
 
@@ -54,9 +64,9 @@
         <input type="text" name="i" value="" id="xinput" />
     </form>
     <table><tr>
-        <td><a href=bookmark.html>Bookmark</a></td>
-        <td><a href=settings.html>Settings</a></td>
-        <td><a href=history.html>History</a></td>
+        <td><a href=bookmark.html><span class="menulink" id="bookmark"></span></a></td>
+        <td><a href=history.html><span class="menulink" id="history"></span></a></td>
+        <td><a href=settings.html><span class="menulink" id="settings"></span></a></td>
     </tr></table>
     <img src="mic-icon.png" onload="loadImage()" onclick="startDictation()" id="ximage" />
 </div>

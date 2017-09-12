@@ -254,12 +254,9 @@ def parseJSON(txt):
 
 def showDebugLog(req):
     global gDebugLog
-    req.write('\n\n')
-    req.write('<!--DebugLog-->\n')
-    req.write('<!--\n')
+    req.write('\n\n<!--DebugLog-->\n')
     for l in gDebugLog:
-        req.write(l+'\n')
-    req.write('-->\n')
+        req.write('<!-- %s -->\n' %(l))
 
 def findItem_reentry(obj, keys):
     global itemResult
