@@ -102,9 +102,9 @@ def addYouTube(req, vid, title=None, desc=None):
     link = 'https://www.youtube.com/watch?v='+vid
     addVideo(req, link, title, None, desc)
 
-def addDailyMotion(req, vid, desc=None, password=None):
+def addDailyMotion(req, vid, title=None, desc=None, password=None):
     link = 'http://www.dailymotion.com/video/'+vid
-    addVideo(req, link, desc=desc, password=password)
+    addVideo(req, link, title, desc=desc, password=password)
 
 def addOpenLoad(req, vid, title=None):
     link = 'https://openload.co/embed/'+vid
@@ -478,13 +478,13 @@ def page_maplestage(req, url):
                     try:
                         for videoSrc in prop['value']['videoSources']:
                             meta.comment(req, str(videoSrc))
-                            for index, video in enumerate(videoSrc['videos'], 1):
+                            for videoIndex, video in enumerate(videoSrc['videos'], 1):
                                 v_type, v_id = darg(video, 'type', 'id')
-                                desc = str(index) + '/' + str(len(videoSrc['videos']))
+                                title = '%s %d/%d' %(v_type, videoIndex, len(videoSrc['videos']))
                                 if v_type == 'youtube':
-                                    addYouTube(req, v_id, desc=desc)
+                                    addYouTube(req, v_id, title)
                                 elif v_type == 'dailymotion':
-                                    addDailyMotion(req, v_id, desc=desc)
+                                    addDailyMotion(req, v_id, title)
                     except:
                         meta.comment(req, 'Exception')
 
