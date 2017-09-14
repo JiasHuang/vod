@@ -498,7 +498,7 @@ def page_youtube_videos(req, url):
                 desc = None
                 for timeStatus in meta.findItem(x, ['thumbnailOverlayTimeStatusRenderer']):
                     desc = timeStatus['text']['simpleText'].encode('utf8')
-                addVideo(req, getLink('youtube', vid), title, desc)
+                addVideo(req, getLink('youtube', vid), title, desc=desc)
             except:
                 meta.comment(req, 'Exception:\n'+str(x))
 
