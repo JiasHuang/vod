@@ -98,21 +98,22 @@ def addVideo(req, link, title=None, image=None, desc=None, password=None):
         link = re.sub('//', 'http://', link)
     addEntry(req, 'view.py?v='+link, title or link, image or meta.getImage(link) or 'Movies-icon.png', desc, password)
 
-def addYouTube(req, vid, title=None, desc=None):
-    link = 'https://www.youtube.com/watch?v='+vid
-    addVideo(req, link, title, None, desc)
+def getLink(site, vid):
+    if site == 'youtube':
+        return 'https://www.youtube.com/watch?v='+vid
+    if site == 'dailymotion':
+        return 'http://www.dailymotion.com/video/'+vid
+    if site == 'openload':
+        return 'https://openload.co/embed/'+vid
+    if site == 'googledrive':
+        return 'https://drive.google.com/file/d/'+vid
+    return None
 
-def addDailyMotion(req, vid, title=None, desc=None, password=None):
-    link = 'http://www.dailymotion.com/video/'+vid
-    addVideo(req, link, title, desc=desc, password=password)
-
-def addOpenLoad(req, vid, title=None):
-    link = 'https://openload.co/embed/'+vid
-    addVideo(req, link, title)
-
-def addGoogleDrive(req, vid, title=None):
-    link = 'https://drive.google.com/file/d/'+vid
-    addVideo(req, link, title)
+def getTitle(site, index, cnt):
+    title = site.title()
+    if cnt > 1:
+        title += ' Part %d/%d' %(index, cnt)
+    return title
 
 def getDuration(desc):
     return meta.search(r'(\d[^<。]*)', desc)
@@ -152,7 +153,7 @@ def search_youtube(req, q, sp=None):
                     vid = x['videoId'].encode('utf8')
                     title = x['title']['simpleText'].encode('utf8')
                     desc = x['lengthText']['simpleText'].encode('utf8')
-                    addYouTube(req, vid, title, desc)
+                    addVideo(req, getLink('youtube', vid), title, desc=desc)
                 elif 'playlistId' in x:
                     playlistId = x['playlistId'].encode('utf8')
                     title = x['title']['simpleText'].encode('utf8')
@@ -421,23 +422,21 @@ def page_lovetv(req, url):
             if re.search(r'-ep([0-9]+).html$', m.group(1)):
                 addPage(req, meta.absURL(domain, m.group(1)), m.group(2))
     else:
+        video_types = {'1':'youtube', '2':'dailymotion', '3':'openload', '21':'googledrive'}
         txt = load(url)
         password = meta.search(r'密碼：(\w+)', txt)
         for m in re.finditer(r'<div id="video_div(|_s[0-9])">.*?</div>\n*</div>', txt, re.DOTALL|re.MULTILINE):
             meta.comment(req, m.group())
             video_ids  = meta.search(r'video_ids.*?>([^<]*)</div>', m.group())
             video_type = meta.search(r'video_type.*?>([^<]*)</div>', m.group())
-            if not video_type or not video_ids:
+            if not video_type or not video_ids or video_type not in video_types:
                 continue
-            for vid in video_ids.split(','):
-                if video_type == '1':
-                    addYouTube(req, vid)
-                elif video_type == '2':
-                    addDailyMotion(req, vid, password=password)
-                elif video_type == '3':
-                    addOpenLoad(req, vid)
-                elif video_type == '21':
-                    addGoogleDrive(req, vid)
+            videos = video_ids.split(',')
+            vcnt = len(videos)
+            for videoIndex, video in enumerate(videos, 1):
+                site = video_types[video_type]
+                title = getTitle(site, videoIndex, vcnt)
+                addVideo(req, getLink(site, video), title, password=password)
 
 def page_maplestage(req, url):
     if re.search(r'/drama/', url):
@@ -478,13 +477,12 @@ def page_maplestage(req, url):
                     try:
                         for videoSrc in prop['value']['videoSources']:
                             meta.comment(req, str(videoSrc))
+                            vcnt = len(videoSrc['videos'])
                             for videoIndex, video in enumerate(videoSrc['videos'], 1):
-                                v_type, v_id = darg(video, 'type', 'id')
-                                title = '%s %d/%d' %(v_type, videoIndex, len(videoSrc['videos']))
-                                if v_type == 'youtube':
-                                    addYouTube(req, v_id, title)
-                                elif v_type == 'dailymotion':
-                                    addDailyMotion(req, v_id, title)
+                                vtype, vid = darg(video, 'type', 'id')
+                                if vtype in ['youtube', 'dailymotion']:
+                                    title = getTitle(vtype, videoIndex, vcnt)
+                                    addVideo(req, getLink(vtype, vid), title)
                     except:
                         meta.comment(req, 'Exception')
 
@@ -500,7 +498,7 @@ def page_youtube_videos(req, url):
                 desc = None
                 for timeStatus in meta.findItem(x, ['thumbnailOverlayTimeStatusRenderer']):
                     desc = timeStatus['text']['simpleText'].encode('utf8')
-                addYouTube(req, vid, title, desc)
+                addVideo(req, getLink('youtube', vid), title, desc)
             except:
                 meta.comment(req, 'Exception:\n'+str(x))
 
@@ -544,7 +542,7 @@ def page_youtube_playlistVideo(req, url):
                 desc = None
                 for timeStatus in meta.findItem(x, ['thumbnailOverlayTimeStatusRenderer']):
                     desc = timeStatus['text']['simpleText'].encode('utf8')
-                addYouTube(req, videoId, title, desc)
+                addVideo(req, getLink('youtube', videoId), title, desc=desc)
             except:
                 meta.comment(req, 'Exception:\n'+str(x))
 
@@ -596,7 +594,7 @@ def page_gdrive(req, url):
                     if not isinstance(mimeType, str):
                         continue
                     if mimeType.startswith('video'):
-                        addGoogleDrive(req, vid, title)
+                        addVideo(req, getLink('googledrive', vid), title)
                     if mimeType.endswith('folder'):
                         addPage(req, 'https://drive.google.com/drive/folders/'+vid, title, 'folder-video-icon.png')
         except:
