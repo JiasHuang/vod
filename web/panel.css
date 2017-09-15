@@ -48,7 +48,6 @@
     padding: 8px 16px;
 }
 
-.menu img {
-    display: block;
-    margin: 32px;
+.menu tr td img {
+    height: 40px;
 }

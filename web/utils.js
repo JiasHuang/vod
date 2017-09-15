@@ -23,7 +23,7 @@ var logs = {
     'percent'       : ['Percent', '進度'],
     'home'          : ['Home', '首頁'],
     'bookmark'      : ['Bookmark', '書籤'],
-    'settings'      : ['Settings/設定', 'settings/設定'],
+    'settings'      : ['Settings', '設定'],
     'history'       : ['History', '紀錄'],
 };
 

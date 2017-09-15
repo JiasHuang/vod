@@ -26,9 +26,9 @@
     text-align: center;
     font-size: 32px;
     padding: 16px;
+    height: 40px;
 }
 
-.menubox img {
-    display: block;
-    margin: 16px;
+.menubox tr td img {
+    height: 100%;
 }
