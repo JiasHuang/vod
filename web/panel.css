@@ -45,9 +45,10 @@
 .menu tr td {
     text-align: center;
     font-size: 36px;
-    padding: 8px 16px;
+    padding: 16px;
+    line-height: 64px;
 }
 
 .menu tr td img {
-    height: 40px;
+    vertical-align: middle;
 }

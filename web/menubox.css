@@ -24,11 +24,11 @@
 
 .menubox tr td {
     text-align: center;
-    font-size: 32px;
+    font-size: 36px;
     padding: 16px;
-    height: 40px;
+    line-height: 64px;
 }
 
 .menubox tr td img {
-    height: 100%;
+    vertical-align: middle;
 }
