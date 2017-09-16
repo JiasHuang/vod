@@ -37,9 +37,9 @@ def runDBG(url, ref, cookies=None):
     youtubedl.extractSUB(url)
     return
 
-def getNext():
+def getNext(playing, playlist):
 
-    if xarg.autonext != 'yes':
+    if xarg.autonext != 'yes' or playlist != xurl.readLocal(xdef.playlist, 0):
         return None
 
     player = getPlayer()
@@ -48,12 +48,6 @@ def getNext():
     if player == 'omxp' and xproc.checkProcessRunning('omxplayer.bin'):
         return None
     if player == 'ffplay' and xproc.checkProcessRunning('ffplay'):
-        return None
-
-    playing  = xurl.readLocal(xdef.playing)
-    playlist = xurl.readLocal(xdef.playlist)
-
-    if xarg.playlist_hashnum != hashlib.md5(playlist).hexdigest():
         return None
 
     lines = playlist.splitlines()
@@ -70,8 +64,6 @@ def getNext():
 def playURL_core(url, ref, cookies=None):
 
     player = getPlayer()
-
-    xurl.saveLocal(xdef.playing, url)
 
     print('\n[xplay][%s]\n' %(player))
     print('\turl : %s' %(url or ''))
@@ -95,18 +87,17 @@ def playURL(url, ref, cookies=None):
 
     if os.path.exists(xdef.playlist):
         setAct('stop', None)
+        os.remove(xdef.playlist)
 
     if xarg.autonext == 'yes' and xarg.pagelist:
-        txt = xurl.readLocal(xarg.pagelist)
-        xurl.saveLocal(xdef.playlist, txt)
-        xarg.playlist_hashnum = hashlib.md5(txt).hexdigest()
-    else:
-        if os.path.exists(xdef.playlist):
-            os.remove(xdef.playlist)
+        playlist = xurl.readLocal(xarg.pagelist)
+        xurl.saveLocal(xdef.playlist, playlist, 0)
+        while url != None:
+            playURL_core(url, ref, cookies)
+            url = ref = getNext(url, playlist)
 
-    while url != None:
+    else:
         playURL_core(url, ref, cookies)
-        url = ref = getNext()
 
     return
 

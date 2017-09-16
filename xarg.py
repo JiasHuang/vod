@@ -6,4 +6,3 @@ ytdlfmt             = '720p'
 autonext            = 'no'
 autosub             = 'no'
 pagelist            = None
-playlist_hashnum    = None

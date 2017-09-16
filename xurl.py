@@ -22,16 +22,16 @@ def verbose_status(status):
     print('\tret: '+status)
     return
 
-def readLocal(local):
+def readLocal(local, buffering=-1):
     if os.path.exists(local):
-        fd = open(local, 'r')
+        fd = open(local, 'r', buffering)
         txt = fd.read()
         fd.close()
         return txt
     return ''
 
-def saveLocal(local, text):
-    fd = open(local, 'w')
+def saveLocal(local, text, buffering=-1):
+    fd = open(local, 'w', buffering)
     fd.write(text)
     fd.close()
     return
