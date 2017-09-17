@@ -52,3 +52,7 @@
 .menu tr td img {
     vertical-align: middle;
 }
+
+.result {
+    word-wrap: break-word;
+}

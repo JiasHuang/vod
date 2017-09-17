@@ -37,17 +37,25 @@ def runDBG(url, ref, cookies=None):
     youtubedl.extractSUB(url)
     return
 
-def getNext(playing, playlist):
-
-    if xarg.autonext != 'yes' or playlist != xurl.readLocal(xdef.playlist, 0):
-        return None
-
+def isPlayerRunning():
     player = getPlayer()
     if player == 'mpv' and xproc.checkProcessRunning('mpv'):
-        return None
+        return True
     if player == 'omxp' and xproc.checkProcessRunning('omxplayer.bin'):
-        return None
+        return True
     if player == 'ffplay' and xproc.checkProcessRunning('ffplay'):
+        return True
+    return False
+
+def getNext(playing, playlist):
+
+    if xarg.autonext != 'yes':
+        return None
+
+    if playlist != xurl.readLocal(xdef.playlist, 0):
+        return None
+
+    if isPlayerRunning():
         return None
 
     lines = playlist.splitlines()
@@ -85,9 +93,9 @@ def playURL_core(url, ref, cookies=None):
 
 def playURL(url, ref, cookies=None):
 
-    if os.path.exists(xdef.playlist):
-        setAct('stop', None)
-        os.remove(xdef.playlist)
+    if isPlayerRunning():
+        if os.path.exists(xdef.playlist):
+            setAct('stop', None)
 
     if xarg.autonext == 'yes' and xarg.pagelist:
         playlist = xurl.readLocal(xarg.pagelist)
