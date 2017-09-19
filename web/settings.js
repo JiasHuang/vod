@@ -20,10 +20,11 @@ var settings = {
         'vals' : ['yes', 'no'],
         'defs' : 'no',
     },
-    'autonext' : {
+    'playbackMode' : {
         'type' : 'select',
-        'vals' : ['yes', 'no'],
-        'defs' : 'no',
+        'vals' : ['Normal', 'AutoNext', 'LoopOne', 'LoopAll'],
+        'defs' : '',
+        'sync' : 'div_playbackMode',
     },
     'youtubeID' : {
         'type' : 'input',
@@ -35,7 +36,7 @@ var settings = {
     },
 };
 
-var settings_cookies = ['format', 'autosub', 'autonext'];
+var settings_cookies = ['format', 'autosub', 'playbackMode'];
 
 function saveCookies() {
     var lists = settings_cookies;
@@ -49,7 +50,7 @@ function save() {
         localStorage.setItem(id, document.getElementById(id).value);
     }
     saveCookies();
-    window.location.href = 'view.py';
+    window.location.href = 'view.py?m=sync';
 }
 
 function resetSettings() {
@@ -68,6 +69,12 @@ function getValue(id) {
     var val = localStorage.getItem(id);
     if (val === null) {
         val = settings[id]['defs'];
+    }
+    if ('sync' in settings[id]) {
+        var sync_val = $('#'+settings[id]['sync']).attr('value');
+        if (sync_val) {
+            val = sync_val;
+        }
     }
     return val;
 }
@@ -98,7 +105,7 @@ function select(id) {
     var text = '';
     text += '<select id="'+id+'">';
     for (var i in settings[id]['vals']) {
-        text += '<option value="'+settings[id]['vals'][i]+'">'+settings[id]['vals'][i]+'</option>';
+        text += '<option value="'+settings[id]['vals'][i]+'">'+getLangLog(settings[id]['vals'][i])+'</option>';
     }
     text += '</select>';
     return text;

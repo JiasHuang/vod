@@ -3,6 +3,5 @@
 
 player              = 'def'
 ytdlfmt             = '720p'
-autonext            = 'no'
 autosub             = 'no'
 pagelist            = None

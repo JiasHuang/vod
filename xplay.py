@@ -49,23 +49,27 @@ def isPlayerRunning():
 
 def getNext(playing, playlist):
 
-    if xarg.autonext != 'yes':
-        return None
-
     if playlist != xurl.readLocal(xdef.playlist, 0):
         return None
 
     if isPlayerRunning():
         return None
 
-    lines = playlist.splitlines()
+    playbackMode = xurl.readLocal(xdef.playbackMode, 0)
 
-    try:
-        index = lines.index(playing)
-        if index < (len(lines) - 1):
-            return lines[index+1]
-    except:
-        return None
+    if playbackMode == 'LoopOne':
+        return playing
+
+    if playbackMode in ['AutoNext', 'LoopAll']:
+        lines = playlist.splitlines()
+        try:
+            index = lines.index(playing)
+            if index < (len(lines) - 1):
+                return lines[index+1]
+            if playbackMode == 'LoopAll' and index == (len(lines) - 1):
+                return lines[0]
+        except:
+            return None
 
     return None
 
@@ -97,13 +101,12 @@ def playURL(url, ref, cookies=None):
         if os.path.exists(xdef.playlist):
             setAct('stop', None)
 
-    if xarg.autonext == 'yes' and xarg.pagelist:
+    if xarg.pagelist:
         playlist = xurl.readLocal(xarg.pagelist)
         xurl.saveLocal(xdef.playlist, playlist, 0)
         while url != None:
             playURL_core(url, ref, cookies)
             url = ref = getNext(url, playlist)
-
     else:
         playURL_core(url, ref, cookies)
 

@@ -62,7 +62,7 @@ def addEntry(req, link, title, image=None, desc=None, password=None):
     entryEven = None
     if (entryCnt & 1 == 0):
         entryEven = 'entryEven'
-    req.write('<!--Entry%s-->\n' %(entryCnt))
+    req.write('\n<!--Entry%s-->\n' %(entryCnt))
     req.write('<!-- link="%s" title="%s" image="%s" desc="%s" -->\n' %(link, title, image or '', desc or ''))
     if re.search('view.py\?v=', link):
         if password:
@@ -126,7 +126,7 @@ def getDescription(attributes, txt):
     return None
 
 def addGoogleNextPage(req, q, txt):
-    req.write('<!--NextPage-->\n')
+    req.write('\n<!--NextPage-->\n')
     prefix = 'view.py?s=google&q='+q
     navcnt = meta.search(r'<div id="navcnt">(.*?)</div>', txt, re.DOTALL|re.MULTILINE)
     if navcnt:
@@ -222,21 +222,14 @@ def search(req, q, s=None, x=None):
     html = re.split('<!--result-->', loadFile('list_search.html'))
     req.write(html[0])
 
+    req.write('\n<!--SearchEngineParameters-->\n')
+    req.write('<div id="div_search_s" value="%s"></div>\n' %(s))
+    req.write('<div id="div_search_q" value="%s"></div>\n' %(q))
+    req.write('<!--SearchEngineParametersEnd-->\n')
+
     s = (s or 'youtube').lower()
 
     q1 = re.sub(' ', '+', q)
-
-    engines = ['YouTube', 'Long', 'Playlist', 'Google', 'Xuite', 'DailyMotion']
-
-    req.write('<!--SearchEngine-->\n')
-
-    for e in engines:
-        req.write('<div id="div_engine_%s" value="%s"></div>\n' %(e, e))
-
-    req.write('<div id="div_search_s" value="%s"></div>\n' %(s))
-    req.write('<div id="div_search_q" value="%s"></div>\n' %(q1))
-
-    req.write('<!--SearchEngineEnd-->\n')
 
     if s == 'youtube':
         search_youtube(req, q1, x)
@@ -614,7 +607,7 @@ def onPageEnd(req):
     global entryCnt
     if entryCnt == 0:
         req.write('<h1><span class="message" id="NotFound"></span></h1>\n')
-    req.write('<!--EntryEnd-->\n')
+    req.write('\n<!--EntryEnd-->\n')
     req.write('<div id="pageinfo" pagelist="%s"></div>' %(savePageList()))
     meta.showDebugLog(req)
 

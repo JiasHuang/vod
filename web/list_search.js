@@ -6,26 +6,6 @@ function onSelectChange() {
     window.location.href = href;
 }
 
-function renderSearchSelect() {
-    var engines = $('[id^="div_engine_"]').map(function () { return $(this).attr('value'); }).get();
-    var text = '';
-    for (var i=0; i<engines.length; i++)
-        text += '<option value="'+engines[i]+'">'+engines[i]+'</option>';
-    return text;
-}
-
-function renderSearchBar() {
-    var search_s = $('#div_search_s').attr('value');
-    var search_q = $('#div_search_q').attr('value');
-    $('#select_engine').html(renderSearchSelect());
-    $('#select_engine').children().each( function () {
-        if ($(this).text().toLowerCase() == search_s) {
-            $('#select_engine').val($(this).text());
-        }
-    });
-    $('#input_q').val(search_q.replace(/\+/g,' '));
-}
-
 function renderNextPages() {
     var title = $('[id^="div_page_"]').map(function () { return $(this).attr('title'); }).get();
     var value = $('[id^="div_page_"]').map(function () { return $(this).attr('value'); }).get();
@@ -59,7 +39,11 @@ function onPageNav(e) {
 
 function onSearchReady() {
 
-    renderSearchBar();
+    var s = $('#div_search_s').attr('value');
+    var q = $('#div_search_q').attr('value');
+    $('#select_engine').val(s);
+    $('#input_q').val(q);
+
     renderNextPages();
 
     if ($('.page').length > 0) {

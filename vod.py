@@ -135,8 +135,8 @@ def main():
     parser.add_option("-p", "--player", dest="player")
     parser.add_option("-f", "--format", dest="format")
     parser.add_option("--autosub", dest="autosub")
-    parser.add_option("--autonext", dest="autonext")
     parser.add_option("--pagelist", dest="pagelist")
+    parser.add_option("--playbackMode", dest="playbackMode")
     (options, args) = parser.parse_args()
 
     if options.player:
@@ -148,11 +148,11 @@ def main():
     if options.autosub:
         xarg.autosub = options.autosub
 
-    if options.autonext:
-        xarg.autonext = options.autonext
-
     if options.pagelist:
         xarg.pagelist = options.pagelist
+
+    if options.playbackMode:
+        xurl.saveLocal(xdef.playbackMode, options.playbackMode, 0)
 
     if len(args) >= 1:
         url = args[0]

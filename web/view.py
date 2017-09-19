@@ -8,6 +8,7 @@ import urllib
 
 import page
 import conf
+import meta
 
 from mod_python import util, Cookie
 
@@ -53,18 +54,27 @@ def getCookie(req, key):
 def getOption(req):
     fmt      = getCookie(req, 'format')
     autosub  = getCookie(req, 'autosub')
-    autonext = getCookie(req, 'autonext')
     pagelist = getCookie(req, 'pagelist')
     opt = ''
     if fmt:
         opt += '-f \'%s\' ' %(fmt)
     if autosub:
         opt += '--autosub %s ' %(autosub)
-    if autonext:
-        opt += '--autonext %s ' %(autonext)
     if pagelist:
         opt += '--pagelist %s ' %(pagelist)
     return opt
+
+def metadata(name, value=None):
+    local = None
+    if name == 'playbackMode':
+        local = conf.playbackMode
+    if not local:
+        return ''
+    if value:
+        meta.saveLocal(local, value, 0)
+    else:
+        value = meta.readLocal(local, 0)
+    return value
 
 def handleCmd(cmd):
     os.system('rm -f '+conf.workdir+'vod_*')
@@ -96,6 +106,7 @@ def index(req):
     f = form.get('f', None) # file
     c = form.get('c', None) # command
     x = form.get('x', None) # extra
+    m = form.get('m', None) # metadata
 
     if i:
         i = i.strip()
@@ -136,6 +147,13 @@ def index(req):
 
     elif c:
         page.render(req, 'status', '<h1>%s</h1>' %(msgID(handleCmd(c))))
+
+    elif m:
+        if m == 'sync':
+            metadata('playbackMode', getCookie(req, 'playbackMode'))
+            page.render(req, 'panel', getCookie(req, 'playbackMode'))
+        else:
+            req.write('<div id="div_%s" value="%s"></div>' %(m, metadata(m)))
 
     else:
         page.render(req, 'panel', None)

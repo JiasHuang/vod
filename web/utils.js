@@ -6,7 +6,11 @@ var logs = {
     'entryMax'      : ['EntryMax', '條目數量'],
     'format'        : ['Format', '視訊格式'],
     'autosub'       : ['AutoSub', '自動字幕'],
-    'autonext'      : ['AutoNext', '循序播放'],
+    'playbackMode'  : ['PlaybackMode', '播放模式'],
+    'Normal'        : ['Normal', '正常播放'],
+    'AutoNext'      : ['Auto Next', '依序播放'],
+    'LoopOne'       : ['Loop One', '單首重複'],
+    'LoopAll'       : ['Loop All', '循環播放'],
     'youtubeID'     : ['YouTubeID', 'YouTube使用名稱'],
     'bookmarkURL'   : ['BookmarkURL', '書籤來源'],
     'MoreActions'   : ['More Actions', '更多選項'],
@@ -100,7 +104,7 @@ function toggleMenu() {
 function getLangLog(key)
 {
     if (!(key in logs)) {
-        return '&lt;'+key+'&gt;';
+        return key;
     }
     var idx = logs['lang'].indexOf(localStorage.getItem("lang"));
     if (idx < 0) {

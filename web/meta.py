@@ -37,16 +37,16 @@ def search(pattern, txt, flags=0):
         return m.group(1)
     return None
 
-def readLocal(local):
+def readLocal(local, buffering=-1):
     if os.path.exists(local):
-        fd = open(local, 'r')
+        fd = open(local, 'r', buffering)
         txt = fd.read()
         fd.close()
         return txt
     return ''
 
-def saveLocal(text, local):
-    fd = open(local, 'w')
+def saveLocal(local, text, buffering=-1):
+    fd = open(local, 'w', buffering)
     fd.write(text)
     fd.close()
     return
@@ -86,7 +86,7 @@ def load(url, local=None, headers=None, cache=True):
             txt = gzip.GzipFile(fileobj=buf).read()
         else:
             txt = f.read()
-        saveLocal(txt, local)
+        saveLocal(local, txt)
         return txt
     except urllib2.HTTPError, e:
         return 'Exception HTTPError: ' + str(e.code)
@@ -109,7 +109,7 @@ def post(url, payload, local=None, cache=True):
     try:
         f = opener.open(url, data)
         txt = f.read()
-        saveLocal(txt, local)
+        saveLocal(local, txt)
         return txt
     except:
         return ''

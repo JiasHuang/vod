@@ -35,8 +35,15 @@
 
     <div id="searchbar" class="searchbar">
         <form action="view.py" method="get" id="xform">
-        <input type="text" id="input_q" name="q" value="" id="xinput"\>
-        <select id="select_engine" onchange="onSelectChange.call(this)"></select>
+        <input type="text" id="input_q" name="q" value="" id="xinput" \>
+        <select id="select_engine" onchange="onSelectChange.call(this)">
+            <option value="youtube">YouTube</option>
+            <option value="long">Long</option>
+            <option value="playlist">Playlist</option>
+            <option value="xuite">Xuite</option>
+            <option value="dailymotion">DailyMotion</option>
+            <option value="google">Google</option>
+        </select>
         </form>
     </div>
 
