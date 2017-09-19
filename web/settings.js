@@ -23,7 +23,7 @@ var settings = {
     'playbackMode' : {
         'type' : 'select',
         'vals' : ['Normal', 'AutoNext', 'LoopOne', 'LoopAll'],
-        'defs' : '',
+        'defs' : 'Normal',
         'sync' : 'div_playbackMode',
     },
     'youtubeID' : {
