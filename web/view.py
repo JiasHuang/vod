@@ -151,7 +151,7 @@ def index(req):
     elif m:
         if m == 'sync':
             metadata('playbackMode', getCookie(req, 'playbackMode'))
-            page.render(req, 'panel', getCookie(req, 'playbackMode'))
+            page.render(req, 'panel', None)
         else:
             req.write('<div id="div_%s" value="%s"></div>' %(m, metadata(m)))
 

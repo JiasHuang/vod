@@ -11,12 +11,12 @@ function renderNextPages() {
     var value = $('[id^="div_page_"]').map(function () { return $(this).attr('value'); }).get();
     var text = '';
 
-    text += '<table class="pages"><tr>';
+    text += '<table><tr>';
     for (var i=0; i<title.length; i++)
-        text += '<td class="page"><a id="page_'+title[i]+'" href="'+value[i]+'">'+title[i]+'</a></td>';
+        text += '<td><a id="page_'+title[i]+'" href="'+value[i]+'">'+title[i]+'</a></td>';
     text += '<tr></table>';
 
-    $('#nextpageTable').html(text);
+    $('#nextpageResult').html(text);
 }
 
 function onPageNav(e) {
@@ -38,11 +38,6 @@ function onPageNav(e) {
 }
 
 function onSearchReady() {
-
-    var s = $('#div_search_s').attr('value');
-    var q = $('#div_search_q').attr('value');
-    $('#select_engine').val(s);
-    $('#input_q').val(q);
 
     renderNextPages();
 

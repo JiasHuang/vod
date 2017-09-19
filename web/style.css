@@ -85,14 +85,14 @@
     margin: 0px;
 }
 
-.pages {
+.nextpage table {
     width: 90vw;
     margin: 32px auto;
     font-size: 32px;
     text-align: center;
 }
 
-.page {
+.nextpage table tr td {
     border: 2px solid black;
     text-align: center;
 }

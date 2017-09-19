@@ -63,7 +63,7 @@ def addEntry(req, link, title, image=None, desc=None, password=None):
     if (entryCnt & 1 == 0):
         entryEven = 'entryEven'
     req.write('\n<!--Entry%s-->\n' %(entryCnt))
-    req.write('<!-- link="%s" title="%s" image="%s" desc="%s" -->\n' %(link, title, image or '', desc or ''))
+    req.write('<!--\n\tlink="%s"\n\ttitle="%s"\n\timage="%s"\n\tdesc="%s"\n-->\n' %(link, title, image or '', desc or ''))
     if re.search('view.py\?v=', link):
         if password:
             password = '&ytdl_password='+password
@@ -220,12 +220,9 @@ def search_dailymotion(req, q):
 
 def search(req, q, s=None, x=None):
     html = re.split('<!--result-->', loadFile('list_search.html'))
-    req.write(html[0])
-
-    req.write('\n<!--SearchEngineParameters-->\n')
-    req.write('<div id="div_search_s" value="%s"></div>\n' %(s))
-    req.write('<div id="div_search_q" value="%s"></div>\n' %(q))
-    req.write('<!--SearchEngineParametersEnd-->\n')
+    text = re.sub('option value="%s"' %(s), 'option value="%s" selected' %(s) , html[0])
+    text = re.sub('input_q_value', q, text)
+    req.write(text)
 
     s = (s or 'youtube').lower()
 
