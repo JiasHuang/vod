@@ -70,7 +70,7 @@ def metadata(name, value=None):
         local = conf.playbackMode
     if not local:
         return ''
-    if value:
+    if value and len(value) > 0:
         meta.saveLocal(local, value, 0)
     else:
         value = meta.readLocal(local, 0)
@@ -107,6 +107,9 @@ def index(req):
     c = form.get('c', None) # command
     x = form.get('x', None) # extra
     m = form.get('m', None) # metadata
+
+    if not os.path.exists(conf.playbackMode):
+        metadata('playbackMode', getCookie(req, 'playbackMode'))
 
     if i:
         i = i.strip()

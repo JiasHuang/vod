@@ -72,7 +72,7 @@ function getValue(id) {
     }
     if ('sync' in settings[id]) {
         var sync_val = $('#'+settings[id]['sync']).attr('value');
-        if (sync_val) {
+        if (sync_val && sync_val.length > 0) {
             val = sync_val;
         }
     }
