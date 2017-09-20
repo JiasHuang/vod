@@ -2,47 +2,50 @@
 function showResults() {
     var pages_str = localStorage.getItem("pages");
     if (pages_str === null) {
-        $('#Result').html('<h2>'+getLangLog('NotFound')+'</h2>');
+        $('#result').html('<h1>'+getLangLog('NotFound')+'</h1>');
         return;
     }
     var pages = JSON.parse(pages_str);
-    var text = '';
-    var css = ["entryTitle", "entryTitle entryEven"];
+    if (pages.length == 0) {
+        $('#result').html('<h1>'+getLangLog('NotFound')+'</h1>');
+        return;
+    }
+    var text = '<table>';
     for (var i=0; i<pages.length; i++) {
-        text += '<h2 class="'+css[i&1]+'">';
+        text += '<tr><td>'
         if (pages[i].plink && pages[i].ptitle) {
             text += '<a href="'+pages[i].plink+'">'+pages[i].ptitle+'</a>  /  ';
         }
-        text += '<a href="'+pages[i].link+'">'+pages[i].title+'</a></h2>';
+        text += '<a href="'+pages[i].link+'">'+pages[i].title+'</a>';
+        text += '<img src="trash-icon-32.png" onclick="onTrash('+i+');" />';
+        text += '</td></tr>'
     }
-    $('#Result').html(text);
+    text += '</table>'
+    $('#result').html(text);
 }
 
-function removePage(link) {
+function removePageByIndex(index) {
     var pages_str = localStorage.getItem("pages");
     var pages = JSON.parse(pages_str);
-    var css = ["entryTitle", "entryTitle entryEven"];
-    for (var i=0; i<pages.length; i++) {
-        if (pages[i].link == link) {
-            pages.splice(i, 1);
-            break;
-        }
-    }
+    pages.splice(index, 1);
     localStorage.setItem("pages", JSON.stringify(pages));
-    return true;
 }
 
-function swipeHandler(event) {
-    var link = $(event.target).children(":last-child").attr("href");
-    var title = $(event.target).children(":last-child").text();
+function getPageTitleByIndex(index) {
+    var pages_str = localStorage.getItem("pages");
+    var pages = JSON.parse(pages_str);
+    return pages[index].title;
+}
+
+function onTrash(index) {
+    var title = getPageTitleByIndex(index);
     var r = confirm("Are you sure to delete it ?\n"+title);
     if (r == true) {
-        removePage(link);
+        removePageByIndex(index);
         show();
     }
 }
 
 function show() {
     showResults();
-    $("h2").on("swipe", swipeHandler);
 }

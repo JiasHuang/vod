@@ -1,0 +1,20 @@
+
+.result table {
+    width: 100%;
+}
+
+.result table tr td {
+    font-size: 32px;
+    border: 2px solid white;
+    padding: 16px;
+}
+
+.result table tr:nth-child(even) {
+    background-color: #D3D3D3;
+}
+
+.result table tr td img {
+    position: absolute;
+    right: 64px;
+}
+
