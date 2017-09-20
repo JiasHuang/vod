@@ -1,5 +1,5 @@
 
-function show() {
+function showResults() {
     var pages_str = localStorage.getItem("pages");
     if (pages_str === null) {
         $('#Result').html('<h2>'+getLangLog('NotFound')+'</h2>');
@@ -18,3 +18,31 @@ function show() {
     $('#Result').html(text);
 }
 
+function removePage(link) {
+    var pages_str = localStorage.getItem("pages");
+    var pages = JSON.parse(pages_str);
+    var css = ["entryTitle", "entryTitle entryEven"];
+    for (var i=0; i<pages.length; i++) {
+        if (pages[i].link == link) {
+            pages.splice(i, 1);
+            break;
+        }
+    }
+    localStorage.setItem("pages", JSON.stringify(pages));
+    return true;
+}
+
+function swipeHandler(event) {
+    var link = $(event.target).children(":last-child").attr("href");
+    var title = $(event.target).children(":last-child").text();
+    var r = confirm("Are you sure to delete it ?\n"+title);
+    if (r == true) {
+        removePage(link);
+        show();
+    }
+}
+
+function show() {
+    showResults();
+    $("h2").on("swipe", swipeHandler);
+}
