@@ -48,14 +48,10 @@
     </tr>
     </table>
 
-    <form action="view.py" method="post">
-        <button type="submit" onclick="setAct('backward')"><img src="Actions-media-skip-backward-icon.png" /></button>
-        <button type="submit" onclick="setAct('stop')"><img src="Actions-media-playback-stop-icon.png" /></button>
-        <button type="submit" onclick="setAct('pause')"><img src="Actions-media-playback-start-icon.png" /></button>
-        <button type="submit" onclick="setAct('forward')" ><img src="Actions-media-skip-forward-icon.png" /></button>
-        <input type="hidden" name="n" value="" maxlength="4" readonly="readonly" />
-        <input type="hidden" name="a" value="" maxlength="4" readonly="readonly" />
-    </form>
+    <button onclick="setAct('backward')"><img src="Actions-media-skip-backward-icon.png" /></button>
+    <button onclick="setAct('stop')"><img src="Actions-media-playback-stop-icon.png" /></button>
+    <button onclick="setAct('pause')"><img src="Actions-media-playback-start-icon.png" /></button>
+    <button onclick="setAct('forward')" ><img src="Actions-media-skip-forward-icon.png" /></button>
 
 </div>
 
@@ -75,7 +71,7 @@
 
 </center>
 
-<div class="result">
+<div id="result" class="result">
 <!--result-->
 </div>
 

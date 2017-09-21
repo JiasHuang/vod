@@ -44,7 +44,15 @@ function setAct(key) {
         num = "";
     }
 
-    document.forms[0].a.value = act;
-    document.forms[0].n.value = num;
+    $("#result").load("view.py?a="+act+"&n="+num, onLoadCompleted);
+
+    act = '';
+    num = '';
 }
 
+function onLoadCompleted (responseTxt, statusTxt, xhr) {
+    if (statusTxt == "success")
+        showServerMessage();
+    if(statusTxt == "error")
+        alert("Error: " + xhr.status + ": " + xhr.statusText);
+}

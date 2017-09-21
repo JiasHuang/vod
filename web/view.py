@@ -146,7 +146,7 @@ def index(req):
 
     elif a:
         sendACT(a, n)
-        page.render(req, 'panel', '<h1>%s %s</h1>' %(msgID(a), n or ''))
+        req.write('<h1>%s %s</h1>' %(msgID(a), n or ''))
 
     elif c:
         page.render(req, 'status', '<h1>%s</h1>' %(msgID(handleCmd(c))))

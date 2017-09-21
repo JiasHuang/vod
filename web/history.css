@@ -14,7 +14,7 @@
 }
 
 .result table tr td img {
-    position: absolute;
-    right: 64px;
+    float: right;
+    margin: 16px;
 }
 
