@@ -55,7 +55,6 @@ function onPageReady() {
         setEntryCluster(entryMax);
         setWidthHeight(entryMax);
         bxslider = $('#result').bxSlider();
-        $(document).keydown(onKeyDown);
     }
 
     $( "a[target='playVideo']" ).click(onPlayVideo);
@@ -71,10 +70,9 @@ function onLoadCompleted (responseTxt, statusTxt, xhr) {
 }
 
 function load(p) {
-    if (p.length > 0) {
+    if (p) {
         $('#loadingMessage').show();
-        url = "load.py?p="+p;
-        $('#result').load(url, onLoadCompleted);
+        $('#result').load("load.py?p="+p, onLoadCompleted);
     }
     else {
         $('#loadingMessage').hide();
@@ -82,8 +80,7 @@ function load(p) {
 }
 
 function onReady() {
-    var p = GetURLParameter("p");
-    load(p);
+    load(GetURLParameter("p"));
     $(document).keydown(onKeyDown);
 }
 

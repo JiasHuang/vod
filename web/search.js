@@ -1,12 +1,13 @@
 
 function query(s, q, x) {
-    if (q.length > 0) {
+    if (q) {
         $('#loadingMessage').show();
         url = "load.py?q="+encodeURIComponent(q);
         if (s)
             url += "&s="+s;
         if (x)
             url += "&x="+x;
+        console.log("url: "+url);
         $('#result').load(url, onLoadCompleted);
     }
     else {
@@ -85,13 +86,15 @@ function show() {
     var s = GetURLParameter("s") || getCookie('engine');
     var q = GetURLParameter("q");
     var x = GetURLParameter("x");
+    console.log("s: "+s);
+    console.log("q: "+q);
+    console.log("x: "+x);
     if (q) {
-        q = decodeURIComponent(q)
+        q = decodeURIComponent(q.replace(/\+/g," "));
         $('#input_q').val(q);
     }
-    if (s) {
+    if (s)
         $('#select_engine').val(s);
-    }
     query(s, q, x);
     $(document).keydown(onPageNav);
 }

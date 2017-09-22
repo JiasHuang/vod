@@ -46,7 +46,7 @@ function onPlayVideo() {
         saveCookie('pagelist', pageinfo.getAttribute('pagelist'));
 }
 
-function onReady() {
+function onPageReady() {
 
     var slider = localStorage.getItem('slider');
     var entryMax = parseInt(localStorage.getItem('entryMax') || '5');
@@ -55,11 +55,16 @@ function onReady() {
         setEntryCluster(entryMax);
         setWidthHeight(entryMax);
         bxslider = $('#result').bxSlider();
-        $(document).keydown(onKeyDown);
     }
 
     $( "a[target='playVideo']" ).click(onPlayVideo);
     $('#loadingMessage').hide();
     showServerMessage();
 }
+
+function onReady() {
+    onPageReady();
+    $(document).keydown(onKeyDown);
+}
+
 

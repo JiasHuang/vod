@@ -129,12 +129,12 @@ def index(req):
         page.page(req, p)
 
     elif q:
-        url = "search.html?q="+q
+        url = 'search.html?q='+q
         if s:
             url += '&s='+s
         if x:
             url += '&x='+x
-        util.redirect(req, url);
+        util.redirect(req, url)
 
     elif d:
         page.renderDIR(req, d)
