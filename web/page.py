@@ -598,48 +598,36 @@ def onPageEnd(req):
     req.write('<div id="pageinfo" pagelist="%s"></div>' %(savePageList()))
     meta.showDebugLog(req)
 
-def page(req, url):
-
-    html = re.split('<!--result-->', loadFile('list.html'))
-    req.write(html[0])
-
-    req.write('<div class="bxslider">\n')
-
+def page_core(req, url):
     if re.search(r'litv', url):
         page_litv(req, url);
-
     elif re.search(r'iqiyi', url):
         page_iqiyi(req, url)
-
     elif re.search(r'(\.le.com|letv)', url):
         page_letv(req, url)
-
     elif re.search(r'lovetv', url):
         page_lovetv(req, url);
-
     elif re.search(r'maplestage', url):
         page_maplestage(req, url);
-
     elif re.search(r'youtube', url):
         page_youtube(req, url)
-
     elif re.search(r'dailymotion', url):
         page_dailymotion(req, url)
-
     elif re.search(r'xuite', url):
         page_xuite(req, url)
-
     elif re.search(r'youku', url):
         page_youku(req, url)
-
     elif re.search(r'drive\.google\.com', url):
         page_gdrive(req, url)
-
     else:
         page_def(req, url)
-
-    req.write('</div>\n')
-
     onPageEnd(req)
+
+def page(req, url):
+    html = re.split('<!--result-->', loadFile('list.html'))
+    req.write(html[0])
+    req.write('<div class="bxslider">\n')
+    page_core(req, url)
+    req.write('</div>\n')
     req.write(html[1])
 
