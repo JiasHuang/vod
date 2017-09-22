@@ -26,7 +26,7 @@ def renderDIR(req, d):
     html = re.split('<!--result-->', loadFile('list.html'))
     req.write(html[0])
     req.write('<h1>Index of %s</h1>\n' %(d))
-    req.write('<div style="line-height:200%;font-size:20">\n')
+    req.write('<div style="line-height:200%;font-size:32px">\n')
     for dirName, subdirList, fileList in os.walk(d):
         for subdir in sorted(subdirList):
             if subdir[0] != '.':
@@ -59,9 +59,6 @@ def darg(d, *arg):
 def addEntry(req, link, title, image=None, desc=None, password=None):
     global entryCnt, entryVideos
     entryCnt = entryCnt + 1
-    entryEven = None
-    if (entryCnt & 1 == 0):
-        entryEven = 'entryEven'
     req.write('\n<!--Entry%s-->\n' %(entryCnt))
     req.write('<!--\n\tlink="%s"\n\ttitle="%s"\n\timage="%s"\n\tdesc="%s"\n-->\n' %(link, title, image or '', desc or ''))
     if re.search('view.py\?v=', link):
@@ -82,7 +79,7 @@ def addEntry(req, link, title, image=None, desc=None, password=None):
         req.write('<h2><a %s>%s</a></h2>\n' %(anchor, title))
         req.write('</div>\n')
     else:
-        req.write('<h2 class="entryTitle %s"><a %s>%s</a></h2>\n' %(entryEven or '', anchor, title))
+        req.write('<h2 class="entryTitle"><a %s>%s</a></h2>\n' %(anchor, title))
 
 def addPage(req, link, title, image=None, desc=None):
     if not link:
@@ -626,8 +623,6 @@ def page_core(req, url):
 def page(req, url):
     html = re.split('<!--result-->', loadFile('list.html'))
     req.write(html[0])
-    req.write('<div class="bxslider">\n')
     page_core(req, url)
-    req.write('</div>\n')
     req.write(html[1])
 

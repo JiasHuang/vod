@@ -51,10 +51,10 @@ function onReady() {
     var slider = localStorage.getItem('slider');
     var entryMax = parseInt(localStorage.getItem('entryMax') || '5');
 
-    if (slider != 'no' && $('.bxslider').length > 0 &&  $('.imageContainer').length > entryMax) {
+    if (slider != 'no' && $('.imageContainer').length > entryMax) {
         setEntryCluster(entryMax);
         setWidthHeight(entryMax);
-        bxslider = $('.bxslider').bxSlider();
+        bxslider = $('#result').bxSlider();
         $(document).keydown(onKeyDown);
     }
 

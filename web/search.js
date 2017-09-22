@@ -2,7 +2,7 @@
 function query(s, q, x) {
     if (q.length > 0) {
         $('#loadingMessage').show();
-        url = "load.py?q="+q;
+        url = "load.py?q="+encodeURIComponent(q);
         if (s)
             url += "&s="+s;
         if (x)
@@ -82,15 +82,16 @@ function onLoadCompleted (responseTxt, statusTxt, xhr) {
 }
 
 function show() {
+    var s = GetURLParameter("s") || getCookie('engine');
     var q = GetURLParameter("q");
     var x = GetURLParameter("x");
-    var engine = getCookie("engine");
-    if (engine)
-        $('#select_engine').val(engine);
-    if (q.length > 0) {
+    if (q) {
         q = decodeURIComponent(q)
         $('#input_q').val(q);
     }
-    query(engine, q, x);
+    if (s) {
+        $('#select_engine').val(s);
+    }
+    query(s, q, x);
     $(document).keydown(onPageNav);
 }
