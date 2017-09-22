@@ -8,34 +8,33 @@
 
 <link rel="stylesheet" href="style.css?v=20170920_3157">
 <link rel="stylesheet" href="menubox.css?v=20170920_3157">
-<link rel="stylesheet" href="searchbar.css?v=20170920_3157">
+<link rel="stylesheet" href="search.css?v=20170920_3157">
 
 <script type="text/javascript" src="utils.js?v=20170920_3157"></script>
-<script type="text/javascript" src="list.js?v=20170920_3157"></script>
-<script type="text/javascript" src="list_search.js?v=20170920_3157"></script>
+<script type="text/javascript" src="search.js?v=20170920_3157"></script>
 <script type="text/javascript" src="speech.js?v=20170920_3157"></script>
 
 <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
 <script type="text/javascript" src="https://www.w3schools.com/lib/w3.js"></script>
 
 <script type="text/javascript">
-    $(document).ready(onSearchReady);
+    window.onload = show;
 </script>
 
 </head>
 
-<div id="loadingMessage">
-<h1>Loading ...<h1>
-</div>
-
 <body bgcolor=silver>
+
+    <div id="loadingMessage">
+    <h1>Loading ...<h1>
+    </div>
 
     <div w3-include-html="menubox.html"></div>
     <script>w3.includeHTML();</script>
 
     <div id="searchbar" class="searchbar">
-        <form action="view.py" method="get" id="xform">
-        <input type="text" id="input_q" name="q" value="input_q_value" id="xinput" \>
+        <form action="search" method="get" id="xform">
+        <input type="text" id="input_q" name="q" value="" id="xinput" \>
         <select id="select_engine" onchange="onSelectChange.call(this)">
             <option value="youtube">YouTube</option>
             <option value="long">Long</option>
@@ -49,7 +48,7 @@
 
     <div class="space"></div>
 
-<!--result-->
+    <div id="result"></div>
 
     <div id="nextpageResult" class="nextpage"></div>
 

@@ -129,8 +129,7 @@ def index(req):
         page.page(req, p)
 
     elif q:
-        s = s or getCookie(req, 'engine')
-        page.search(req, q, s, x)
+        util.redirect(req, "search?q="+q);
 
     elif d:
         page.renderDIR(req, d)

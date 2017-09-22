@@ -42,6 +42,13 @@ function saveCookie(name, value) {
     document.cookie = name+'='+value+';'+getExpire();
 }
 
+function getCookie(name) {
+    var arr = document.cookie.match(new RegExp("(^| )"+name+"=([^;]*)(;|$)"));
+    if(arr != null)
+        return unescape(arr[2]);
+    return null;
+}
+
 function onPageClick() {
     var link = $(this).attr("href");
     var title = $(this).attr("title");
@@ -126,5 +133,19 @@ function showMenuLink()
     var x = document.getElementsByClassName("menulink");
     for (var i=0; i<x.length; i++) {
         $(x[i]).html(getLangLog(x[i].id));
+    }
+}
+
+function GetURLParameter(sParam)
+{
+    var sPageURL = window.location.search.substring(1);
+    var sURLVariables = sPageURL.split('&');
+    for (var i = 0; i < sURLVariables.length; i++)
+    {
+        var sParameterName = sURLVariables[i].split('=');
+        if (sParameterName[0] == sParam)
+        {
+            return sParameterName[1];
+        }
     }
 }

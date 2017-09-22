@@ -127,7 +127,6 @@ def getDescription(attributes, txt):
 
 def addGoogleNextPage(req, q, txt):
     req.write('\n<!--NextPage-->\n')
-    prefix = 'view.py?s=google&q='+q
     navcnt = meta.search(r'<div id="navcnt">(.*?)</div>', txt, re.DOTALL|re.MULTILINE)
     if navcnt:
         for m in re.finditer(r'<a .*?</a>', navcnt):
@@ -135,7 +134,7 @@ def addGoogleNextPage(req, q, txt):
             label = meta.search(r'aria-label="Page (\d+)"', m.group()) or meta.search(r'id="pn([^"]*)"', m.group()) or ''
             start = meta.search(r'start=(\d+)', link)
             if start:
-                req.write('<div id="div_page_%s" title="%s" value="%s"></div>\n' %(label, label, prefix+'&x='+start))
+                req.write('<div id="div_page_%s" title="%s" s="%s" q="%s" x="%s"></div>\n' %(label, label, 'google', q, start))
     req.write('<!--NextPageEnd-->\n')
     return
 
@@ -219,15 +218,8 @@ def search_dailymotion(req, q):
     return
 
 def search(req, q, s=None, x=None):
-    html = re.split('<!--result-->', loadFile('list_search.html'))
-    text = re.sub('option value="%s"' %(s), 'option value="%s" selected' %(s) , html[0])
-    text = re.sub('input_q_value', q, text)
-    req.write(text)
-
     s = (s or 'youtube').lower()
-
     q1 = re.sub(' ', '+', q)
-
     if s == 'youtube':
         search_youtube(req, q1, x)
     elif s == 'long':
@@ -240,9 +232,7 @@ def search(req, q, s=None, x=None):
         search_xuite(req, q1)
     elif s == 'dailymotion':
         search_dailymotion(req, q1)
-
     onPageEnd(req)
-    req.write(html[1])
 
 def page_def(req, url):
     meta.findLink(req, url)
