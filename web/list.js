@@ -1,18 +1,4 @@
 
-function onKeyDown(e) {
-    switch(e.which) {
-        case 37: // left
-            bxslider.goToPrevSlide();
-            break;
-        case 39: // right
-            bxslider.goToNextSlide();
-            break;
-        default:
-            return;
-    }
-    e.preventDefault(); // prevent the default action
-}
-
 function setEntryCluster(entryMax) {
     for (var i = 1; i <= $('.imageContainer').length; i++) {
         if (i % entryMax == 1) {
@@ -41,9 +27,8 @@ function setWidthHeight(entryMax) {
 };
 
 function onPlayVideo() {
-    pageinfo = document.getElementById('pageinfo');
-    if (pageinfo)
-        saveCookie('pagelist', pageinfo.getAttribute('pagelist'));
+    if ($('#pageinfo').length)
+        saveCookie('pagelist', $('#pageinfo').attr('pagelist'));
 }
 
 function onPageReady() {
@@ -62,9 +47,7 @@ function onPageReady() {
     showServerMessage();
 }
 
-function onReady() {
+function onDocumentReady() {
     onPageReady();
-    $(document).keydown(onKeyDown);
 }
-
 

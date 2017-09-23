@@ -81,7 +81,7 @@ function onTimeout () {
     $.getJSON("bookmark.json", parseJSON);
 }
 
-function loadAll() {
+function onDocumentReady() {
     //loadgist("30f6cc0f78ee246c1e28bd537764d6c4", "bookmark.json");
     var jsonURL = 'https://gist.githubusercontent.com/JiasHuang/30f6cc0f78ee246c1e28bd537764d6c4/raw/bookmark.json';
 

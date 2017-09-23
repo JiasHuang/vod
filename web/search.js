@@ -63,9 +63,8 @@ function onPageNav(e) {
 }
 
 function onPlayVideo() {
-    pageinfo = document.getElementById('pageinfo');
-    if (pageinfo)
-        saveCookie('pagelist', pageinfo.getAttribute('pagelist'));
+    if ($('#pageinfo').length)
+        saveCookie('pagelist', $('pagelist').attr('pagelist'));
 }
 
 function onSearchReady() {
@@ -82,7 +81,7 @@ function onLoadCompleted (responseTxt, statusTxt, xhr) {
         alert("Error: " + xhr.status + ": " + xhr.statusText);
 }
 
-function show() {
+function onDocumentReady() {
     var s = GetURLParameter("s") || getCookie('engine');
     var q = GetURLParameter("q");
     var x = GetURLParameter("x");

@@ -1,4 +1,6 @@
 
+var menuboxContent = 0;
+
 var logs = {
     'lang'          : ['en', 'ch'],
     'NotFound'      : ['Oops! Not Found', '抱歉，找不到您要的資料'],
@@ -92,18 +94,22 @@ function onMenuClick() {
 }
 
 function closeMenu() {
-    var menubox = document.getElementById('menubox');
-    menubox.style.display = "none";
+    $('#menubox').hide();
+}
+
+function onLoadMenuBoxCompleted (responseTxt, statusTxt, xhr) {
+    if (statusTxt == "success")
+        showMenuLink();
+    if(statusTxt == "error")
+        alert("Error: " + xhr.status + ": " + xhr.statusText);
 }
 
 function toggleMenu() {
-    var menubox = document.getElementById('menubox');
-    if (menubox.style.display == "block") {
-        menubox.style.display = "none";
-    } else {
-        menubox.style.display = "block";
-        showMenuLink();
+    if (menuboxContent == 0) {
+        $('#menubox').load("menubox.html", onLoadMenuBoxCompleted);
+        menuboxContent = 1;
     }
+    $('#menubox').toggle();
     $('html').click(closeMenu);
     event.stopPropagation();
 }
@@ -122,18 +128,16 @@ function getLangLog(key)
 
 function showServerMessage()
 {
-    var x = document.getElementsByClassName("message");
-    for (var i=0; i<x.length; i++) {
-        $(x[i]).html(getLangLog(x[i].id));
-    }
+    $('.message').each(function () {
+        $(this).html(getLangLog($(this).attr('id')));
+    });
 }
 
 function showMenuLink()
 {
-    var x = document.getElementsByClassName("menulink");
-    for (var i=0; i<x.length; i++) {
-        $(x[i]).html(getLangLog(x[i].id));
-    }
+    $('.menulink').each(function () {
+        $(this).html(getLangLog($(this).attr('id')));
+    });
 }
 
 function GetURLParameter(sParam)

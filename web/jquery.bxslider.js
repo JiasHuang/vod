@@ -43,7 +43,7 @@
     ariaHidden: true,
 
     // KEYBOARD
-    keyboardEnabled: false,
+    keyboardEnabled: true,
 
     // PAGER
     pager: true,

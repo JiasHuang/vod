@@ -41,13 +41,13 @@ var settings_cookies = ['format', 'autosub', 'playbackMode'];
 function saveCookies() {
     var lists = settings_cookies;
     for (var i=0; i<lists.length; i++) {
-        saveCookie(lists[i], document.getElementById(lists[i]).value);
+        saveCookie(lists[i], $('#'+lists[i]).val());
     }
 }
 
 function save() {
     for (var id in settings) {
-        localStorage.setItem(id, document.getElementById(id).value);
+        localStorage.setItem(id, $('#'+id).val());
     }
     saveCookies();
     window.location.href = 'view.py?m=sync';
@@ -82,7 +82,7 @@ function getValue(id) {
 function onLangSelect()
 {
     localStorage.setItem("lang", $(this).val());
-    show();
+    onDocumentReady();
 }
 
 function onActinSelect()
@@ -128,19 +128,18 @@ function result() {
     return text;
 }
 
-function show() {
+function onDocumentReady() {
 
-    document.getElementById(getLangLog('lang')).checked = true;
+    $('#'+getLangLog('lang')).prop('checked', true);
 
     $('#Result').html(result());
     for (var id in settings) {
         $('#'+id).val(getValue(id));
     }
 
-    var actionSelect = document.getElementById('actionSelect');
-    for (var i=0; i < actionSelect.length; i++) {
-        actionSelect.options[i].text = getLangLog(actionSelect.options[i].value);
+    var options = $('#actionSelect').children().toArray();
+    for (var i in options) {
+        $(options[i]).text(getLangLog($(options[i]).val()));
     }
-
 }
 
