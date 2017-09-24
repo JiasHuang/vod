@@ -149,7 +149,8 @@ def search_youtube(req, q, sp=None):
                     vid = x['videoId'].encode('utf8')
                     title = x['title']['simpleText'].encode('utf8')
                     desc = x['lengthText']['simpleText'].encode('utf8')
-                    addVideo(req, getLink('youtube', vid), title, desc=desc)
+                    image = x['thumbnail']['thumbnails'][0]['url'].encode('utf8')
+                    addVideo(req, getLink('youtube', vid), title, image, desc=desc)
                 elif 'playlistId' in x:
                     playlistId = x['playlistId'].encode('utf8')
                     title = x['title']['simpleText'].encode('utf8')
@@ -472,10 +473,11 @@ def page_youtube_videos(req, url):
             try:
                 vid = x['videoId'].encode('utf8')
                 title = x['title']['simpleText'].encode('utf8')
+                image = x['thumbnail']['thumbnails'][0]['url'].encode('utf8')
                 desc = None
                 for timeStatus in meta.findItem(x, ['thumbnailOverlayTimeStatusRenderer']):
                     desc = timeStatus['text']['simpleText'].encode('utf8')
-                addVideo(req, getLink('youtube', vid), title, desc=desc)
+                addVideo(req, getLink('youtube', vid), title, image, desc=desc)
             except:
                 meta.comment(req, 'Exception:\n'+str(x))
 

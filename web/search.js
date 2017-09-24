@@ -18,7 +18,6 @@ function query(s, q, x) {
 function onSelectChange() {
     var q = $('#input_q').val();
     var engine = $(this).val();
-    saveCookie('engine', engine);
     query(engine, q);
 }
 
@@ -82,7 +81,7 @@ function onLoadCompleted (responseTxt, statusTxt, xhr) {
 }
 
 function onDocumentReady() {
-    var s = GetURLParameter("s") || getCookie('engine');
+    var s = GetURLParameter("s");
     var q = GetURLParameter("q");
     var x = GetURLParameter("x");
     console.log("s: "+s);
