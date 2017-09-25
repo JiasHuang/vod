@@ -37,6 +37,10 @@
     color: blue;
 }
 
+.nextpage table tr td.selected {
+    background-color: silver;
+}
+
 .nextpage table tr td:hover {
     border: 4px solid blue;
 }

@@ -129,21 +129,27 @@ def getDescription(attributes, txt):
         return getDuration(desc) or desc
     return None
 
+def getDivLabel(label):
+    label = label.lower()
+    if re.search(r'prev', label):
+        return 'prev'
+    if re.search(r'next', label):
+        return 'next'
+    return label
+
 def addYouTubeNextPage(req, q, url):
     headers = [('cookie', 'PREF=f1=50000000&f6=1408&f5=30&hl=en')]
     local = meta.genLocal(url, suffix='.old')
     txt = meta.load(url, local, headers)
+    pages = meta.search(r'search-pager(.*?)</div>', txt, re.DOTALL|re.MULTILINE)
     req.write('\n<!--NextPage-->\n')
-    for m in re.finditer(r'<a .*?</a>', txt):
-        pageno = meta.search(r'aria-label="Go to page (\d+)"', m.group())
-        if pageno:
-            label = pageno
+    for m in re.finditer(r'<(a|button) .*?</(a|button)>', pages):
+        label = meta.search(r'<span.*?">(.*?)</span>', m.group())
+        sp = None
+        if m.group(1) == 'a':
             sp = meta.search(r'sp=([a-zA-Z0-9%]*)', m.group())
-            if re.search(r'«', m.group()):
-                label = 'prev'
-            elif re.search(r'»', m.group()):
-                label = 'next'
-            req.write('<div id="div_page_%s" title="%s" s="%s" q="%s" x="%s"></div>\n' %(label, label, 'youtube', q, sp))
+        if label:
+            req.write('<div id="div_page_%s" title="%s" s="%s" q="%s" x="%s"></div>\n' %(getDivLabel(label), label, 'youtube', q, sp or ''))
     req.write('<!--NextPageEnd-->\n')
     return
 
@@ -151,12 +157,13 @@ def addGoogleNextPage(req, q, txt):
     req.write('\n<!--NextPage-->\n')
     navcnt = meta.search(r'<div id="navcnt">(.*?)</div>', txt, re.DOTALL|re.MULTILINE)
     if navcnt:
-        for m in re.finditer(r'<a .*?</a>', navcnt):
+        for m in re.finditer(r'<td.*?</td>', navcnt):
+            meta.comment(req, m.group())
+            label = meta.search(r'(\w+)(</span>|)(</a>|)</td>', m.group())
             link = meta.search(r'href="([^"]*)"', m.group())
-            label = meta.search(r'aria-label="Page (\d+)"', m.group()) or meta.search(r'id="pn([^"]*)"', m.group()) or ''
             start = meta.search(r'start=(\d+)', link)
-            if start:
-                req.write('<div id="div_page_%s" title="%s" s="%s" q="%s" x="%s"></div>\n' %(label, label, 'google', q, start))
+            if label:
+                req.write('<div id="div_page_%s" title="%s" s="%s" q="%s" x="%s"></div>\n' %(getDivLabel(label), label, 'google', q, start or ''))
     req.write('<!--NextPageEnd-->\n')
     return
 

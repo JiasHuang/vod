@@ -30,7 +30,10 @@ function renderNextPages() {
         var q = $(pages[i]).attr('q');
         var x = $(pages[i]).attr('x');
         var title = $(pages[i]).attr('title');
-        text += '<td onclick="onPageClick('+i+');">'+title+'</td>';
+        if (x.length > 0)
+            text += '<td onclick="onPageClick('+i+');">'+title+'</td>';
+        else
+            text += '<td class="selected">'+title+'</td>';
     }
     text += '<tr></table>';
     $('#nextpageResult').html(text);
