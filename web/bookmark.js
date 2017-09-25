@@ -74,6 +74,7 @@ function parseJSON(obj) {
     }
 
     $('#result').html(text);
+    $('#loadingMessage').hide();
 }
 
 function onTimeout () {

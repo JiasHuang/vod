@@ -7,14 +7,14 @@
 
 <title>VOD</title>
 
-<link rel="stylesheet" href="bookmark.css?v=20170922_1001">
-<link rel="stylesheet" href="menubox.css?v=20170922_1001">
+<link rel="stylesheet" href="style.css?v=35b9ae70225afa777cdcda27691dd9c5">
+<link rel="stylesheet" href="menubox.css?v=4ae92e3865d895a938324b4e3501e723">
+<link rel="stylesheet" href="bookmark.css?v=8b7df7210c791c2f7f9446448f82cd34">
 
-<script type="text/javascript" src="utils.js?v=20170922_1001"></script>
-<script type="text/javascript" src="speech.js?v=20170922_1001"></script>
+<script type="text/javascript" src="utils.js?v=e7cc017cff959809852e5fbb6726f2da"></script>
+<script type="text/javascript" src="bookmark.js?v=9b63fb909ff72e0cd9f96af85569bb75"></script>
 
 <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-<script type="text/javascript" src="bookmark.js?v=20170922_1001"></script>
 
 <script type="text/javascript">
     $(document).ready(onDocumentReady);
@@ -24,10 +24,14 @@
 
 <body bgcolor=silver>
 
+    <div id="loadingMessage">
+    <h1>Loading ...<h1>
+    </div>
+
     <img src="menu-icon.png" onclick="toggleMenu()" class="menuicon" />
     <div id="menubox" class="menubox" style="display: none" onclick="onMenuClick()"></div>
 
-    <div id="result"></div>
+    <div id="result" class="result"></div>
 
 </body>
 

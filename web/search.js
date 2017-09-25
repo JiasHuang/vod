@@ -81,7 +81,7 @@ function onLoadCompleted (responseTxt, statusTxt, xhr) {
 }
 
 function onDocumentReady() {
-    var s = GetURLParameter("s");
+    var s = GetURLParameter("s") || 'youtube';
     var q = GetURLParameter("q");
     var x = GetURLParameter("x");
     console.log("s: "+s);
@@ -91,8 +91,7 @@ function onDocumentReady() {
         q = decodeURIComponent(q.replace(/\+/g," "));
         $('#input_q').val(q);
     }
-    if (s)
-        $('#select_engine').val(s);
+    $('#select_engine').val(s);
     query(s, q, x);
     $(document).keydown(onPageNav);
 }

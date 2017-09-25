@@ -2,20 +2,26 @@
 # -*- coding: utf-8 -*-
 
 import os
-import re
 import glob
+import hashlib
 
-from time import gmtime, strftime
+def gethash(local):
+    if os.path.exists(local):
+        fd = open(local, 'r')
+        txt = fd.read()
+        fd.close()
+        return hashlib.md5(txt).hexdigest()
+    return ''
 
 def main():
 
     os.chdir('web')
-    ver = strftime("%Y%m%d_%M%S", gmtime())
 
     files = glob.glob("*.js") + glob.glob("*.css")
 
     for html in glob.glob("*.html"):
         for f in files:
+            ver = gethash(f)
             os.system('sed -i -r \'s/%s([^"]*)/%s\?v=%s/g\' %s' %(f, f, ver, html))
 
     return

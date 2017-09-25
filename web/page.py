@@ -56,19 +56,26 @@ def darg(d, *arg):
         return d[arg[0]].encode('utf8')
     return [d[a].encode('utf8') for a in arg]
 
-def addEntry(req, link, title, image=None, desc=None, password=None):
+def addEntry(req, link, title, image=None, desc=None, password=None, video=True):
     global entryCnt, entryVideos
     entryCnt = entryCnt + 1
     req.write('\n<!--Entry%s-->\n' %(entryCnt))
-    req.write('<!--\n\tlink="%s"\n\ttitle="%s"\n\timage="%s"\n\tdesc="%s"\n-->\n' %(link, title, image or '', desc or ''))
-    if re.search('view.py\?v=', link):
+    if link:
+        req.write('<!--link="%s"-->\n' %(link))
+    if title:
+        req.write('<!--title="%s"-->\n' %(title))
+    if image:
+        req.write('<!--image="%s"-->\n' %(image))
+    if desc:
+        req.write('<!--desc="%s"-->\n' %(desc))
+    if video:
         if password:
             password = '&ytdl_password='+password
         source = '%s%s' %(link, password or '')
-        anchor = 'href="%s" target="playVideo"' %(source)
-        entryVideos.append(source[10:])
+        anchor = 'href="view.py?v=%s" target="playVideo"' %(source)
+        entryVideos.append(source)
     else:
-        anchor = 'href="%s" onclick="onPageClick.call(this);" title="%s"' %(link, title)
+        anchor = 'href="view.py?p=%s" onclick="onPageClick.call(this);" title="%s"' %(link, title)
     if image:
         req.write('<div class="imageWrapper">\n')
         req.write('<div class="imageContainer">\n')
@@ -86,14 +93,14 @@ def addPage(req, link, title, image=None, desc=None):
         return
     if re.search(r'^//', link):
         link = re.sub('//', 'http://', link)
-    addEntry(req, 'view.py?p='+link, title, image, desc)
+    addEntry(req, link, title, image, desc, video=False)
 
 def addVideo(req, link, title=None, image=None, desc=None, password=None):
     if not link:
         return
     if re.search(r'^//', link):
         link = re.sub('//', 'http://', link)
-    addEntry(req, 'view.py?v='+link, title or link, image or meta.getImage(link) or 'Movies-icon.png', desc, password)
+    addEntry(req, link, title or link, image or meta.getImage(link) or 'Movies-icon.png', desc, password)
 
 def getLink(site, vid):
     if site == 'youtube':
@@ -176,15 +183,6 @@ def search_google(req, q, start=None):
         if link and title:
             addVideo(req, link, title)
     addGoogleNextPage(req, q, txt)
-
-def search_db(req, q):
-    local = os.path.expanduser('~')+'/.voddatabase'
-    for m in re.finditer(r'<!-- link="([^"]*)" title="([^"]*)" image="([^"]*)" -->', meta.readLocal(local)):
-        link, title, image = m.group(1), m.group(2), m.group(3)
-        if len(image) == 0:
-            image = 'Movies-icon.png'
-        if re.search(q, title, re.IGNORECASE):
-            addEntry(req, link, title, image)
 
 def search_xuite(req, q):
     for i in range(3):
