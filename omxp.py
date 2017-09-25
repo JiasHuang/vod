@@ -7,7 +7,7 @@ import subprocess
 import xdef
 import xurl
 import xproc
-import youtubedl
+import xsrc
 
 def setAct(act, val):
 
@@ -40,8 +40,7 @@ def play(url, ref, cookies=None):
 
     xargs = ''
 
-    if youtubedl.checkURL(url):
-        url, cookies = youtubedl.extractURL(url)
+    url, cookies = xsrc.getSource(url)
 
     if not url:
         print('\n[omxp][play] invalid url\n')

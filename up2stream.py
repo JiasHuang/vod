@@ -9,7 +9,7 @@ def getSource(url):
     m = re.search(r'http://([^"]+)', txt)
     if m:
         m.group()
-    return ''
+    return None
 
 def search(txt):
     m = re.search(r'http://up2stream.com/([^"]*)', txt)

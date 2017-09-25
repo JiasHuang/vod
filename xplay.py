@@ -13,7 +13,7 @@ import xurl
 import mpv
 import omxp
 import ffplay
-import youtubedl
+import xsrc
 
 def getPlayer():
 
@@ -31,10 +31,15 @@ def getPlayer():
 
     return 'err'
 
-def runDBG(url, ref, cookies=None):
-    if youtubedl.checkURL(url):
-        url, cookies = youtubedl.extractURL(url)
-    youtubedl.extractSUB(url)
+def runDBG(url, ref):
+    src, cookies = xsrc.getSource(url)
+    sub = xsrc.getSUB(url)
+    if src:
+        print('\n[xplay][DBG][src]\n\n\t%s' %(src))
+    if cookies:
+        print('\n[xplay][DBG][cookies]\n\n\t%s' %(cookies))
+    if sub:
+        print('\n[xplay][DBG][sub]\n\n\t%s' %(sub))
     return
 
 def isPlayerRunning():
@@ -55,25 +60,25 @@ def getNext(playing, playlist):
     if isPlayerRunning():
         return None
 
-    playbackMode = xurl.readLocal(xdef.playbackMode, 0)
+    playbackMode = xurl.readLocal(xdef.playbackMode, 0).lower()
 
-    if playbackMode == 'LoopOne':
+    if playbackMode == 'loopone':
         return playing
 
-    if playbackMode in ['AutoNext', 'LoopAll']:
+    if playbackMode in ['autonext', 'loopall']:
         lines = playlist.splitlines()
         try:
             index = lines.index(playing)
             if index < (len(lines) - 1):
                 return lines[index+1]
-            if playbackMode == 'LoopAll' and index == (len(lines) - 1):
+            if playbackMode == 'loopall' and index == (len(lines) - 1):
                 return lines[0]
         except:
             return None
 
     return None
 
-def playURL_core(url, ref, cookies=None):
+def playURL_core(url, ref):
 
     player = getPlayer()
 
@@ -85,17 +90,17 @@ def playURL_core(url, ref, cookies=None):
         return
 
     if player == 'mpv':
-        return mpv.play(url, ref, cookies)
+        return mpv.play(url, ref)
 
     if player == 'omxp':
-        return omxp.play(url, ref, cookies)
+        return omxp.play(url, ref)
 
     if player == 'ffplay':
-        return ffplay.play(url, ref, cookies)
+        return ffplay.play(url, ref)
 
-    return runDBG(url, ref, cookies)
+    return runDBG(url, ref)
 
-def playURL(url, ref, cookies=None):
+def playURL(url, ref):
 
     if isPlayerRunning():
         if os.path.exists(xdef.playlist):
@@ -105,10 +110,10 @@ def playURL(url, ref, cookies=None):
         playlist = xurl.readLocal(xarg.pagelist)
         xurl.saveLocal(xdef.playlist, playlist, 0)
         while url != None:
-            playURL_core(url, ref, cookies)
+            playURL_core(url, ref)
             url = ref = getNext(url, playlist)
     else:
-        playURL_core(url, ref, cookies)
+        playURL_core(url, ref)
 
     return
 

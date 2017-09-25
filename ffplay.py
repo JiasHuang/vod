@@ -7,7 +7,7 @@ import subprocess
 
 import xdef
 import xproc
-import youtubedl
+import xsrc
 
 def setAct(act, val):
 
@@ -45,12 +45,11 @@ def setAct(act, val):
         print('\n[ffplay][setAct] unsupported: %s %s' %(act, val))
     return
 
-def play(url, ref, cookies=None):
+def play(url, ref):
 
     xargs = ''
 
-    if youtubedl.checkURL(url):
-        url, cookies = youtubedl.extractURL(url)
+    url, cookies = xsrc.getSource(url)
 
     if not url:
         print('\n[ffplay][play] invalid url')

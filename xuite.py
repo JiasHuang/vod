@@ -1,20 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import os
-import sys
 import re
 import xurl
 import xdef
 
-def parseParameters(url):
-    match = re.search(r'(.*?)&ytdl_password=(.*?)$', url)
-    if match:
-        return match.group(1), match.group(2)
-    return url, None
-
-def getSource(url):
-    url, key = parseParameters(url)
+def getSource(url, key=None):
     mURL = None
     if re.search(r'^http://vlog.xuite.net/play/', url):
         txt = xurl.load(url)
@@ -23,7 +14,7 @@ def getSource(url):
             mURL = m.group(0)
 
     if mURL == None:
-        return ''
+        return None
 
     if key:
         txt = xurl.post(mURL, {'pwInput': key})
@@ -37,5 +28,5 @@ def getSource(url):
             src = re.sub('q=360', 'q='+hd.group(1), src)
         print('\n[xuite][src]\n\n\t'+src)
         return src
-    return ''
+    return None
 

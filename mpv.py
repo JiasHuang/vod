@@ -8,8 +8,7 @@ import time
 
 import xdef
 import xproc
-import xurl
-import youtubedl
+import xsrc
 
 def setAct(act, val):
 
@@ -28,14 +27,12 @@ def setAct(act, val):
     os.system('echo %s > %s' %(cmd, xdef.fifo))
     return
 
-def play(url, ref, cookies=None):
+def play(url, ref):
 
     p = None
     xargs = ''
 
-    if youtubedl.checkURL(url):
-        url, cookies = youtubedl.extractURL(url)
-        xargs = '--ytdl=no'
+    url, cookies = xsrc.getSource(url)
 
     if not url:
         print('\n[mpv][play] invalid url\n')
@@ -66,7 +63,7 @@ def play(url, ref, cookies=None):
         os.system('echo loadfile \"%s\" > %s' %(url, xdef.fifo))
         os.system('echo sub-remove > %s' %(xdef.fifo))
 
-    sub = youtubedl.extractSUB(ref)
+    sub = xsrc.getSUB(ref)
     if sub:
         os.system('echo sub-add \"%s\" select > %s' %(sub, xdef.fifo))
 

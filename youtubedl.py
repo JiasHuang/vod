@@ -18,23 +18,10 @@ import xurl
 import xplay
 import mpv
 
-def checkURL(url):
-    if url.endswith(xdef.ytdlm3u):
-        return True
-    site = xurl.findSite(url)
-    return re.compile('(youtube|dailymotion|facebook|bilibili|vimeo|youku|openload|litv|drive|iqiyi|letv)').search(site)
-
 def redirectURL(url):
     if re.search(r'youku', url):
         url = re.sub('player.youku.com/embed/', 'v.youku.com/v_show/id_', url)
     return url
-
-def parseParameters(url):
-    match = re.search(r'(.*?)&ytdl_password=(.*?)$', url)
-    if match:
-        url = match.group(1)
-        return '--video-password ' + match.group(2)
-    return None
 
 def getFormat(url):
     formats = []
@@ -178,7 +165,7 @@ def createSubprocess(url):
     print('\tret : %s' %(local))
     return local, None
 
-def extractURL(url):
+def extractURL(url, key=None):
 
     if url.endswith(xdef.ytdlm3u):
         return createSubprocess(url)
@@ -186,9 +173,12 @@ def extractURL(url):
     print('\n[ytdl][extractURL]\n')
 
     url = redirectURL(url)
-    arg = parseParameters(url)
+    arg = None
     fmt = getFormat(url)
     local = xdef.workdir+'vod_list_'+hashlib.md5(url+fmt).hexdigest()+'.json'
+
+    if key:
+        arg = '--video-password ' + key
 
     if arg:
         print('\targ : %s' %(arg or ''))
