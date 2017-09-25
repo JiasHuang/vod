@@ -97,14 +97,18 @@ def load(url, local=None, headers=None, cache=True):
     except :
         return 'Exception'
 
-def post(url, payload, local=None, cache=True):
+def post(url, payload, local=None, headers=None, cache=True):
 
     local = local or genLocal(url)
     if cache and os.path.exists(local) and not checkExpire(local):
         return readLocal(local)
 
     opener = urllib2.build_opener()
-    opener.addheaders = [('User-agent', 'Mozilla/5.0 (X11; Linux i686; rv:10.0) Gecko/20100101 Firefox/33.0')]
+    opener.addheaders = [('User-agent', conf.ua)]
+
+    if headers:
+        opener.addheaders += headers
+
     data = urllib.urlencode(payload)
     try:
         f = opener.open(url, data)

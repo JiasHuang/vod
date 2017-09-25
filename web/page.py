@@ -129,6 +129,24 @@ def getDescription(attributes, txt):
         return getDuration(desc) or desc
     return None
 
+def addYouTubeNextPage(req, q, url):
+    headers = [('cookie', 'PREF=f1=50000000&f6=1408&f5=30&hl=en')]
+    local = meta.genLocal(url, suffix='.old')
+    txt = meta.load(url, local, headers)
+    req.write('\n<!--NextPage-->\n')
+    for m in re.finditer(r'<a .*?</a>', txt):
+        pageno = meta.search(r'aria-label="Go to page (\d+)"', m.group())
+        if pageno:
+            label = pageno
+            sp = meta.search(r'sp=([a-zA-Z0-9%]*)', m.group())
+            if re.search(r'«', m.group()):
+                label = 'prev'
+            elif re.search(r'»', m.group()):
+                label = 'next'
+            req.write('<div id="div_page_%s" title="%s" s="%s" q="%s" x="%s"></div>\n' %(label, label, 'youtube', q, sp))
+    req.write('<!--NextPageEnd-->\n')
+    return
+
 def addGoogleNextPage(req, q, txt):
     req.write('\n<!--NextPage-->\n')
     navcnt = meta.search(r'<div id="navcnt">(.*?)</div>', txt, re.DOTALL|re.MULTILINE)
@@ -165,6 +183,7 @@ def search_youtube(req, q, sp=None):
                     addPage(req, 'https://www.youtube.com/playlist?list='+playlistId, title, image, 'Playlist')
             except:
                 meta.comment(req, str(x))
+    addYouTubeNextPage(req, q, url)
 
 def search_google(req, q, start=None):
     url = 'http://www.google.com/search?num=30&hl=en&q=site%3Adrive.google.com%20video%20'+q
