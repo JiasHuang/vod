@@ -129,13 +129,10 @@ def getDescription(attributes, txt):
         return getDuration(desc) or desc
     return None
 
-def getDivLabel(label):
-    label = label.lower()
-    if re.search(r'prev', label):
-        return 'prev'
-    if re.search(r'next', label):
-        return 'next'
-    return label
+def addNextPage(req, label, s, q, x, isSelected=False):
+    div_label = meta.search(r'(prev|next)', label.lower()) or label
+    req.write('<div id="div_page_%s" title="%s" s="%s" q="%s" x="%s"></div>\n' %(div_label, label, s, q, x or ''))
+    return
 
 def addYouTubeNextPage(req, q, url):
     headers = [('cookie', 'PREF=f1=50000000&f6=1408&f5=30&hl=en')]
@@ -148,8 +145,7 @@ def addYouTubeNextPage(req, q, url):
         sp = None
         if m.group(1) == 'a':
             sp = meta.search(r'sp=([a-zA-Z0-9%]*)', m.group())
-        if label:
-            req.write('<div id="div_page_%s" title="%s" s="%s" q="%s" x="%s"></div>\n' %(getDivLabel(label), label, 'youtube', q, sp or ''))
+        addNextPage(req, label, 'youtube', q, sp)
     req.write('<!--NextPageEnd-->\n')
     return
 
@@ -158,12 +154,11 @@ def addGoogleNextPage(req, q, txt):
     navcnt = meta.search(r'<div id="navcnt">(.*?)</div>', txt, re.DOTALL|re.MULTILINE)
     if navcnt:
         for m in re.finditer(r'<td.*?</td>', navcnt):
-            meta.comment(req, m.group())
             label = meta.search(r'(\w+)(</span>|)(</a>|)</td>', m.group())
             link = meta.search(r'href="([^"]*)"', m.group())
             start = meta.search(r'start=(\d+)', link)
             if label:
-                req.write('<div id="div_page_%s" title="%s" s="%s" q="%s" x="%s"></div>\n' %(getDivLabel(label), label, 'google', q, start or ''))
+                addNextPage(req, label, 'google', q, start)
     req.write('<!--NextPageEnd-->\n')
     return
 
