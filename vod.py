@@ -39,7 +39,7 @@ def main():
         xarg.pagelist = options.pagelist
 
     if options.playbackMode:
-        xarg,playbackMode = options.playbackMode
+        xarg.playbackMode = options.playbackMode
 
     if len(args) >= 1:
         url = args[0].strip()
