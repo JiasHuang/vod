@@ -48,6 +48,8 @@ function onPageClick(index) {
 }
 
 function onPageNav(e) {
+    if ($("#input_q").is(":focus"))
+        return;
     target = null;
     switch(e.which) {
         case 37: // left

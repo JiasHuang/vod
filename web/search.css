@@ -28,6 +28,7 @@
     margin: 32px auto;
     font-size: 32px;
     text-align: center;
+    table-layout: fixed;
 }
 
 .nextpage table tr td {
@@ -39,8 +40,9 @@
 
 .nextpage table tr td.selected {
     background-color: silver;
+    color: black;
 }
 
-.nextpage table tr td:hover {
-    border: 4px solid blue;
+.nextpage table tr td:not(.selected):hover {
+    background-color: gold;
 }
