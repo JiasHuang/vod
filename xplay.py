@@ -104,7 +104,12 @@ def playURL(url, ref):
 
     if isPlayerRunning():
         if os.path.exists(xdef.playlist):
-            setAct('stop', None)
+            playbackMode = xurl.readLocal(xdef.playbackMode, 0).lower()
+            if len(playbackMode) > 0 and playbackMode != 'normal':
+                setAct('stop', None)
+
+    if xarg.playbackMode:
+        xurl.saveLocal(xdef.playbackMode, xarg.playbackMode, 0)
 
     if xarg.pagelist:
         playlist = xurl.readLocal(xarg.pagelist)

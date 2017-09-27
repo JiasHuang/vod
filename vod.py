@@ -7,7 +7,6 @@ import urllib
 
 import xarg
 import xdef
-import xurl
 import xplay
 
 from optparse import OptionParser
@@ -40,7 +39,7 @@ def main():
         xarg.pagelist = options.pagelist
 
     if options.playbackMode:
-        xurl.saveLocal(xdef.playbackMode, options.playbackMode, 0)
+        xarg,playbackMode = options.playbackMode
 
     if len(args) >= 1:
         url = args[0].strip()

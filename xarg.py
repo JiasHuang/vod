@@ -5,3 +5,4 @@ player              = 'def'
 ytdlfmt             = '720p'
 autosub             = 'no'
 pagelist            = None
+playbackMode        = None
