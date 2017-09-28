@@ -612,8 +612,8 @@ def onPageEnd(req):
     global entryCnt
     if entryCnt == 0:
         req.write('<h1><span class="message" id="NotFound"></span></h1>\n')
-    req.write('\n<!--EntryEnd-->\n')
     req.write('<div id="pageinfo" pagelist="%s"></div>' %(savePageList()))
+    req.write('\n<!--EntryEnd-->\n')
     meta.showDebugLog(req)
 
 def page_core(req, url):
