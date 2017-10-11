@@ -130,8 +130,8 @@ def getDescription(attributes, txt):
     return None
 
 def addNextPage(req, label, s, q, x, isSelected=False):
-    div_label = meta.search(r'(prev|next)', label.lower()) or label
-    req.write('<div id="div_page_%s" title="%s" s="%s" q="%s" x="%s"></div>\n' %(div_label, label, s, q, x or ''))
+    label = meta.search(r'(prev|next)', label.lower()) or label
+    req.write('<div id="div_page_%s" title="%s" s="%s" q="%s" x="%s"></div>\n' %(label, label.title(), s, q, x or ''))
     return
 
 def addYouTubeNextPage(req, q, url):

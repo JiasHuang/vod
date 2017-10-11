@@ -88,7 +88,7 @@ def get(url, local):
     opener = urllib2.build_opener()
     opener.addheaders = [('User-agent', xdef.ua)]
     try:
-        f = opener.open(url)
+        f = opener.open(url, None, 10) # timeout 10
         if f.info().get('Content-Encoding') == 'gzip':
             buf = StringIO(f.read())
             saveLocal(local, gzip.GzipFile(fileobj=buf).read())
