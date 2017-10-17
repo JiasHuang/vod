@@ -139,14 +139,15 @@ def addYouTubeNextPage(req, q, url):
     local = meta.genLocal(url, suffix='.old')
     txt = meta.load(url, local, headers)
     pages = meta.search(r'search-pager(.*?)</div>', txt, re.DOTALL|re.MULTILINE)
-    req.write('\n<!--NextPage-->\n')
-    for m in re.finditer(r'<(a|button) .*?</(a|button)>', pages):
-        label = meta.search(r'<span.*?">(.*?)</span>', m.group())
-        sp = None
-        if m.group(1) == 'a':
-            sp = meta.search(r'sp=([a-zA-Z0-9%]*)', m.group())
-        addNextPage(req, label, 'youtube', q, sp)
-    req.write('<!--NextPageEnd-->\n')
+    if pages:
+        req.write('\n<!--NextPage-->\n')
+        for m in re.finditer(r'<(a|button) .*?</(a|button)>', pages):
+            label = meta.search(r'<span.*?">(.*?)</span>', m.group())
+            sp = None
+            if m.group(1) == 'a':
+                sp = meta.search(r'sp=([a-zA-Z0-9%]*)', m.group())
+            addNextPage(req, label, 'youtube', q, sp)
+        req.write('<!--NextPageEnd-->\n')
     return
 
 def addGoogleNextPage(req, q, txt):
