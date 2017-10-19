@@ -11,6 +11,14 @@ import goodtv
 import youtubedl
 import xurl
 
+def search(pattern, txt, flags=0):
+    if not txt:
+        return None
+    m = re.search(pattern, txt, flags)
+    if m:
+        return m.group(1)
+    return None
+
 def parseParameters(url):
     m = re.search(r'(.*?)&ytdl_password=(.*?)$', url)
     if m:
@@ -48,9 +56,19 @@ def getSource(url, key=None):
     if xurl.getContentType(url) != 'text/html':
         return url, None
 
-    return youtubedl.extractURL(url, key)
+    src, cookies = youtubedl.extractURL(url, key)
+    if src:
+        return src, cookies
+
+    raise Exception('GetSourceError')
+    return None, None
 
 def getSUB(url):
     if re.search(r'youtube.com/watch\?v=', url):
         return youtubedl.extractSUB(url)
     return None
+
+def getIframeSrc(url):
+    if url[0:4] != 'http':
+        return None
+    return search(r'<iframe.*?src="([^"]*)"', xurl.load(url))

@@ -151,16 +151,16 @@ def addYouTubeNextPage(req, q, url):
     return
 
 def addGoogleNextPage(req, q, txt):
-    req.write('\n<!--NextPage-->\n')
     navcnt = meta.search(r'<div id="navcnt">(.*?)</div>', txt, re.DOTALL|re.MULTILINE)
     if navcnt:
+        req.write('\n<!--NextPage-->\n')
         for m in re.finditer(r'<td.*?</td>', navcnt):
             label = meta.search(r'(\w+)(</span>|)(</a>|)</td>', m.group())
             link = meta.search(r'href="([^"]*)"', m.group())
             start = meta.search(r'start=(\d+)', link)
             if label:
                 addNextPage(req, label, 'google', q, start)
-    req.write('<!--NextPageEnd-->\n')
+        req.write('<!--NextPageEnd-->\n')
     return
 
 def search_youtube(req, q, sp=None):

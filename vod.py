@@ -4,10 +4,12 @@
 import os
 import re
 import urllib
+import sys
 
 import xarg
 import xdef
 import xplay
+import xsrc
 
 from optparse import OptionParser
 
@@ -50,7 +52,16 @@ def main():
     if len(args) >= 2:
         ref = args[1].strip()
 
-    xplay.playURL(url, ref or url)
+    try:
+        xplay.playURL(url, ref or url)
+        return
+    except:
+        print(sys.exc_info()[0])
+
+    iframeSrc = xsrc.getIframeSrc(url)
+    if iframeSrc:
+        xplay.playURL(iframeSrc, iframeSrc)
+
     return
 
 if __name__ == '__main__':
