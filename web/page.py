@@ -485,9 +485,12 @@ def page_maplestage(req, url):
                         meta.comment(req, 'Exception')
 
 def page_japvideo(req, url):
-    for i in range(5):
-        page = url+'page/'+str(i)
-        meta.findVideoLink(req, page, showPage=True, showImage=True, ImageExt=None)
+    if re.search(r'category', url):
+        for i in range(5):
+            page = url+'page/'+str(i)
+            meta.findVideoLink(req, page, showPage=True, showImage=True, ImageExt=None)
+    else:
+        meta.findFrame(req, url)
     return
 
 def page_youtube_videos(req, url):

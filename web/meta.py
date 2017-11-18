@@ -19,6 +19,9 @@ import page
 gDebugLog = []
 itemResult = []
 
+class defs:
+    linkPattern = r'http(s|)://(www.|)(redirector.googlevideo|dailymotion|videomega|videowood|youtube|openload)(.com|.tv|.co)([^"]*)'
+
 class entryObj(object):
     url = None
     title = None
@@ -242,9 +245,9 @@ def findPage(req, url, showImage=False):
 def findLink(req, url):
     link = ''
     txt = load2(url)
-    for m in re.finditer(r'"http(s|)://(www.|)(redirector.googlevideo|dailymotion|videomega|videowood|youtube|openload)(.com|.tv|.co)([^"]*)', txt):
-        if m.group()[1:-1] != link:
-            link = m.group()[1:-1]
+    for m in re.finditer(defs.linkPattern, txt):
+        if m.group() != link:
+            link = m.group()
             image = getImage(link)
             page.addVideo(req, link, link, image)
 
@@ -252,7 +255,8 @@ def findFrame(req, url):
     for m in re.finditer(r'<iframe (.*?)</iframe>', load2(url)):
         src = re.search(r'src="([^"]*)"', m.group(1))
         if src:
-            page.addVideo(req, src.group(1))
+            if re.search(defs.linkPattern, src.group(1)):
+                page.addVideo(req, src.group(1))
 
 def parseJSON(txt):
     try:
