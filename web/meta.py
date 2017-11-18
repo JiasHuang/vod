@@ -194,6 +194,10 @@ def findVideoLink(req, url, showPage=False, showImage=False, ImageSrc='src', Ima
             image = search(re.escape(ImageSrc)+r'="([^"]*)"', m.group(0))
         if image and ImageExt and not image.endswith(ImageExt):
             continue
+        if link and not ImageExt:
+            parsed_link = urlparse.urlparse(link)
+            if parsed_link.path == '/':
+                continue
         if link and title and image:
             link = absURL(domain, link)
             image = absURL(domain, image)

@@ -254,7 +254,7 @@ def search(req, q, s=None, x=None):
 
 def page_def(req, url):
     meta.findLink(req, url)
-    meta.findImageLink(req, url, True, False)
+    meta.findVideoLink(req, url, showPage=True, showImage=True, ImageExt=None)
 
 def page_xuite(req, url):
     if re.search(r'xuite.net/([a-zA-Z0-9]*)($)', url):
@@ -484,6 +484,12 @@ def page_maplestage(req, url):
                     except:
                         meta.comment(req, 'Exception')
 
+def page_japvideo(req, url):
+    for i in range(5):
+        page = url+'page/'+str(i)
+        meta.findVideoLink(req, page, showPage=True, showImage=True, ImageExt=None)
+    return
+
 def page_youtube_videos(req, url):
     txt = loadYouTube(url)
     ytInitialData = meta.search(r'window\["ytInitialData"\] = (.*?});', txt)
@@ -628,6 +634,8 @@ def page_core(req, url):
         page_lovetv(req, url);
     elif re.search(r'maplestage', url):
         page_maplestage(req, url);
+    elif re.search(r'japvideo', url):
+        page_japvideo(req, url)
     elif re.search(r'youtube', url):
         page_youtube(req, url)
     elif re.search(r'dailymotion', url):
