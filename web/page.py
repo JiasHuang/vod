@@ -6,6 +6,7 @@ import os
 import urlparse
 
 import meta
+import conf
 
 entryCnt = 0
 entryVideos = []
@@ -609,6 +610,42 @@ def page_gdrive(req, url):
             meta.comment(req, 'exception in page_gdrive')
             return
 
+def page_8maple_filescdn(req, url):
+    txt = meta.load2(url)
+    filescdn = meta.search(r'\'(\w+)_filescdn\'', txt)
+    if filescdn:
+        filescdnURL = 'http://8video.tv/filescdn/?url=%s_filescdn' %(filescdn)
+        filescdnURLTxt = meta.load2(filescdnURL, options='--referer=\'%s\'' %(url))
+        rapidVideo = re.search(r'https://www\.rapidvideo\.com/[^"]*', filescdnURLTxt)
+        if rapidVideo:
+            rapidVideoURL = rapidVideo.group()
+            rapidVideoURLTxt = meta.load2(rapidVideoURL, options='--referer=\'%s\'' %(filescdnURL))
+            videoURL = meta.search('<video .*? src="([^"]*)"', rapidVideoURLTxt)
+            if videoURL:
+                addVideo(req, videoURL+'&__referer__='+rapidVideoURL)
+
+def page_8maple(req, url):
+    conf.wget = conf.wget_noUA
+    parsed_uri = urlparse.urlparse(url)
+    domain = '{uri.scheme}://{uri.netloc}'.format(uri=parsed_uri)
+    txt = meta.load2(domain)
+    if re.search(r'8maple.ru/\d+/$', url):
+        txt = meta.load2(url)
+        lists = meta.search(r'<tr align="center">(.*?)</tr>', txt, re.DOTALL|re.MULTILINE)
+        if lists:
+            for m in re.finditer(r'<a href="([^"]*)">(.*?)</a>', lists):
+                pageURL, pageTitle = m.group(1), m.group(2)
+                addPage(req, pageURL, pageTitle, image=None, desc=None)
+        else:
+            page_8maple_filescdn(req, url)
+    else:
+        meta.findVideoLink(req, url, showPage=True, showImage=True, ImageExt=None)
+
+def page_ok(req, url):
+    conf.ua = ''
+    txt = meta.load2(url)
+    meta.findVideoLink(req, url, showImage=True, ImageExt=None)
+
 def savePageList():
     global entryVideos
     local = '/tmp/vod_list_pagelist_%s' %(str(os.getpid() % 100))
@@ -649,6 +686,10 @@ def page_core(req, url):
         page_youku(req, url)
     elif re.search(r'drive\.google\.com', url):
         page_gdrive(req, url)
+    elif re.search(r'8maple', url):
+        page_8maple(req, url)
+    elif re.search(r'ok.ru', url):
+        page_ok(req, url)
     else:
         page_def(req, url)
     onPageEnd(req)

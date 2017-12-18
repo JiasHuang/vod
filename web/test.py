@@ -23,7 +23,7 @@ def main():
         if q:
             page.search(fd, q, s, x)
         if p:
-            page.page_core(req, p)
+            page.page_core(fd, p)
     else:
         page.page(fd, sys.argv[1])
 

@@ -9,6 +9,7 @@ import urlparse
 import hashlib
 import time
 import json
+import subprocess
 
 from StringIO import StringIO
 import gzip
@@ -121,10 +122,26 @@ def post(url, payload, local=None, headers=None, cache=True):
     except:
         return ''
 
+def wget_refresh(url, local, options=None):
+    output = readLocal(conf.log_wget)
+    if re.search(r'ERROR 503', output):
+        parsed_uri = urlparse.urlparse(url)
+        domain = '{uri.scheme}://{uri.netloc}'.format(uri=parsed_uri)
+        # Refresh: 8;URL=/cdn-cgi/l/chk_jschl?pass=1513576312.733-0MEHx8hbgG
+        m = re.search(r'Refresh: (\d+);URL=(.*?)\n', output, re.DOTALL)
+        if m:
+            print(m.group())
+            time.sleep(float(m.group(1)))
+            newURL = absURL(domain, m.group(2))
+            cmd = '%s -O %s \'%s\' %s' %(conf.wget, local, newURL, options or '')
+            os.system(cmd)
+
 def wget(url, local, options=None):
-    cmd = '%s -U \'%s\' -O %s \'%s\' %s' %(conf.wget, conf.ua, local, url, options or '')
-    os.system(cmd)
-    return
+    cmd = '%s -O %s \'%s\' %s' %(conf.wget, local, url, options or '')
+    try:
+        subprocess.check_output(cmd, shell=True)
+    except:
+        wget_refresh(url, local, options)
 
 def load2(url, local=None, options=None, cache=True):
 
