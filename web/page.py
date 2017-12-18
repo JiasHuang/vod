@@ -382,7 +382,6 @@ def page_letv(req, url):
                 addVideo(req, obj.url, obj.title, obj.image)
 
 def page_youku(req, url):
-    global entryCnt
     if re.search(r'/v_show/', url):
         txt = load(url)
         if re.search(r'tvlist', txt):
@@ -628,18 +627,18 @@ def page_8maple(req, url):
     conf.wget = conf.wget_noUA
     parsed_uri = urlparse.urlparse(url)
     domain = '{uri.scheme}://{uri.netloc}'.format(uri=parsed_uri)
-    txt = meta.load2(domain)
-    if re.search(r'8maple.ru/\d+/$', url):
+    meta.load2(domain)
+    if re.search(r'/category/', url):
+        meta.findVideoLink(req, url, showPage=True, showImage=True, ImageExt=None)
+    else:
         txt = meta.load2(url)
-        lists = meta.search(r'<tr align="center">(.*?)</tr>', txt, re.DOTALL|re.MULTILINE)
+        lists = meta.search(r'<tbody>(.*?)</table>', txt, re.DOTALL|re.MULTILINE)
         if lists:
             for m in re.finditer(r'<a href="([^"]*)">(.*?)</a>', lists):
                 pageURL, pageTitle = m.group(1), m.group(2)
                 addPage(req, pageURL, pageTitle, image=None, desc=None)
         else:
             page_8maple_filescdn(req, url)
-    else:
-        meta.findVideoLink(req, url, showPage=True, showImage=True, ImageExt=None)
 
 def page_ok(req, url):
     conf.ua = ''
