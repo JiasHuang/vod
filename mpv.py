@@ -32,7 +32,7 @@ def play(url, ref):
     p = None
     xargs = ''
 
-    url, cookies = xsrc.getSource(url)
+    url, cookies = xsrc.getSource(url, ref=ref)
 
     if not url:
         print('\n[mpv][play] invalid url\n')

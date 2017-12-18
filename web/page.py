@@ -609,19 +609,25 @@ def page_gdrive(req, url):
             meta.comment(req, 'exception in page_gdrive')
             return
 
+def page_8maple_openload(req, url):
+    txt = meta.load2(url)
+    source = meta.search(r'(\w+)_openload(\d*)', txt)
+    if source:
+        sourceURL = 'http://8video.tv/openload/?url' + source.group()
+        sourceURLTxt = meta.load2(sourceURL, ref=url)
+        videoURL = re.search(r'https://openload\.co/[^"]*', sourceURLTxt)
+        if videoURL:
+            addVideo(req, videoURL.group()+'&__referer__='+sourceURL)
+
 def page_8maple_filescdn(req, url):
     txt = meta.load2(url)
-    filescdn = meta.search(r'\'(\w+)_filescdn\'', txt)
-    if filescdn:
-        filescdnURL = 'http://8video.tv/filescdn/?url=%s_filescdn' %(filescdn)
-        filescdnURLTxt = meta.load2(filescdnURL, options='--referer=\'%s\'' %(url))
-        rapidVideo = re.search(r'https://www\.rapidvideo\.com/[^"]*', filescdnURLTxt)
-        if rapidVideo:
-            rapidVideoURL = rapidVideo.group()
-            rapidVideoURLTxt = meta.load2(rapidVideoURL, options='--referer=\'%s\'' %(filescdnURL))
-            videoURL = meta.search('<video .*? src="([^"]*)"', rapidVideoURLTxt)
-            if videoURL:
-                addVideo(req, videoURL+'&__referer__='+rapidVideoURL)
+    source = re.search(r'(\w+)_filescdn(\d*)', txt)
+    if source:
+        sourceURL = 'http://8video.tv/filescdn/?url=' + source.group()
+        sourceURLTxt = meta.load2(sourceURL, ref=url)
+        videoURL = re.search(r'https://www\.rapidvideo\.com/[^"]*', sourceURLTxt)
+        if videoURL:
+            addVideo(req, videoURL.group()+'&__referer__='+sourceURL)
 
 def page_8maple(req, url):
     conf.wget = conf.wget_noUA
@@ -639,6 +645,7 @@ def page_8maple(req, url):
                 addPage(req, pageURL, pageTitle, image=None, desc=None)
         else:
             page_8maple_filescdn(req, url)
+            page_8maple_openload(req, url)
 
 def page_ok(req, url):
     conf.ua = ''

@@ -40,7 +40,7 @@ def play(url, ref, cookies=None):
 
     xargs = ''
 
-    url, cookies = xsrc.getSource(url)
+    url, cookies = xsrc.getSource(url, ref=ref)
 
     if not url:
         print('\n[omxp][play] invalid url\n')

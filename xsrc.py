@@ -25,7 +25,7 @@ def parseParameters(url):
         return m.group(1), m.group(2)
     return url, None
 
-def getSource(url, key=None):
+def getSource(url, key=None, ref=None):
 
     if url == '':
         return None, None
@@ -56,7 +56,10 @@ def getSource(url, key=None):
     if xurl.getContentType(url) != 'text/html':
         return url, None
 
-    src, cookies = youtubedl.extractURL(url, key)
+    if ref and ref == url:
+        ref = None
+
+    src, cookies = youtubedl.extractURL(url, key, ref)
     if src:
         return src, cookies
 

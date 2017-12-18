@@ -127,10 +127,8 @@ def wget_refresh(url, local, options=None):
     if re.search(r'ERROR 503', output):
         parsed_uri = urlparse.urlparse(url)
         domain = '{uri.scheme}://{uri.netloc}'.format(uri=parsed_uri)
-        # Refresh: 8;URL=/cdn-cgi/l/chk_jschl?pass=1513576312.733-0MEHx8hbgG
         m = re.search(r'Refresh: (\d+);URL=(.*?)\n', output, re.DOTALL)
         if m:
-            print(m.group())
             time.sleep(float(m.group(1)))
             newURL = absURL(domain, m.group(2))
             cmd = '%s -O %s \'%s\' %s' %(conf.wget, local, newURL, options or '')
@@ -143,11 +141,17 @@ def wget(url, local, options=None):
     except:
         wget_refresh(url, local, options)
 
-def load2(url, local=None, options=None, cache=True):
+def load2(url, local=None, options=None, cache=True, ref=None):
 
     local = local or genLocal(url)
     if cache and os.path.exists(local) and not checkExpire(local):
         return readLocal(local)
+
+    if ref:
+        if options:
+            options = options + ' --referer='+ref
+        else:
+            options = '--referer='+ref
 
     wget(url, local, options)
     return readLocal(local)

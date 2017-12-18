@@ -165,7 +165,7 @@ def createSubprocess(url):
     print('\tret : %s' %(local))
     return local, None
 
-def extractURL(url, key=None):
+def extractURL(url, key=None, ref=None):
 
     if url.endswith(xdef.ytdlm3u):
         return createSubprocess(url)
@@ -179,6 +179,9 @@ def extractURL(url, key=None):
 
     if key:
         arg = '--video-password ' + key
+
+    if ref:
+        arg = '--referer ' + ref
 
     if arg:
         print('\targ : %s' %(arg or ''))
