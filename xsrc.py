@@ -6,6 +6,7 @@ import re
 import videomega
 import videowood
 import up2stream
+import rapidvideo
 import xuite
 import goodtv
 import youtubedl
@@ -19,52 +20,72 @@ def search(pattern, txt, flags=0):
         return m.group(1)
     return None
 
-def parseParameters(url):
-    m = re.search(r'(.*?)&ytdl_password=(.*?)$', url)
+def parseParameters(url, key, ref):
+
+    m = re.search(r'&__password__=(.*?)($|&__)', url)
     if m:
-        return m.group(1), m.group(2)
-    return url, None
+        key = m.group(1)
+
+    m = re.search(r'&__referer__=(.*?)($|&__)', url)
+    if m:
+        ref = m.group(1)
+
+    m = re.search(r'(.*?)&__', url)
+    if m:
+        url = m.group(1)
+
+    return url, key, ref
 
 def getSource(url, key=None, ref=None):
 
+    src = None
+    srcRef = None
+    cookies = None
+
     if url == '':
-        return None, None
+        src = None
 
-    if url[0] == '/':
-        return url, None
+    elif url[0] == '/':
+        src = url
 
-    if url[0:4] != 'http':
-        return None, None
+    elif url[0:4] != 'http':
+        src = None
 
-    url, key = parseParameters(url)
+    else:
 
-    if re.search('xuite.net', url):
-        return xuite.getSource(url, key), None
+        url, key, ref = parseParameters(url, key, ref)
 
-    if re.search('goodtv.org', url):
-        return goodtv.getSource(url), None
+        if re.search('xuite.net', url):
+            src = xuite.getSource(url, key)
 
-    if re.search('videomega.tv', url):
-        return videomega.getSource(url), None
+        elif re.search('goodtv.org', url):
+            src = goodtv.getSource(url)
 
-    if re.search('videowood.tv', url):
-        return videowood.getSource(url), None
+        elif re.search('videomega.tv', url):
+            src = videomega.getSource(url)
 
-    if re.search('up2stream.com', url):
-        return up2stream.getSource(url), None
+        elif re.search('up2stream.com', url):
+            src = up2stream.getSource(url)
 
-    if xurl.getContentType(url) != 'text/html':
-        return url, None
+        elif re.search('rapidvideo.com', url):
+            src = rapidvideo.getSource(url, ref=ref)
+            srcRef = url
 
-    if ref and ref == url:
-        ref = None
+        elif xurl.getContentType(url) != 'text/html':
+            src = url
 
-    src, cookies = youtubedl.extractURL(url, key, ref)
+        else:
+            src, cookies = youtubedl.extractURL(url, key=key, ref=ref)
+            srcRef = url
+
+    if not src:
+        src = xsrc.getIframeSrc(url)
+
     if src:
-        return src, cookies
+        return src, cookies, srcRef or ref
 
     raise Exception('GetSourceError')
-    return None, None
+    return None, None, None
 
 def getSUB(url):
     if re.search(r'youtube.com/watch\?v=', url):

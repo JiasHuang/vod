@@ -57,7 +57,7 @@ def darg(d, *arg):
         return d[arg[0]].encode('utf8')
     return [d[a].encode('utf8') for a in arg]
 
-def addEntry(req, link, title, image=None, desc=None, password=None, video=True):
+def addEntry(req, link, title, image=None, desc=None, password=None, video=True, referer=None):
     global entryCnt, entryVideos
     entryCnt = entryCnt + 1
     req.write('\n<!--Entry%s-->\n' %(entryCnt))
@@ -71,8 +71,10 @@ def addEntry(req, link, title, image=None, desc=None, password=None, video=True)
         req.write('<!--desc="%s"-->\n' %(desc))
     if video:
         if password:
-            password = '&ytdl_password='+password
-        source = '%s%s' %(link, password or '')
+            password = '&__password__='+password
+        if referer:
+            referer = '&__referer__='+referer
+        source = '%s%s%s' %(link, password or '', referer or '')
         anchor = 'href="view.py?v=%s" target="playVideo"' %(source)
         entryVideos.append(source)
     else:
@@ -96,12 +98,12 @@ def addPage(req, link, title, image=None, desc=None):
         link = re.sub('//', 'http://', link)
     addEntry(req, link, title, image, desc, video=False)
 
-def addVideo(req, link, title=None, image=None, desc=None, password=None):
+def addVideo(req, link, title=None, image=None, desc=None, password=None, referer=None):
     if not link:
         return
     if re.search(r'^//', link):
         link = re.sub('//', 'http://', link)
-    addEntry(req, link, title or link, image or meta.getImage(link) or 'Movies-icon.png', desc, password)
+    addEntry(req, link, title or link, image or meta.getImage(link) or 'Movies-icon.png', desc, password, referer=referer)
 
 def getLink(site, vid):
     if site == 'youtube':
@@ -609,25 +611,17 @@ def page_gdrive(req, url):
             meta.comment(req, 'exception in page_gdrive')
             return
 
-def page_8maple_openload(req, url):
+def page_8maple_video(req, url):
     txt = meta.load2(url)
-    source = meta.search(r'(\w+)_openload(\d*)', txt)
-    if source:
-        sourceURL = 'http://8video.tv/openload/?url' + source.group()
+    source = []
+    for m in re.finditer(r'(\w+)_(openload|filescdn)(\d*)', txt):
+        source.append(m.groups())
+    for s in set(source):
+        sourceURL = 'http://8video.tv/%s/?url=%s_%s%s' %(s[1], s[0], s[1], s[2] or '')
         sourceURLTxt = meta.load2(sourceURL, ref=url)
-        videoURL = re.search(r'https://openload\.co/[^"]*', sourceURLTxt)
+        videoURL = re.search(r'innerHTML=\'<iframe .*? src="([^"]*)"', sourceURLTxt)
         if videoURL:
-            addVideo(req, videoURL.group()+'&__referer__='+sourceURL)
-
-def page_8maple_filescdn(req, url):
-    txt = meta.load2(url)
-    source = re.search(r'(\w+)_filescdn(\d*)', txt)
-    if source:
-        sourceURL = 'http://8video.tv/filescdn/?url=' + source.group()
-        sourceURLTxt = meta.load2(sourceURL, ref=url)
-        videoURL = re.search(r'https://www\.rapidvideo\.com/[^"]*', sourceURLTxt)
-        if videoURL:
-            addVideo(req, videoURL.group()+'&__referer__='+sourceURL)
+            addVideo(req, videoURL.group(1), referer=sourceURL)
 
 def page_8maple(req, url):
     conf.wget = conf.wget_noUA
@@ -644,8 +638,7 @@ def page_8maple(req, url):
                 pageURL, pageTitle = m.group(1), m.group(2)
                 addPage(req, pageURL, pageTitle, image=None, desc=None)
         else:
-            page_8maple_filescdn(req, url)
-            page_8maple_openload(req, url)
+            page_8maple_video(req, url)
 
 def page_ok(req, url):
     conf.ua = ''

@@ -132,9 +132,11 @@ def post(url, payload, local=None):
     except:
         return ''
 
-def load2(url, local=None, options=None):
+def load2(url, local=None, options=None, ref=None):
     url = absURL(url)
     local = local or xdef.workdir+'vod_load_'+hashlib.md5(url).hexdigest()
+    if ref:
+        options = (options or '') + ' --referer='+ref
     wget(url, local, options)
     return readLocal(local)
 

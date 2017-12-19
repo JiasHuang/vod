@@ -49,7 +49,7 @@ def play(url, ref):
 
     xargs = ''
 
-    url, cookies = xsrc.getSource(url, ref=ref)
+    url, cookies, ref = xsrc.getSource(url, ref=ref)
 
     if not url:
         print('\n[ffplay][play] invalid url')

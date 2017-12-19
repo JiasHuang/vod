@@ -21,14 +21,10 @@ def runCmd(cmd):
     else:
         subprocess.Popen(cmd, shell=True).communicate()
 
-def playURL(url, opt=None, ref=''):
+def playURL(url, opt=None):
     if not os.path.exists(conf.vod):
         return
-    videoURLs = re.split('&__referer__=', url)
-    if len(videoURLs) > 1:
-        url = videoURLs[0]
-        ref = videoURLs[1]
-    cmd = 'python -u %s \'%s\' \'%s\' %s | tee -a %s' %(conf.vod, url, ref, opt or '', conf.log)
+    cmd = 'python -u %s \'%s\' %s | tee -a %s' %(conf.vod, url, opt or '', conf.log)
     if os.path.exists('/usr/bin/xterm'):
         subprocess.Popen(['/usr/bin/xterm', '-geometry', '80x24-50+50', '-display', ':0', '-e', cmd])
     else:

@@ -178,10 +178,10 @@ def extractURL(url, key=None, ref=None):
     local = xdef.workdir+'vod_list_'+hashlib.md5(url+fmt).hexdigest()+'.json'
 
     if key:
-        arg = '--video-password ' + key
+        arg = (arg or '') + ' --video-password ' + key
 
     if ref:
-        arg = '--referer ' + ref
+        arg = (arg or '') + ' --referer ' + ref
 
     if arg:
         print('\targ : %s' %(arg or ''))

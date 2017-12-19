@@ -5,6 +5,7 @@ import os
 import re
 import urllib
 import sys
+import traceback
 
 import xarg
 import xdef
@@ -56,11 +57,8 @@ def main():
         xplay.playURL(url, ref or url)
         return
     except:
-        print(sys.exc_info()[0])
-
-    iframeSrc = xsrc.getIframeSrc(url)
-    if iframeSrc:
-        xplay.playURL(iframeSrc, iframeSrc)
+        print(sys.exc_info())
+        traceback.print_tb(sys.exc_info()[2])
 
     return
 

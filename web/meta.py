@@ -146,13 +146,8 @@ def load2(url, local=None, options=None, cache=True, ref=None):
     local = local or genLocal(url)
     if cache and os.path.exists(local) and not checkExpire(local):
         return readLocal(local)
-
     if ref:
-        if options:
-            options = options + ' --referer='+ref
-        else:
-            options = '--referer='+ref
-
+        options = (options or '') + ' --referer='+ref
     wget(url, local, options)
     return readLocal(local)
 
