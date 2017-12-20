@@ -134,7 +134,7 @@ def wget_refresh(url, local, options=None):
             time.sleep(float(m.group(1)))
             newURL = absURL(domain, m.group(2))
             cmd = '%s -O %s \'%s\' %s' %(conf.wget, local, newURL, options or '')
-            os.system(cmd)
+            subprocess.check_output(cmd, shell=True)
 
 def wget(url, local, options=None):
     cmd = '%s -O %s \'%s\' %s' %(conf.wget, local, url, options or '')
@@ -144,12 +144,11 @@ def wget(url, local, options=None):
         wget_refresh(url, local, options)
 
 def load2(url, local=None, options=None, cache=True, ref=None):
-
     local = local or genLocal(url)
     if cache and os.path.exists(local) and not checkExpire(local):
         return readLocal(local)
     if ref:
-        options = (options or '') + ' --referer='+ref
+        options = ' '.join([options or '', '--referer='+ref])
     wget(url, local, options)
     return readLocal(local)
 

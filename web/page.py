@@ -625,11 +625,13 @@ def page_8maple_video(req, url):
 
 def page_8maple(req, url):
     conf.wget = conf.wget_noUA
+    conf.wget = conf.wget + '--header=\'Accept-Language:zh-TW,zh;q=0.9,en-US;q=0.8,en;q=0.7\' '
+    conf.wget = conf.wget + '--save-cookies %s --load-cookies %s ' %(conf.cookie, conf.cookie)
     parsed_uri = urlparse.urlparse(url)
     domain = '{uri.scheme}://{uri.netloc}'.format(uri=parsed_uri)
     meta.load2(domain)
     if re.search(r'/category/', url):
-        meta.findVideoLink(req, url, showPage=True, showImage=True, ImageExt=None)
+        meta.findVideoLink(req, url, showPage=True, showImage=False, ImageExt=None)
     else:
         txt = meta.load2(url)
         lists = meta.search(r'<tbody>(.*?)</table>', txt, re.DOTALL|re.MULTILINE)
