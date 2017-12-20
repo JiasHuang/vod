@@ -165,7 +165,7 @@ def createSubprocess(url):
     print('\tret : %s' %(local))
     return local, None
 
-def extractURL(url, key=None, ref=None):
+def extractURL(url, key=None, ref=None, dontParseJson=False):
 
     if url.endswith(xdef.ytdlm3u):
         return createSubprocess(url)
@@ -173,27 +173,26 @@ def extractURL(url, key=None, ref=None):
     print('\n[ytdl][extractURL]\n')
 
     url = redirectURL(url)
-    arg = None
+    arg = '-i -j --no-playlist --no-warnings'
     fmt = getFormat(url)
     local = xdef.workdir+'vod_list_'+hashlib.md5(url+fmt).hexdigest()+'.json'
 
     if key:
-        arg = (arg or '') + ' --video-password ' + key
+        arg = ' '.join([arg, '--video-password='+key])
 
     if ref:
-        arg = (arg or '') + ' --referer ' + ref
+        arg = ' '.join([arg, '--referer=\'%s\'' %(ref)])
 
-    if arg:
-        print('\targ : %s' %(arg or ''))
-
-    if fmt:
-        print('\tfmt : %s' %(fmt or ''))
+    print('\targ : %s' %(arg or ''))
+    print('\tfmt : %s' %(fmt or ''))
 
     if os.path.exists(local) and not xurl.checkExpire(local):
         print('\tret : %s' %(local))
+        if dontParseJson:
+            return local
         return parseJson(local)
 
-    cmd = '%s %s -f \"%s\" -i -j --no-playlist %s \'%s\' > %s' %(xdef.ytdlcmd(), xdef.ytdlarg, fmt, arg or '', url, local)
+    cmd = '%s -f \'%s\' --user-agent \'%s\' %s \'%s\' > %s' %(xdef.ytdlcmd(), fmt, xdef.ua, arg, url, local)
 
     try:
         start_time = timeit.default_timer()
@@ -205,6 +204,9 @@ def extractURL(url, key=None, ref=None):
 
     print('\tsec : %s' %(str(elapsed)))
     print('\tret : %s' %(local))
+
+    if dontParseJson:
+        return local
 
     return parseJson(local)
 

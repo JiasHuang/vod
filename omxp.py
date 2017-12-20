@@ -38,7 +38,7 @@ def setAct(act, val):
 
 def play(url, ref, cookies=None):
 
-    xargs = ''
+    xargs = '--user-agent=\'%s\'' %(xdef.ua)
 
     url, cookies, ref = xsrc.getSource(url, ref=ref)
 
@@ -50,7 +50,7 @@ def play(url, ref, cookies=None):
         setAct('stop', None)
 
     if cookies:
-        xargs += ' --avdict headers:\"Cookie: %s\"' %(cookies)
+        xargs = ' '.join([xargs, '--avdict headers:\"Cookie: %s\"' %(cookies)])
 
     cmd = '%s %s \'%s\' 2>&1 | tee %s' %(xdef.omxp, xargs, url, xdef.log)
     print('\n[omx][cmd]\n\n\t'+cmd+'\n')

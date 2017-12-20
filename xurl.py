@@ -37,6 +37,8 @@ def saveLocal(local, text, buffering=-1):
     return
 
 def checkExpire(local):
+    if os.path.getsize(local) <= 0:
+        return True
     t0 = int(os.path.getmtime(local))
     t1 = int(time.time())
     if (t1 - t0) > 14400:
@@ -72,9 +74,6 @@ def absURL(url, site=None):
 
 def wget(url, local, options=None):
     verbose(url, local, 'wget')
-    if os.path.exists(local):
-        verbose_status('already exist')
-        return
     cmd = '%s -U \'%s\' -O %s \'%s\' %s' %(xdef.wget, xdef.ua, local, url, options or '')
     os.system(cmd)
     verbose_status('done')
@@ -135,6 +134,8 @@ def post(url, payload, local=None):
 def load2(url, local=None, options=None, ref=None):
     url = absURL(url)
     local = local or xdef.workdir+'vod_load_'+hashlib.md5(url).hexdigest()
+    if os.path.exists(local) and not checkExpire(local):
+        return readLocal(local)
     if ref:
         options = (options or '') + ' --referer='+ref
     wget(url, local, options)

@@ -56,6 +56,8 @@ def saveLocal(local, text, buffering=-1):
     return
 
 def checkExpire(local):
+    if os.path.getsize(local) <= 0:
+        return True
     t0 = int(os.path.getmtime(local))
     t1 = int(time.time())
     if (t1 - t0) > 3600:

@@ -7,6 +7,7 @@ import videomega
 import videowood
 import up2stream
 import rapidvideo
+import odnoklassniki
 import xuite
 import goodtv
 import youtubedl
@@ -71,6 +72,9 @@ def getSource(url, key=None, ref=None):
             src = rapidvideo.getSource(url, ref=ref)
             srcRef = url
 
+        elif re.search('ok.ru', url):
+            src = odnoklassniki.getSource(url)
+
         elif xurl.getContentType(url) != 'text/html':
             src = url
 
@@ -79,7 +83,7 @@ def getSource(url, key=None, ref=None):
             srcRef = url
 
     if not src:
-        src = xsrc.getIframeSrc(url)
+        src = getIframeSrc(url)
 
     if src:
         return src, cookies, srcRef or ref
