@@ -56,6 +56,8 @@ def saveLocal(local, text, buffering=-1):
     return
 
 def checkExpire(local):
+    if not os.path.exists(local):
+        return True
     if os.path.getsize(local) <= 0:
         return True
     t0 = int(os.path.getmtime(local))
@@ -76,7 +78,7 @@ def genLocal(url, prefix=None, suffix=None):
 def load(url, local=None, headers=None, cache=True):
 
     local = local or genLocal(url)
-    if cache and os.path.exists(local) and not checkExpire(local):
+    if cache and not checkExpire(local):
         return readLocal(local)
 
     opener = urllib2.build_opener()
@@ -106,7 +108,7 @@ def load(url, local=None, headers=None, cache=True):
 def post(url, payload, local=None, headers=None, cache=True):
 
     local = local or genLocal(url)
-    if cache and os.path.exists(local) and not checkExpire(local):
+    if cache and not checkExpire(local):
         return readLocal(local)
 
     opener = urllib2.build_opener()
@@ -124,32 +126,32 @@ def post(url, payload, local=None, headers=None, cache=True):
     except:
         return ''
 
-def wget_refresh(url, local, options=None):
-    output = readLocal(conf.log_wget)
-    if re.search(r'ERROR 503', output):
-        parsed_uri = urlparse.urlparse(url)
-        domain = '{uri.scheme}://{uri.netloc}'.format(uri=parsed_uri)
-        m = re.search(r'Refresh: (\d+);URL=(.*?)\n', output, re.DOTALL)
-        if m:
-            time.sleep(float(m.group(1)))
-            newURL = absURL(domain, m.group(2))
-            cmd = '%s -O %s \'%s\' %s' %(conf.wget, local, newURL, options or '')
-            subprocess.check_output(cmd, shell=True)
-
-def wget(url, local, options=None):
-    cmd = '%s -O %s \'%s\' %s' %(conf.wget, local, url, options or '')
+def wget(url, local, options=None, cmd=None):
+    cmd = '%s -o %s -O %s %s \'%s\'' %(cmd or conf.wget, conf.log_wget, local, options or '', url)
     try:
         subprocess.check_output(cmd, shell=True)
     except:
-        wget_refresh(url, local, options)
+        output = readLocal(conf.log_wget)
+        if re.search(r'ERROR 503', output):
+            m = re.search(r'Refresh: (\d+);URL=(.*?)\n', output, re.DOTALL)
+            if m:
+                time.sleep(float(m.group(1)))
+                parsed_uri = urlparse.urlparse(url)
+                domain = '{uri.scheme}://{uri.netloc}'.format(uri=parsed_uri)
+                newURL = absURL(domain, m.group(2))
+                cmd = '%s -O %s %s \'%s\'' %(cmd or conf.wget, local, options or '', newURL)
+                try:
+                    subprocess.check_output(cmd, shell=True)
+                except:
+                    print('Exception: '+cmd)
 
-def load2(url, local=None, options=None, cache=True, ref=None):
+def load2(url, local=None, options=None, cache=True, ref=None, cmd=None):
     local = local or genLocal(url)
-    if cache and os.path.exists(local) and not checkExpire(local):
+    if cache and not checkExpire(local):
         return readLocal(local)
     if ref:
         options = ' '.join([options or '', '--referer='+ref])
-    wget(url, local, options)
+    wget(url, local, options, cmd)
     return readLocal(local)
 
 def getContentType(url):
@@ -201,10 +203,10 @@ def comment(req, msg):
     req.write('\n-->\n')
     return
 
-def findVideoLink(req, url, showPage=False, showImage=False, ImageSrc='src', ImageExt='jpg', ImagePattern=None):
+def findVideoLink(req, url, showPage=False, showImage=False, ImageSrc='src', ImageExt='jpg', ImagePattern=None, cmd=None):
     parsed_uri = urlparse.urlparse(url)
     domain = '{uri.scheme}://{uri.netloc}'.format(uri=parsed_uri)
-    txt = load2(url)
+    txt = load2(url, cmd=cmd)
     for m in re.finditer(r'<a .*?</a>', txt, re.DOTALL):
         link = search(r'href="([^"]*)"', m.group(0))
         title = search(r'title="([^"]*)"', m.group(0))

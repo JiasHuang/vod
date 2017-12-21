@@ -612,28 +612,27 @@ def page_gdrive(req, url):
             return
 
 def page_8maple_video(req, url):
-    txt = meta.load2(url)
+    cmd = 'wget -S --save-cookies %s --load-cookies %s --header=\'%s\'' %(conf.cookie, conf.cookie, conf.lang)
+    txt = meta.load2(url, cmd=cmd)
     source = []
     for m in re.finditer(r'(\w+)_(openload|filescdn)(\d*)', txt):
         source.append(m.groups())
     for s in set(source):
         sourceURL = 'http://8video.tv/%s/?url=%s_%s%s' %(s[1], s[0], s[1], s[2] or '')
-        sourceURLTxt = meta.load2(sourceURL, ref=url)
+        sourceURLTxt = meta.load2(sourceURL, ref=url, cmd=cmd)
         videoURL = re.search(r'innerHTML=\'<iframe .*? src="([^"]*)"', sourceURLTxt)
         if videoURL:
             addVideo(req, videoURL.group(1), referer=sourceURL)
 
 def page_8maple(req, url):
-    conf.wget = conf.wget_noUA
-    conf.wget = conf.wget + '--header=\'Accept-Language:zh-TW,zh;q=0.9,en-US;q=0.8,en;q=0.7\' '
-    conf.wget = conf.wget + '--save-cookies %s --load-cookies %s ' %(conf.cookie, conf.cookie)
+    cmd = 'wget -S --save-cookies %s --load-cookies %s --header=\'%s\'' %(conf.cookie, conf.cookie, conf.lang)
     parsed_uri = urlparse.urlparse(url)
     domain = '{uri.scheme}://{uri.netloc}'.format(uri=parsed_uri)
-    meta.load2(domain)
+    meta.load2(domain, cmd=cmd)
     if re.search(r'/category/', url):
-        meta.findVideoLink(req, url, showPage=True, showImage=False, ImageExt=None)
+        meta.findVideoLink(req, url, showPage=True, showImage=False, ImageExt=None, cmd=cmd)
     else:
-        txt = meta.load2(url)
+        txt = meta.load2(url, cmd=cmd)
         lists = meta.search(r'<tbody>(.*?)</table>', txt, re.DOTALL|re.MULTILINE)
         if lists:
             for m in re.finditer(r'<a href="([^"]*)">(.*?)</a>', lists):
@@ -642,10 +641,9 @@ def page_8maple(req, url):
         else:
             page_8maple_video(req, url)
 
-def page_ok(req, url):
-    conf.ua = ''
-    txt = meta.load2(url)
-    meta.findVideoLink(req, url, showImage=True, ImageExt=None)
+def page_odnoklassniki(req, url):
+    cmd = 'wget'
+    return meta.findVideoLink(req, url, showImage=True, ImageExt=None, cmd=cmd)
 
 def savePageList():
     global entryVideos
@@ -690,7 +688,7 @@ def page_core(req, url):
     elif re.search(r'8maple', url):
         page_8maple(req, url)
     elif re.search(r'ok.ru', url):
-        page_ok(req, url)
+        page_odnoklassniki(req, url)
     else:
         page_def(req, url)
     onPageEnd(req)
