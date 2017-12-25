@@ -192,7 +192,7 @@ def extractURL(url, key=None, ref=None, dontParseJson=False):
             return local
         return parseJson(local)
 
-    cmd = '%s -f \'%s\' --user-agent \'%s\' %s \'%s\' > %s' %(xdef.ytdlcmd(), fmt, xdef.ua, arg, url, local)
+    cmd = '%s -f \'%s\' --user-agent \'%s\' %s \'%s\' > %s' %(xdef.ytdlcmd(), fmt, xurl.defvals.ua, arg, url, local)
 
     try:
         start_time = timeit.default_timer()

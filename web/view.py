@@ -8,7 +8,7 @@ import urllib
 
 import page
 import conf
-import meta
+import xurl
 
 from mod_python import util, Cookie
 
@@ -71,9 +71,9 @@ def metadata(name, value=None):
     if not local:
         return ''
     if value and len(value) > 0:
-        meta.saveLocal(local, value, 0)
+        xurl.saveLocal(local, value, 0)
     else:
-        value = meta.readLocal(local, 0)
+        value = xurl.readLocal(local, 0)
     return value
 
 def handleCmd(cmd):

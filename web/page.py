@@ -6,7 +6,7 @@ import os
 import urlparse
 
 import meta
-import conf
+import xurl
 
 entryCnt = 0
 entryVideos = []
@@ -43,13 +43,13 @@ def renderDIR(req, d):
     req.write(html[1])
 
 def load(url):
-    return meta.load2(url)
+    return xurl.load2(url)
 
 # FIXME
 def loadYouTube(url):
     txt = load(url)
     if not re.search(r'ytInitialData', txt):
-        txt = meta.load2(url, cache=False)
+        txt = xurl.load2(url, cache=False)
     return txt
 
 def darg(d, *arg):
@@ -139,8 +139,8 @@ def addNextPage(req, label, s, q, x, isSelected=False):
 
 def addYouTubeNextPage(req, q, url):
     headers = [('cookie', 'PREF=f1=50000000&f6=1408&f5=30&hl=en')]
-    local = meta.genLocal(url, suffix='.old')
-    txt = meta.load(url, local, headers)
+    local = xurl.genLocal(url, suffix='.old')
+    txt = xurl.load(url, local, headers)
     pages = meta.search(r'search-pager(.*?)</div>', txt, re.DOTALL|re.MULTILINE)
     if pages:
         req.write('\n<!--NextPage-->\n')
@@ -225,7 +225,7 @@ def search_xuite(req, q):
     return
 
 def search_dailymotion(req, q):
-    url = 'https://api.dailymotion.com/videos/?search="'+q+'"&limit=100'
+    url = 'https://api.dailymotion.com/videos/?search="'+q+'"&limit=100&fields=id,title,duration'
     data = meta.parseJSON(load(url))
     if 'list' not in data:
         return
@@ -233,7 +233,11 @@ def search_dailymotion(req, q):
         try:
             prefix = 'http://www.dailymotion.com/video/'
             vid, title = darg(d, 'id', 'title')
-            addVideo(req, prefix+vid, title)
+            seconds = d['duration']
+            m, s = divmod(seconds, 60)
+            h, m = divmod(m, 60)
+            desc = '%d:%02d:%02d' %(h, m, s)
+            addVideo(req, prefix+vid, title, desc=desc)
         except:
             continue
     return
@@ -267,10 +271,8 @@ def page_xuite(req, url):
         next_page_links = meta.search(r'<!-- Numbered page links -->(.*?)<!-- Next page link -->', \
             load(url), re.DOTALL|re.MULTILINE)
         if next_page_links:
-            parsed_uri = urlparse.urlparse(url)
-            domain = '{uri.scheme}://{uri.netloc}'.format(uri=parsed_uri)
             for m in re.finditer('href="([^"]*)">', next_page_links):
-                meta.findVideo(req, meta.absURL(domain, m.group(1)))
+                meta.findVideo(req, xurl.absURL(m.group(1)))
 
 def page_xuiteDIR(req, url):
 
@@ -337,10 +339,8 @@ def page_iqiyi(req, url):
     if re.search(r'list.', url):
         pages = []
         pages.append(url)
-        parsed_uri = urlparse.urlparse(url)
-        domain = '{uri.scheme}://{uri.netloc}'.format(uri=parsed_uri)
         for m in re.finditer(r'<a data-key.*? href="([^"]*)"', load(url), re.DOTALL):
-            page = meta.absURL(domain, m.group(1))
+            page = xurl.absURL(m.group(1))
             if page not in pages:
                 pages.append(page)
         for page in pages[0:5]:
@@ -404,23 +404,21 @@ def page_youku(req, url):
     return
 
 def page_lovetv(req, url):
-    parsed_uri = urlparse.urlparse(url)
-    domain = '{uri.scheme}://{uri.netloc}'.format(uri=parsed_uri)
     if re.search(r'special-drama-list.html$', url):
         for m in re.finditer(r'<a href="([^"]*)">([^<]*)</a>', load(url)):
             meta.comment(req, m.group())
             if re.search(r'special-drama-([0-9-]+).html$', m.group(1)):
-                addPage(req, meta.absURL(domain, m.group(1)), m.group(2))
+                addPage(req, xurl.absURL(m.group(1)), m.group(2))
     elif re.search(r'(drama-list.html|/)$', url):
         for m in re.finditer(r'<a href=[\'|"]([^\'"]*)[\'|"]>([^<]*)</a>', load(url)):
             meta.comment(req, m.group())
             if re.search(r'-list', m.group(1)):
-                addPage(req, meta.absURL(domain, m.group(1)), m.group(2))
+                addPage(req, xurl.absURL(m.group(1)), m.group(2))
     elif re.search(r'-list', url):
         for m in re.finditer(r'<a href="([^"]*)">([^<]*)</a>', load(url)):
             meta.comment(req, m.group())
             if re.search(r'-ep([0-9]+).html$', m.group(1)):
-                addPage(req, meta.absURL(domain, m.group(1)), m.group(2))
+                addPage(req, xurl.absURL(m.group(1)), m.group(2))
     else:
         video_types = {'1':'youtube', '2':'dailymotion', '3':'openload', '21':'googledrive'}
         txt = load(url)
@@ -612,27 +610,27 @@ def page_gdrive(req, url):
             return
 
 def page_8maple_video(req, url):
-    cmd = 'wget -S --save-cookies %s --load-cookies %s --header=\'%s\'' %(conf.cookie, conf.cookie, conf.lang)
-    txt = meta.load2(url, cmd=cmd)
+    cmd = 'wget -S %s %s' %(xurl.defvals.wget_opt_cookie, xurl.defvals.wget_opt_lang)
+    txt = xurl.load2(url, cmd=cmd)
     source = []
     for m in re.finditer(r'(\w+)_(openload|filescdn)(\d*)', txt):
         source.append(m.groups())
     for s in set(source):
         sourceURL = 'http://8video.tv/%s/?url=%s_%s%s' %(s[1], s[0], s[1], s[2] or '')
-        sourceURLTxt = meta.load2(sourceURL, ref=url, cmd=cmd)
+        sourceURLTxt = xurl.load2(sourceURL, ref=url, cmd=cmd)
         videoURL = re.search(r'innerHTML=\'<iframe .*? src="([^"]*)"', sourceURLTxt)
         if videoURL:
             addVideo(req, videoURL.group(1), referer=sourceURL)
 
 def page_8maple(req, url):
-    cmd = 'wget -S --save-cookies %s --load-cookies %s --header=\'%s\'' %(conf.cookie, conf.cookie, conf.lang)
-    parsed_uri = urlparse.urlparse(url)
-    domain = '{uri.scheme}://{uri.netloc}'.format(uri=parsed_uri)
-    meta.load2(domain, cmd=cmd)
+    cmd = 'wget -S %s %s' %(xurl.defvals.wget_opt_cookie, xurl.defvals.wget_opt_lang)
+    txt = xurl.load2('http://8maple.ru', cmd=cmd)
+    if len(txt) == 0:
+        return
     if re.search(r'/category/', url):
         meta.findVideoLink(req, url, showPage=True, showImage=False, ImageExt=None, cmd=cmd)
     else:
-        txt = meta.load2(url, cmd=cmd)
+        txt = xurl.load2(url, cmd=cmd)
         lists = meta.search(r'<tbody>(.*?)</table>', txt, re.DOTALL|re.MULTILINE)
         if lists:
             for m in re.finditer(r'<a href="([^"]*)">(.*?)</a>', lists):
@@ -647,7 +645,7 @@ def page_odnoklassniki(req, url):
 
 def savePageList():
     global entryVideos
-    local = '/tmp/vod_list_pagelist_%s' %(str(os.getpid() % 100))
+    local = '/var/tmp/vod_list_pagelist_%s' %(str(os.getpid() % 100))
     fd = open(local, 'w')
     for v in entryVideos:
         fd.write(v+'\n')
@@ -663,6 +661,7 @@ def onPageEnd(req):
     meta.showDebugLog(req)
 
 def page_core(req, url):
+    xurl.setDomain(url)
     if re.search(r'litv', url):
         page_litv(req, url);
     elif re.search(r'iqiyi', url):

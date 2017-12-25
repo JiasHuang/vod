@@ -16,8 +16,8 @@ import gzip
 
 import conf
 import page
+import xurl
 
-gDebugLog = []
 itemResult = []
 
 class defs:
@@ -41,136 +41,8 @@ def search(pattern, txt, flags=0):
         return m.group(1)
     return None
 
-def readLocal(local, buffering=-1):
-    if os.path.exists(local):
-        fd = open(local, 'r', buffering)
-        txt = fd.read()
-        fd.close()
-        return txt
-    return ''
-
-def saveLocal(local, text, buffering=-1):
-    fd = open(local, 'w', buffering)
-    fd.write(text)
-    fd.close()
-    return
-
-def checkExpire(local):
-    if not os.path.exists(local):
-        return True
-    if os.path.getsize(local) <= 0:
-        return True
-    t0 = int(os.path.getmtime(local))
-    t1 = int(time.time())
-    if (t1 - t0) > 3600:
-        return True
-    return False
-
-def dict2str(adict):
-    return ''.join('{}{}'.format(key, val) for key, val in adict.items())
-
-def genLocal(url, prefix=None, suffix=None):
-    global gDebugLog
-    local = conf.workdir+(prefix or 'vod_load_')+hashlib.md5(url).hexdigest()+(suffix or '')
-    gDebugLog.append('%s -> %s' %(url, local))
-    return local
-
-def load(url, local=None, headers=None, cache=True):
-
-    local = local or genLocal(url)
-    if cache and not checkExpire(local):
-        return readLocal(local)
-
-    opener = urllib2.build_opener()
-    opener.addheaders = [('User-agent', conf.ua)]
-
-    if headers:
-        opener.addheaders += headers
-
-    try:
-        f = opener.open(url, None, 10) # timeout=10
-        if f.info().get('Content-Encoding') == 'gzip':
-            buf = StringIO(f.read())
-            txt = gzip.GzipFile(fileobj=buf).read()
-        else:
-            txt = f.read()
-        saveLocal(local, txt)
-        return txt
-    except urllib2.HTTPError, e:
-        return 'Exception HTTPError: ' + str(e.code)
-    except urllib2.URLError, e:
-        return 'Exception URLError: ' + str(e.reason)
-    except httplib.HTTPException, e:
-        return 'Exception HTTPException'
-    except :
-        return 'Exception'
-
-def post(url, payload, local=None, headers=None, cache=True):
-
-    local = local or genLocal(url)
-    if cache and not checkExpire(local):
-        return readLocal(local)
-
-    opener = urllib2.build_opener()
-    opener.addheaders = [('User-agent', conf.ua)]
-
-    if headers:
-        opener.addheaders += headers
-
-    data = urllib.urlencode(payload)
-    try:
-        f = opener.open(url, data)
-        txt = f.read()
-        saveLocal(local, txt)
-        return txt
-    except:
-        return ''
-
-def wget(url, local, options=None, cmd=None):
-    cmd = '%s -o %s -O %s %s \'%s\'' %(cmd or conf.wget, conf.log_wget, local, options or '', url)
-    try:
-        subprocess.check_output(cmd, shell=True)
-    except:
-        output = readLocal(conf.log_wget)
-        if re.search(r'ERROR 503', output):
-            m = re.search(r'Refresh: (\d+);URL=(.*?)\n', output, re.DOTALL)
-            if m:
-                time.sleep(float(m.group(1)))
-                parsed_uri = urlparse.urlparse(url)
-                domain = '{uri.scheme}://{uri.netloc}'.format(uri=parsed_uri)
-                newURL = absURL(domain, m.group(2))
-                cmd = '%s -O %s %s \'%s\'' %(cmd or conf.wget, local, options or '', newURL)
-                try:
-                    subprocess.check_output(cmd, shell=True)
-                except:
-                    print('Exception: '+cmd)
-
-def load2(url, local=None, options=None, cache=True, ref=None, cmd=None):
-    local = local or genLocal(url)
-    if cache and not checkExpire(local):
-        return readLocal(local)
-    if ref:
-        options = ' '.join([options or '', '--referer='+ref])
-    wget(url, local, options, cmd)
-    return readLocal(local)
-
-def getContentType(url):
-    res = urllib.urlopen(url)
-    info = res.info()
-    res.close()
-    return info.type
-
-def absURL(domain, url):
-    if re.search(r'^//', url):
-        return 'http:'+url
-    if re.search(r'^/', url):
-        return domain+url
-    if not re.search(r'^http', url):
-        return domain+'/'+url
-    return url
-
 def findPoster(link):
-    return search(r'poster="([^"]*)"', load2(link))
+    return search(r'poster="([^"]*)"', xurl.load2(link))
 
 def getImage(link):
 
@@ -204,9 +76,7 @@ def comment(req, msg):
     return
 
 def findVideoLink(req, url, showPage=False, showImage=False, ImageSrc='src', ImageExt='jpg', ImagePattern=None, cmd=None):
-    parsed_uri = urlparse.urlparse(url)
-    domain = '{uri.scheme}://{uri.netloc}'.format(uri=parsed_uri)
-    txt = load2(url, cmd=cmd)
+    txt = xurl.load2(url, cmd=cmd)
     for m in re.finditer(r'<a .*?</a>', txt, re.DOTALL):
         link = search(r'href="([^"]*)"', m.group(0))
         title = search(r'title="([^"]*)"', m.group(0))
@@ -221,8 +91,8 @@ def findVideoLink(req, url, showPage=False, showImage=False, ImageSrc='src', Ima
             if parsed_link.path == '/':
                 continue
         if link and title and image:
-            link = absURL(domain, link)
-            image = absURL(domain, image)
+            link = xurl.absURL(link)
+            image = xurl.absURL(image)
             if showPage == False:
                 page.addVideo(req, link, title, image)
             elif showImage == True:
@@ -233,7 +103,7 @@ def findVideoLink(req, url, showPage=False, showImage=False, ImageSrc='src', Ima
 def findImageLink(req, url, unquote=False, showPage=False):
     parsed_uri = urlparse.urlparse(url)
     domain = '{uri.scheme}://{uri.netloc}'.format(uri=parsed_uri)
-    txt = load2(url)
+    txt = xurl.load2(url)
     objs = []
     for m in re.finditer(r'<a\s.*?</a>', txt, re.DOTALL|re.MULTILINE):
         link = search(r'href\s*=\s*"([^"]*)"', m.group(0))
@@ -242,9 +112,6 @@ def findImageLink(req, url, unquote=False, showPage=False):
         if link and image:
             if unquote == True:
                 link = urllib.unquote(link)
-            link = absURL(domain, link)
-            if urlparse.urlparse(link).path.rstrip('/') == '':
-                continue
             if not req:
                 objs.append(entryObj(link, title or link, image))
                 continue
@@ -263,7 +130,7 @@ def findPage(req, url, showImage=False):
 
 def findLink(req, url):
     link = ''
-    txt = load2(url)
+    txt = xurl.load2(url)
     for m in re.finditer(defs.linkPattern, txt):
         if m.group() != link:
             link = m.group()
@@ -271,7 +138,7 @@ def findLink(req, url):
             page.addVideo(req, link, link, image)
 
 def findFrame(req, url):
-    for m in re.finditer(r'<iframe (.*?)</iframe>', load2(url)):
+    for m in re.finditer(r'<iframe (.*?)</iframe>', xurl.load2(url)):
         src = re.search(r'src="([^"]*)"', m.group(1))
         if src:
             if re.search(defs.linkPattern, src.group(1)):
@@ -284,10 +151,7 @@ def parseJSON(txt):
         return {}
 
 def showDebugLog(req):
-    global gDebugLog
-    req.write('\n\n<!--DebugLog-->\n')
-    for l in gDebugLog:
-        req.write('<!-- %s -->\n' %(l))
+    return xurl.showDebugLog(req)
 
 def findItem_reentry(obj, keys):
     global itemResult

@@ -3,7 +3,7 @@
 import re
 import urllib
 
-import meta
+import xurl
 
 from mod_python import util, Cookie
 
@@ -21,7 +21,7 @@ def index(req):
     if j:
         req.content_type = 'application/json'
         j = getUnparsedURL(req) or j
-        req.write(meta.load(j))
+        req.write(xurl.load(j))
         return
 
     return

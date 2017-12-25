@@ -5,7 +5,6 @@ import re
 import urllib
 
 import page
-import meta
 
 from mod_python import util, Cookie
 

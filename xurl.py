@@ -9,18 +9,23 @@ import urllib2
 import hashlib
 import urlparse
 import time
+import subprocess
 
-import xdef
+gDebugLog = []
+domain = None
 
-def verbose(url, local, agent):
-    print('\n[xurl][%s]\n' %(agent))
-    print('\tsrc: '+url)
-    print('\tdst: '+local)
-    return
-
-def verbose_status(status):
-    print('\tret: '+status)
-    return
+class defvals:
+    workdir             = '/var/tmp/'
+    wget_path_cookie    = workdir+'vod_wget.cookie'
+    wget_path_log       = workdir+'vod_wget.log'
+    ua                  = 'Mozilla/5.0 (X11; Linux x86_64; rv:10.0) Gecko/20150101 Firefox/47.0 (Chrome)'
+    wget_opt_base       = 'wget -T 10 -S -c'
+    wget_opt_cookie     = '--save-cookies %s --load-cookies %s' %(wget_path_cookie, wget_path_cookie)
+    wget_opt_log        = '-o %s' %(wget_path_log)
+    wget_opt_ua         = '-U \'%s\'' %(ua)
+    wget_opt_lang       = '--header=\'Accept-Language:zh-TW,zh;q=0.9,en-US;q=0.8,en;q=0.7\''
+    wget                = '%s %s' %(wget_opt_base, wget_opt_ua)
+    expiration          = 14400
 
 def readLocal(local, buffering=-1):
     if os.path.exists(local):
@@ -28,7 +33,7 @@ def readLocal(local, buffering=-1):
         txt = fd.read()
         fd.close()
         return txt
-    return ''
+    return None
 
 def saveLocal(local, text, buffering=-1):
     fd = open(local, 'w', buffering)
@@ -36,26 +41,38 @@ def saveLocal(local, text, buffering=-1):
     fd.close()
     return
 
+def debug_readLocal(url, local):
+    global gDebugLog
+    gDebugLog.append('%s -> %s' %(url, local))
+    return readLocal(local)
+
+def debug_saveLocal(url, local, txt):
+    global gDebugLog
+    gDebugLog.append('%s -> %s' %(url, local))
+    saveLocal(local, txt)
+    return txt
+
+def showDebugLog(req):
+    global gDebugLog
+    req.write('\n\n<!--DebugLog-->\n')
+    for l in gDebugLog:
+        req.write('<!-- %s -->\n' %(l))
+    return
+
 def checkExpire(local):
+    if not os.path.exists(local):
+        return True
     if os.path.getsize(local) <= 0:
         return True
     t0 = int(os.path.getmtime(local))
     t1 = int(time.time())
-    if (t1 - t0) > 14400:
+    if (t1 - t0) > defvals.expiration:
         return True
     return False
 
-def dict2str(adict):
-    return ''.join('{}{}'.format(key, val) for key, val in adict.items())
-
-def findSite(url):
-    if re.search(r'://', url):
-        m = re.search(r'://([^/]*)', url);
-    else:
-        m = re.search(r'([^/]*)', url);
-    if m:
-        return m.group(1)
-    return ''
+def genLocal(url, prefix=None, suffix=None):
+    local = defvals.workdir+(prefix or 'vod_load_')+hashlib.md5(url).hexdigest()+(suffix or '')
+    return local
 
 def parse(url):
     p = urlparse.urlparse(url)
@@ -64,90 +81,23 @@ def parse(url):
     return prefix, basename
 
 def absURL(url, site=None):
+    global domain
+    site = site or domain
     if re.search(r'^//', url):
         return 'http:'+url
     if site and re.search(r'^/', url):
-        return re.sub('^/', site, url)
+        return site+url
     if not re.search(r'^http', url):
         return 'http://'+url
     return url
 
-def wget(url, local, options=None):
-    verbose(url, local, 'wget')
-    cmd = '%s -U \'%s\' -O %s \'%s\' %s' %(xdef.wget, xdef.ua, local, url, options or '')
-    os.system(cmd)
-    verbose_status('done')
-    return
-
-def get(url, local):
-    verbose(url, local, 'urllib2')
-    if os.path.exists(local):
-        verbose_status('already exist')
-        return
-    opener = urllib2.build_opener()
-    opener.addheaders = [('User-agent', xdef.ua)]
-    try:
-        f = opener.open(url, None, 10) # timeout 10
-        if f.info().get('Content-Encoding') == 'gzip':
-            buf = StringIO(f.read())
-            saveLocal(local, gzip.GzipFile(fileobj=buf).read())
-        else:
-            saveLocal(local, f.read())
-        verbose_status('done')
-    except:
-        verbose_status('fail')
-    return
-
-def urlretrieve(url, local):
-    verbose(url, local, 'urlretrieve')
-    try:
-        urllib.urlretrieve (url, local)
-        verbose_status('done')
-    except:
-        verbose_status('fail')
-    return
-
-def load(url, local=None):
-    url = absURL(url)
-    local = local or xdef.workdir+'vod_load_'+hashlib.md5(url).hexdigest()
-    get(url, local)
-    return readLocal(local)
-
-def post(url, payload, local=None):
-
-    local = local or xdef.workdir+'vod_post_'+hashlib.md5(dict2str(payload)).hexdigest()
-    if os.path.exists(local):
-        verbose_status('already exist')
-        return readLocal(local)
-
-    opener = urllib2.build_opener()
-    opener.addheaders = [('User-agent', xdef.ua)]
-    data = urllib.urlencode(payload)
-    try:
-        f = opener.open(url, data)
-        txt = f.read()
-        saveLocal(local, txt)
-        return txt
-    except:
-        return ''
-
-def load2(url, local=None, options=None, ref=None):
-    url = absURL(url)
-    local = local or xdef.workdir+'vod_load_'+hashlib.md5(url).hexdigest()
-    if os.path.exists(local) and not checkExpire(local):
-        return readLocal(local)
-    if ref:
-        options = (options or '') + ' --referer='+ref
-    wget(url, local, options)
-    return readLocal(local)
-
-def getIFrame(url):
-    links = []
-    for m in re.finditer(r'<iframe ([^>]*)>', load2(url)):
-        src = re.search(r'src="([^"]*)"', m.group(1))
-        if src:
-            links.append(absURL(src.group(1)))
-    return links
+def setDomain(url):
+    global domain
+    if re.search(r'^http', url):
+        parsed_uri = urlparse.urlparse(url)
+        domain = '{uri.scheme}://{uri.netloc}'.format(uri=parsed_uri)
+        return domain
+    return None
 
 def getContentType(url):
     res = urllib.urlopen(url)
@@ -155,14 +105,86 @@ def getContentType(url):
     res.close()
     return info.type
 
-def saveCookies(local, url, rawdata):
-    parsed_uri = urlparse.urlparse(url)
-    domain = '{uri.netloc}'.format(uri=parsed_uri)
-    expire = str(int(time.time())+20000)
-    fd = open(local, 'w')
-    for pair in rawdata.split(';'):
-        m = re.search(r'([^=]*)=(.*)$', pair)
-        if m:
-            fd.write('%s\t%s\t%s\t%s\t%s\t%s\t%s\n' %(domain, 'TRUE', '/', 'FALSE', expire, m.group(1), m.group(2)))
-    fd.close()
+# -----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
+
+def load(url, local=None, headers=None, cache=True):
+    url = absURL(url)
+    local = local or genLocal(url)
+    if cache and not checkExpire(local):
+        return debug_readLocal(url, local)
+
+    opener = urllib2.build_opener()
+    opener.addheaders = [('User-agent', defvals.ua)]
+
+    if headers:
+        opener.addheaders += headers
+
+    try:
+        f = opener.open(url, None, 10) # timeout=10
+        if f.info().get('Content-Encoding') == 'gzip':
+            buf = StringIO(f.read())
+            txt = gzip.GzipFile(fileobj=buf).read()
+        else:
+            txt = f.read()
+        return debug_saveLocal(url, local, txt)
+    except urllib2.HTTPError, e:
+        return 'Exception HTTPError: ' + str(e.code)
+    except urllib2.URLError, e:
+        return 'Exception URLError: ' + str(e.reason)
+    except httplib.HTTPException, e:
+        return 'Exception HTTPException'
+    except:
+        return 'Exception'
+
+def post(url, payload, local=None, headers=None, cache=True):
+    url = absURL(url)
+    local = local or genLocal(url)
+    if cache and not checkExpire(local):
+        return debug_readLocal(url, local)
+
+    opener = urllib2.build_opener()
+    opener.addheaders = [('User-agent', defvals.ua)]
+
+    if headers:
+        opener.addheaders += headers
+
+    data = urllib.urlencode(payload)
+    try:
+        f = opener.open(url, data)
+        txt = f.read()
+        return debug_saveLocal(url, local, txt)
+    except:
+        return 'Exception'
+
+def wget(url, local, options=None, cmd=None):
+    print('[wget] %s -> %s' %(url, local))
+    c = '%s %s' %(cmd or defvals.wget, options or '')
+    cmd = '%s %s -O %s \'%s\'' %(c, defvals.wget_opt_log, local, url)
+    try:
+        subprocess.check_output(cmd, shell=True)
+    except:
+        output = readLocal(defvals.wget_path_log)
+        if re.search(r'ERROR 503', output):
+            m = re.search(r'Refresh: (\d+);URL=(.*?)\n', output, re.DOTALL)
+            if m:
+                secs, newURL = m.group(1), absURL(m.group(2))
+                print('%s\nsecs: %s\nnewURL: %s' %(m.group(), secs, newURL))
+                time.sleep(float(secs))
+                cmd = '%s -O %s \'%s\'' %(c, local, newURL)
+                try:
+                    subprocess.check_output(cmd, shell=True)
+                except:
+                    print('Exception: '+cmd)
     return
+
+def load2(url, local=None, options=None, cache=True, ref=None, cmd=None):
+    url = absURL(url)
+    local = local or genLocal(url)
+    if cache and not checkExpire(local):
+        return readLocal(local)
+    if ref:
+        options = ' '.join([options or '', '--referer='+ref])
+    wget(url, local, options, cmd=cmd)
+    return debug_readLocal(url, local)
+

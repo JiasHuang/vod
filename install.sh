@@ -4,7 +4,7 @@ cd $(dirname $(readlink -f $0))
 
 sudo mkdir -p /var/www/html/vod/db/
 sudo mkdir -p /var/www/html/vod/images/
-sudo cp -vu web/* /var/www/html/vod/
+sudo cp -vuL web/* /var/www/html/vod/
 sudo cp -vu web/db/* /var/www/html/vod/db/
 sudo cp -vu web/images/* /var/www/html/vod/images/
 
