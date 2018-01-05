@@ -9,6 +9,7 @@ import time
 import xdef
 import xproc
 import xsrc
+import xurl
 
 def setAct(act, val):
 
@@ -48,7 +49,7 @@ def play(url, ref):
         if os.path.exists('/etc/alternatives/x86_64-linux-gnu_libvdpau_nvidia.so'):
             xargs = xargs + ' --hwdec=vdpau'
 
-        xargs = xargs + ' --user-agent=\'%s\'' %(xdef.ua)
+        xargs = xargs + ' --user-agent=\'%s\'' %(xurl.defvals.ua)
         xargs = xargs + ' --referrer=\'%s\'' %(ref)
         xargs = xargs + ' --input-file=\'%s\'' %(xdef.fifo)
 

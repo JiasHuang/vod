@@ -38,7 +38,7 @@ def setAct(act, val):
 
 def play(url, ref, cookies=None):
 
-    xargs = '--user-agent=\'%s\'' %(xdef.ua)
+    xargs = '--user-agent=\'%s\'' %(xurl.defvals.ua)
 
     url, cookies, ref = xsrc.getSource(url, ref=ref)
 
