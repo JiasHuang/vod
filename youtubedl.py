@@ -180,7 +180,7 @@ def extractURL(url, key=None, ref=None, dontParseJson=False):
     if key:
         arg = ' '.join([arg, '--video-password='+key])
 
-    if ref:
+    if ref and ref != url:
         arg = ' '.join([arg, '--referer=\'%s\'' %(ref)])
 
     print('\targ : %s' %(arg or ''))
