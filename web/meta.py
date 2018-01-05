@@ -150,9 +150,6 @@ def parseJSON(txt):
     except:
         return {}
 
-def showDebugLog(req):
-    return xurl.showDebugLog(req)
-
 def findItem_reentry(obj, keys):
     global itemResult
     if type(obj) is dict:

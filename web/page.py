@@ -487,10 +487,18 @@ def page_maplestage(req, url):
 def page_japvideo(req, url):
     if re.search(r'category', url):
         for i in range(5):
-            page = url+'page/'+str(i)
-            meta.findVideoLink(req, page, showPage=True, showImage=True, ImageExt=None)
+            pageURL = url+'page/'+str(i)
+            meta.findVideoLink(req, pageURL, showPage=True, showImage=True, ImageExt=None)
     else:
-        meta.findFrame(req, url)
+        txt = load(url)
+        if re.search(r'jetpack-video-wrapper', txt):
+            for m in re.finditer(r'<p>(.*?)</p>\n<div class="jetpack-video-wrapper">\n(.*?)\n', txt):
+                title = m.group(1)
+                link = meta.search(r'src="([^"]*)"', m.group(2))
+                if title and link:
+                    addVideo(req, link, title)
+        else:
+            meta.findFrame(req, url)
     return
 
 def page_youtube_videos(req, url):
@@ -658,7 +666,7 @@ def onPageEnd(req):
         req.write('<h1><span class="message" id="NotFound"></span></h1>\n')
     req.write('<div id="pageinfo" pagelist="%s"></div>' %(savePageList()))
     req.write('\n<!--EntryEnd-->\n')
-    meta.showDebugLog(req)
+    xurl.showDebugLog(req)
 
 def page_core(req, url):
     xurl.setDomain(url)

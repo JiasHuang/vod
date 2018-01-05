@@ -52,11 +52,13 @@ def debug_saveLocal(url, local, txt):
     saveLocal(local, txt)
     return txt
 
-def showDebugLog(req):
+def showDebugLog(req, clear=True):
     global gDebugLog
     req.write('\n\n<!--DebugLog-->\n')
     for l in gDebugLog:
         req.write('<!-- %s -->\n' %(l))
+    if clear:
+        del gDebugLog[:]
     return
 
 def checkExpire(local):
