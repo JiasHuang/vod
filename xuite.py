@@ -8,7 +8,7 @@ import xdef
 
 def getSource(url, key=None):
     mURL = None
-    if re.search(r'^http://vlog.xuite.net/play/', url):
+    if url.startswith('http://vlog.xuite.net/play/'):
         txt = xurl.load(url)
         m = re.search(r'http://m.xuite.net/vlog/([^"]*)', txt)
         if m:

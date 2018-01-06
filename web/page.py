@@ -94,14 +94,14 @@ def addEntry(req, link, title, image=None, desc=None, password=None, video=True,
 def addPage(req, link, title, image=None, desc=None):
     if not link:
         return
-    if re.search(r'^//', link):
+    if link.startswith('//'):
         link = re.sub('//', 'http://', link)
     addEntry(req, link, title, image, desc, video=False)
 
 def addVideo(req, link, title=None, image=None, desc=None, password=None, referer=None):
     if not link:
         return
-    if re.search(r'^//', link):
+    if link.startswith('//'):
         link = re.sub('//', 'http://', link)
     addEntry(req, link, title or link, image or meta.getImage(link) or 'Movies-icon.png', desc, password, referer=referer)
 
@@ -347,9 +347,9 @@ def page_iqiyi(req, url):
             objs = meta.findImageLink(None, page, True)
             for obj in objs:
                 basename = os.path.basename(obj.url)
-                if re.search(r'^a_', basename):
+                if basename.startswith('a_'):
                     addPage(req, obj.url, obj.title, obj.image)
-                elif re.search(r'^v_', basename):
+                elif basename.startswith('v_'):
                     addVideo(req, obj.url, obj.title, obj.image)
     else:
         albumId = meta.search(r'albumId:\s*(\d+)', load(url))

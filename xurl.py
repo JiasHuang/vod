@@ -85,17 +85,17 @@ def parse(url):
 def absURL(url, site=None):
     global domain
     site = site or domain
-    if re.search(r'^//', url):
+    if url.startswith('//'):
         return 'http:'+url
-    if site and re.search(r'^/', url):
+    if site and url.startswith('/'):
         return site+url
-    if not re.search(r'^http', url):
+    if not url.startswith('http'):
         return 'http://'+url
     return url
 
 def setDomain(url):
     global domain
-    if re.search(r'^http', url):
+    if url.startswith('http'):
         parsed_uri = urlparse.urlparse(url)
         domain = '{uri.scheme}://{uri.netloc}'.format(uri=parsed_uri)
         return domain

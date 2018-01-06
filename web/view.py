@@ -25,6 +25,7 @@ def playURL(url, opt=None):
     if not os.path.exists(conf.vod):
         return
     cmd = 'python -u %s \'%s\' %s | tee -a %s' %(conf.vod, url, opt or '', conf.log)
+    os.system('echo \'*** [%s] *** \' >> %s' %(cmd, conf.log))
     if os.path.exists('/usr/bin/xterm'):
         subprocess.Popen(['/usr/bin/xterm', '-geometry', '80x24-50+50', '-display', ':0', '-e', cmd])
     else:
@@ -113,13 +114,13 @@ def index(req):
 
     if i:
         i = i.strip()
-        if re.search(r'^#', i):
+        if i.startswith('#'):
             c = i[1:]
-        elif re.search(r'^http', i):
+        elif i.startswith('http'):
             v = i
-        elif re.search(r'^/', i) and os.path.isdir(i):
+        elif i.startswith('/') and os.path.isdir(i):
             d = i
-        elif re.search(r'^/', i) and os.path.exists(i):
+        elif i.startswith('/') and os.path.exists(i):
             f = i
         else:
             q = re.sub('\s+', ' ', i)

@@ -75,7 +75,7 @@ def getSource(url, key=None, ref=None):
         elif re.search('ok.ru', url):
             src = odnoklassniki.getSource(url)
 
-        elif xurl.getContentType(url) != 'text/html':
+        elif not xurl.getContentType(url).startswith('text'):
             src = url
 
         else:
