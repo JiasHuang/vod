@@ -33,7 +33,7 @@ def readLocal(local, buffering=-1):
         txt = fd.read()
         fd.close()
         return txt
-    return None
+    return ''
 
 def saveLocal(local, text, buffering=-1):
     fd = open(local, 'w', buffering)
