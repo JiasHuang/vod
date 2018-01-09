@@ -41,10 +41,10 @@ def search(pattern, txt, flags=0):
         return m.group(1)
     return None
 
-def findPoster(link):
-    return search(r'poster="([^"]*)"', xurl.load2(link))
+def findPoster(link, referer=None):
+    return search(r'poster="([^"]*)"', xurl.load2(link, ref=referer))
 
-def getImage(link):
+def getImage(link, referer=None):
 
     m = re.search(r'www.youtube.com/(watch\?v=|embed/)(.{11})', link)
     if m:
@@ -60,7 +60,7 @@ def getImage(link):
 
     m = re.search(r'(openload.co|videomega.tv|up2stream.com)', link)
     if m:
-        return findPoster(link)
+        return findPoster(link, referer)
 
     m = re.search(r'http(s|)://drive.google.com/file/d/(\w*)', link)
     if m:

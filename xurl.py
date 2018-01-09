@@ -184,7 +184,7 @@ def load2(url, local=None, options=None, cache=True, ref=None, cmd=None):
     url = absURL(url)
     local = local or genLocal(url)
     if cache and not checkExpire(local):
-        return readLocal(local)
+        return debug_readLocal(url, local)
     if ref:
         options = ' '.join([options or '', '--referer='+ref])
     wget(url, local, options, cmd=cmd)

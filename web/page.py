@@ -102,8 +102,8 @@ def addVideo(req, link, title=None, image=None, desc=None, password=None, refere
     if not link:
         return
     if link.startswith('//'):
-        link = re.sub('//', 'http://', link)
-    addEntry(req, link, title or link, image or meta.getImage(link) or 'Movies-icon.png', desc, password, referer=referer)
+        link = 'http:' + link
+    addEntry(req, link, title or link, image or meta.getImage(link, referer) or 'Movies-icon.png', desc, password, referer=referer)
 
 def getLink(site, vid):
     if site == 'youtube':
@@ -621,14 +621,19 @@ def page_8maple_video(req, url):
     cmd = 'wget -S %s %s' %(xurl.defvals.wget_opt_cookie, xurl.defvals.wget_opt_lang)
     txt = xurl.load2(url, cmd=cmd)
     source = []
-    for m in re.finditer(r'(\w+)_(openload|filescdn)(\d*)', txt):
+    for m in re.finditer(r'(\w+)(_openload|_filescdn|\$\$drama|\$\$maple)(\d*)', txt):
         source.append(m.groups())
     for s in set(source):
-        sourceURL = 'http://8video.tv/%s/?url=%s_%s%s' %(s[1], s[0], s[1], s[2] or '')
-        sourceURLTxt = xurl.load2(sourceURL, ref=url, cmd=cmd)
-        videoURL = re.search(r'innerHTML=\'<iframe .*? src="([^"]*)"', sourceURLTxt)
-        if videoURL:
-            addVideo(req, videoURL.group(1), referer=sourceURL)
+        sourceDomain = re.sub(r'(\$|_)', '', s[1])
+        sourceURL = 'http://8video.tv/'+sourceDomain+'/?url='+''.join(s)
+        meta.comment(req, 'sourceURL : ' + sourceURL)
+        if sourceDomain in ['drama', 'maple']:
+            continue
+        else:
+            sourceURLTxt = xurl.load2(sourceURL, ref=url, cmd=cmd)
+            videoURL = re.search(r'innerHTML=\'<iframe .*? src="([^"]*)"', sourceURLTxt)
+            if videoURL:
+                addVideo(req, videoURL.group(1), referer=sourceURL)
 
 def page_8maple(req, url):
     cmd = 'wget -S %s %s' %(xurl.defvals.wget_opt_cookie, xurl.defvals.wget_opt_lang)
