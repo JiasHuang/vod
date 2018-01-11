@@ -166,6 +166,23 @@ def addGoogleNextPage(req, q, txt):
         req.write('<!--NextPageEnd-->\n')
     return
 
+def parseDailyMotionJSON(req, url):
+    data = meta.parseJSON(load(url))
+    if 'list' not in data:
+        return
+    for d in data['list']:
+        try:
+            prefix = 'http://www.dailymotion.com/video/'
+            vid, title = darg(d, 'id', 'title')
+            seconds = d['duration']
+            m, s = divmod(seconds, 60)
+            h, m = divmod(m, 60)
+            desc = '%d:%02d:%02d' %(h, m, s)
+            addVideo(req, prefix+vid, title, desc=desc)
+        except:
+            continue
+    return
+
 def search_youtube(req, q, sp=None):
     url = 'https://www.youtube.com/results?q='+q
     if sp:
@@ -226,21 +243,7 @@ def search_xuite(req, q):
 
 def search_dailymotion(req, q):
     url = 'https://api.dailymotion.com/videos/?search="'+q+'"&limit=100&fields=id,title,duration'
-    data = meta.parseJSON(load(url))
-    if 'list' not in data:
-        return
-    for d in data['list']:
-        try:
-            prefix = 'http://www.dailymotion.com/video/'
-            vid, title = darg(d, 'id', 'title')
-            seconds = d['duration']
-            m, s = divmod(seconds, 60)
-            h, m = divmod(m, 60)
-            desc = '%d:%02d:%02d' %(h, m, s)
-            addVideo(req, prefix+vid, title, desc=desc)
-        except:
-            continue
-    return
+    return parseDailyMotionJSON(req, url)
 
 def search(req, q, s=None, x=None):
     s = (s or 'youtube').lower()
@@ -591,7 +594,10 @@ def page_youtube(req, url):
         page_youtube_videos(req, url)
 
 def page_dailymotion(req, url):
-    meta.findImageLink(req, url, True, False)
+    if url.startswith('https://api.dailymotion.com'):
+        parseDailyMotionJSON(req, url)
+    else:
+        meta.findImageLink(req, url, True, False)
 
 def page_gdrive(req, url):
     txt = load(url)
