@@ -166,18 +166,7 @@ def wget(url, local, options=None, cmd=None):
     try:
         subprocess.check_output(cmd, shell=True)
     except:
-        output = readLocal(defvals.wget_path_log)
-        if re.search(r'ERROR 503', output):
-            m = re.search(r'Refresh: (\d+);URL=(.*?)\n', output, re.DOTALL)
-            if m:
-                secs, newURL = m.group(1), absURL(m.group(2))
-                print('%s\nsecs: %s\nnewURL: %s' %(m.group(), secs, newURL))
-                time.sleep(float(secs))
-                cmd = '%s -O %s \'%s\'' %(c, local, newURL)
-                try:
-                    subprocess.check_output(cmd, shell=True)
-                except:
-                    print('Exception: '+cmd)
+        print('Exception: '+cmd)
     return
 
 def load2(url, local=None, options=None, cache=True, ref=None, cmd=None):

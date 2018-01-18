@@ -10,9 +10,11 @@ import xdef
 
 def getSource(url):
     txt = xurl.load(url)
-    m = re.search(r'source src="([^"]*)"', txt)
-    if m:
-        return m.group(1)
+    for m in re.finditer(r'source src="([^"]*)"', txt):
+        src = m.group(1)
+        if not src.endswith('.m4a.m3u8'):
+            print('[src] %s' %(src))
+            return src
     return url
 
 def dl(src, target, bitrate):
@@ -29,8 +31,8 @@ def dl(src, target, bitrate):
     return
 
 def download():
-    mmdd = datetime.datetime.now().strftime("%m%d")
-    target = xdef.dldir+'studio_classroom_'+mmdd+'.ts'
+    yyyymmdd = datetime.datetime.now().strftime("%Y%m%d")
+    target = xdef.dldir+'studio_classroom_'+yyyymmdd+'.ts'
     url = 'http://w2.goodtv.org/studio_classroom/'
     src = getSource(url)
     for bitrate in ['1200k', '500k', '350k']:

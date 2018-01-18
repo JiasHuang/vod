@@ -642,10 +642,17 @@ def page_8maple_video(req, url):
                 addVideo(req, videoURL.group(1), referer=sourceURL)
 
 def page_8maple(req, url):
-    cmd = 'wget -S %s %s' %(xurl.defvals.wget_opt_cookie, xurl.defvals.wget_opt_lang)
+    cmd = 'wget -S --content-on-error %s %s' %(xurl.defvals.wget_opt_cookie, xurl.defvals.wget_opt_lang)
     txt = xurl.load2('http://8maple.ru', cmd=cmd)
     if len(txt) == 0:
         return
+    challengeForm = meta.search(r'<form id="challenge-form"(.*?)</form', txt, re.DOTALL | re.MULTILINE)
+    if challengeForm:
+        action = meta.search(r'action="([^"]*)"', challengeForm)
+        jschl_vc = meta.search(r'name="jschl_vc" value="([^"]*)"', challengeForm)
+        _pass = meta.search(r'name="pass" value="([^"]*)"', challengeForm)
+        newURL = xurl.absURL(action)+'?jschl_vc=%s&pass=%s&jschl_anwser=-72' %(jschl_vc, _pass)
+        txt = xurl.load2(newURL, cmd=cmd)
     if re.search(r'/category/', url):
         meta.findVideoLink(req, url, showPage=True, showImage=False, ImageExt=None, cmd=cmd)
     else:
