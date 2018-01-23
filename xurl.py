@@ -19,7 +19,7 @@ class defvals:
     wget_path_cookie    = workdir+'vod_wget.cookie'
     wget_path_log       = workdir+'vod_wget.log'
     ua                  = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Safari/537.36'
-    wget_opt_base       = 'wget -T 10 -S -c'
+    wget_opt_base       = 'wget -T 10 -S'
     wget_opt_cookie     = '--save-cookies %s --load-cookies %s' %(wget_path_cookie, wget_path_cookie)
     wget_opt_log        = '-o %s' %(wget_path_log)
     wget_opt_ua         = '-U \'%s\'' %(ua)
