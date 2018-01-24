@@ -641,6 +641,25 @@ def page_8maple_video(req, url):
             if videoURL:
                 addVideo(req, videoURL.group(1), referer=sourceURL)
 
+def page_8maple_jschl_anwser(txt):
+    m = re.search(r'setTimeout\(function\(\){(.*?)submit', txt, re.DOTALL | re.MULTILINE)
+    if m:
+        fd = open('/tmp/8maple.js', 'w')
+        for m in re.finditer(r'( |;)(.*?);', txt):
+            if re.search('!', m.group()):
+                print(m.group())
+                fd.write(m.group()+'\n')
+            if re.search('parseInt', m.group()):
+                parseInt = re.search(r'parseInt\(.*?\)', m.group())
+                print(parseInt.group())
+                fd.write('console.log(%s + 9);\n' %(parseInt.group()))
+        fd.close()
+        os.system('js /tmp/8maple.js > /tmp/8maple.log')
+        ret = xurl.readLocal('/tmp/8maple.log')
+        print(ret)
+        return int(ret)
+    return 0
+
 def page_8maple(req, url):
     cmd = 'wget -S --content-on-error %s %s' %(xurl.defvals.wget_opt_cookie, xurl.defvals.wget_opt_lang)
     txt = xurl.load2('http://8maple.ru', cmd=cmd)
@@ -651,7 +670,8 @@ def page_8maple(req, url):
         action = meta.search(r'action="([^"]*)"', challengeForm)
         jschl_vc = meta.search(r'name="jschl_vc" value="([^"]*)"', challengeForm)
         _pass = meta.search(r'name="pass" value="([^"]*)"', challengeForm)
-        newURL = xurl.absURL(action)+'?jschl_vc=%s&pass=%s&jschl_anwser=-72' %(jschl_vc, _pass)
+        jschl_anwser = page_8maple_jschl_anwser(txt)
+        newURL = xurl.absURL(action)+'?jschl_vc=%s&pass=%s&jschl_anwser=%d' %(jschl_vc, _pass, jschl_anwser)
         txt = xurl.load2(newURL, cmd=cmd)
     if re.search(r'/category/', url):
         meta.findVideoLink(req, url, showPage=True, showImage=False, ImageExt=None, cmd=cmd)

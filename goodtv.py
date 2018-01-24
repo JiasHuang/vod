@@ -31,6 +31,8 @@ def dl(src, target, bitrate):
     return
 
 def download():
+    if datetime.datetime.today().isoweekday() == 7:
+        return
     yyyymmdd = datetime.datetime.now().strftime("%Y%m%d")
     target = xdef.dldir+'studio_classroom_'+yyyymmdd+'.ts'
     url = 'http://w2.goodtv.org/studio_classroom/'
