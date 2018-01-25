@@ -666,8 +666,14 @@ def page_8maple_jschl_answer(txt):
     return 0
 
 def page_8maple_setup_cookie():
+    m = re.search(r'(\d+)(\t| )+cf_clearance', xurl.readLocal(xurl.defvals.wget_path_cookie))
+    if m:
+        if int(m.group(1)) > int(time.time()):
+            t = time.localtime(float(m.group(1)))
+            print('cf_clearance is unexpired (%s)' %(time.strftime('%Y-%m-%d %H:%M', t)))
+            return
     cmd = 'wget -S --content-on-error %s %s' %(xurl.defvals.wget_opt_cookie, xurl.defvals.wget_opt_lang)
-    txt = xurl.load2('http://8maple.ru', cmd=cmd)
+    txt = xurl.load2('http://8maple.ru', cache=False, cmd=cmd)
     if len(txt) == 0:
         return False
     challengeForm = meta.search(r'<form id="challenge-form"(.*?)</form', txt, re.DOTALL | re.MULTILINE)
