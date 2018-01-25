@@ -4,6 +4,7 @@
 import re
 import os
 import urlparse
+import time
 
 import meta
 import xurl
@@ -641,38 +642,53 @@ def page_8maple_video(req, url):
             if videoURL:
                 addVideo(req, videoURL.group(1), referer=sourceURL)
 
-def page_8maple_jschl_anwser(txt):
-    m = re.search(r'setTimeout\(function\(\){(.*?)submit', txt, re.DOTALL | re.MULTILINE)
+def page_8maple_jschl_answer(txt):
+    local_js = '/tmp/8maple.js'
+    local_log = '/tmp/8maple.log'
+    m = re.search(r'<script.*?</script>', txt, re.DOTALL | re.MULTILINE)
     if m:
-        fd = open('/tmp/8maple.js', 'w')
-        for m in re.finditer(r'( |;)(.*?);', txt):
-            if re.search('!', m.group()):
-                print(m.group())
-                fd.write(m.group()+'\n')
-            if re.search('parseInt', m.group()):
-                parseInt = re.search(r'parseInt\(.*?\)', m.group())
-                print(parseInt.group())
+        print('\n'+m.group()+'\n')
+        val = re.search(r'var s,t,o,p,b,r,e,a,k,i,n,g,f, ([^=]+)=.*?;', m.group(), re.DOTALL)
+        if val:
+            fd = open(local_js, 'w')
+            fd.write(val.group()+'\n')
+            valname = val.group(1)
+            for vals in re.finditer(re.escape(valname)+r'.*?;', m.group()):
+                if re.search('=', vals.group()):
+                    fd.write(vals.group()+'\n')
+            parseInt = re.search(r'parseInt\(.*?\)', m.group())
+            if parseInt:
                 fd.write('console.log(%s + 9);\n' %(parseInt.group()))
-        fd.close()
-        os.system('js /tmp/8maple.js > /tmp/8maple.log')
-        ret = xurl.readLocal('/tmp/8maple.log')
-        print(ret)
-        return int(ret)
+            fd.close()
+            print(xurl.readLocal(local_js))
+            os.system('js %s > %s' %(local_js, local_log))
+            return int(xurl.readLocal(local_log))
     return 0
 
-def page_8maple(req, url):
+def page_8maple_setup_cookie():
     cmd = 'wget -S --content-on-error %s %s' %(xurl.defvals.wget_opt_cookie, xurl.defvals.wget_opt_lang)
-    txt = xurl.load2('http://8maple.ru', cmd=cmd)
+    txt = xurl.load2('http://8maple.ru', cache=False, cmd=cmd)
     if len(txt) == 0:
-        return
+        return False
     challengeForm = meta.search(r'<form id="challenge-form"(.*?)</form', txt, re.DOTALL | re.MULTILINE)
     if challengeForm:
-        action = meta.search(r'action="([^"]*)"', challengeForm)
-        jschl_vc = meta.search(r'name="jschl_vc" value="([^"]*)"', challengeForm)
-        _pass = meta.search(r'name="pass" value="([^"]*)"', challengeForm)
-        jschl_anwser = page_8maple_jschl_anwser(txt)
-        newURL = xurl.absURL(action)+'?jschl_vc=%s&pass=%s&jschl_anwser=%d' %(jschl_vc, _pass, jschl_anwser)
-        txt = xurl.load2(newURL, cmd=cmd)
+        v_action = meta.search(r'action="([^"]*)"', challengeForm)
+        v_jschl_vc = meta.search(r'name="jschl_vc" value="([^"]*)"', challengeForm)
+        v_pass = meta.search(r'name="pass" value="([^"]*)"', challengeForm)
+        v_jschl_answer = page_8maple_jschl_answer(txt)
+        newURL = xurl.absURL(v_action)+'?jschl_vc=%s&pass=%s&jschl_answer=%d' %(v_jschl_vc, v_pass, v_jschl_answer)
+        print(newURL)
+        time.sleep(4)
+        txt = xurl.load2(newURL, ref='http://8maple.ru/', cmd=cmd)
+        if not re.search('cf_clearance', xurl.readLocal(xurl.defvals.wget_path_cookie)):
+            print('cf_clearance NotFound')
+            return False
+    return True
+
+def page_8maple(req, url):
+    if not page_8maple_setup_cookie():
+        return
+    cmd = 'wget -S %s %s' %(xurl.defvals.wget_opt_cookie, xurl.defvals.wget_opt_lang)
     if re.search(r'/category/', url):
         meta.findVideoLink(req, url, showPage=True, showImage=False, ImageExt=None, cmd=cmd)
     else:
