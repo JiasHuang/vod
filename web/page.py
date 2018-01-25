@@ -671,7 +671,7 @@ def page_8maple_setup_cookie():
         if int(m.group(1)) > int(time.time()):
             t = time.localtime(float(m.group(1)))
             print('cf_clearance is unexpired (%s)' %(time.strftime('%Y-%m-%d %H:%M', t)))
-            return
+            return True
     cmd = 'wget -S --content-on-error %s %s' %(xurl.defvals.wget_opt_cookie, xurl.defvals.wget_opt_lang)
     txt = xurl.load2('http://8maple.ru', cache=False, cmd=cmd)
     if len(txt) == 0:
