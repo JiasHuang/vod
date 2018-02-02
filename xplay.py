@@ -5,6 +5,7 @@ import os
 import re
 import subprocess
 import hashlib
+from multiprocessing import Process
 
 import xarg
 import xdef
@@ -117,8 +118,16 @@ def playURL(url, ref):
         playlist = xurl.readLocal(xarg.pagelist)
         xurl.saveLocal(xdef.playlist, playlist, 0)
         while url != None:
-            playURL_core(url, ref)
-            url = ref = getNext(url, playlist)
+            nextURL = getNext(url, playlist)
+            if nextURL:
+                p = Process(target=xsrc.getSource, args=(nextURL,))
+                p.start()
+                playURL_core(url, ref)
+                p.join()
+                url = ref = nextURL
+            else:
+                playURL_core(url, ref)
+                url = None
     else:
         playURL_core(url, ref)
 

@@ -39,7 +39,7 @@ function onPageReady() {
     if (slider != 'no' && $('.imageContainer').length > entryMax) {
         setEntryCluster(entryMax);
         setWidthHeight(entryMax);
-        bxslider = $('#result').bxSlider({keyboardEnabled: true});
+        bxslider = $('#result').bxSlider({keyboardEnabled: true, speed: 100});
     }
 
     $( "a[target='playVideo']" ).click(onPlayVideo);
