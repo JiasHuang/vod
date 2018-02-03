@@ -31,7 +31,7 @@ def setAct(act, val):
 def play(url, ref):
 
     p = None
-    xargs = ''
+    xargs = []
 
     url, cookies, ref = xsrc.getSource(url, ref=ref)
 
@@ -46,20 +46,14 @@ def play(url, ref):
 
     if not xproc.checkProcessRunning('mpv'):
 
-        if os.path.exists('/etc/alternatives/x86_64-linux-gnu_libvdpau_nvidia.so'):
-            xargs = xargs + ' --hwdec=vdpau'
-
-        xargs = xargs + ' --user-agent=\'%s\'' %(xurl.defvals.ua)
-        xargs = xargs + ' --referrer=\'%s\'' %(ref)
-        xargs = xargs + ' --input-file=\'%s\'' %(xdef.fifo)
+        xargs.append('--user-agent=\'%s\'' %(xurl.defvals.ua))
+        xargs.append('--referrer=\'%s\'' %(ref))
+        xargs.append('--input-file=\'%s\'' %(xdef.fifo))
 
         if cookies:
-            xargs = xargs + ' --http-header-fields="Cookie:%s"' %(cookies)
+            xargs.append('--http-header-fields="Cookie:%s"' %(cookies))
 
-        if url.startswith('/'):
-            xargs = xargs + ' --sub-auto=fuzzy'
-
-        cmd = '%s %s \'%s\'' %(xdef.mpv, xargs, url)
+        cmd = '%s %s \'%s\'' %(xdef.mpv, ' '.join(xargs), url)
         print('\n[mpv][cmd]\n\n\t'+cmd+'\n')
         p = subprocess.Popen(cmd, shell=True)
 
