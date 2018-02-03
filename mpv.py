@@ -56,6 +56,9 @@ def play(url, ref):
         if cookies:
             xargs = xargs + ' --http-header-fields="Cookie:%s"' %(cookies)
 
+        if url.startswith('/'):
+            xargs = xargs + ' --sub-auto=fuzzy'
+
         cmd = '%s %s \'%s\'' %(xdef.mpv, xargs, url)
         print('\n[mpv][cmd]\n\n\t'+cmd+'\n')
         p = subprocess.Popen(cmd, shell=True)
