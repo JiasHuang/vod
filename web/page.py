@@ -12,6 +12,11 @@ import xurl
 entryCnt = 0
 entryVideos = []
 
+def reset():
+    global entryCnt, entryVideos
+    entryCnt = 0
+    entryVideos = []
+
 def loadFile(filename):
     path = os.path.dirname(os.path.abspath(__file__))+'/'+filename
     with open(path, 'r') as fd:
@@ -376,12 +381,14 @@ def page_iqiyi(req, url):
 def page_letv(req, url):
     pages = []
     pages.append(url)
+    '''
     if re.search(r'list.', url):
         nextpage = re.search(r'<div class="next-page">.*?</div>', load(url), re.DOTALL|re.MULTILINE)
         if nextpage:
             for m in re.finditer(r'href="([^"]*)"', nextpage.group()):
                 if m.group(1) not in pages:
                     pages.append(m.group(1))
+    '''
     for page in pages[0:5]:
         objs = meta.findImageLink(None, page, True)
         for obj in objs:
