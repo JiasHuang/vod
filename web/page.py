@@ -341,6 +341,7 @@ def page_litv(req, url):
 
 def page_iqiyi(req, url):
     if re.search(r'list.', url):
+        category = meta.search(r'www/(\d+)/', url) or 'err'
         pages = []
         pages.append(url)
         for m in re.finditer(r'<a data-key.*? href="([^"]*)"', load(url), re.DOTALL):
@@ -348,17 +349,19 @@ def page_iqiyi(req, url):
             if page not in pages:
                 pages.append(page)
         for page in pages[0:5]:
-            objs = meta.findImageLink(None, page, True)
-            for obj in objs:
-                basename = os.path.basename(obj.url)
-                if basename.startswith('a_'):
-                    addPage(req, obj.url, obj.title, obj.image)
-                elif basename.startswith('v_'):
-                    addVideo(req, obj.url, obj.title, obj.image)
+            for m in re.finditer(r'<div class="plist-item">(.*?)<p class="pic-sub-title">', load(page), re.DOTALL|re.MULTILINE):
+                link = meta.search(r'href="([^"]*)"', m.group(1))
+                title = meta.search(r'<a class="pic-title".*?>(.*?)</a>', m.group(1))
+                image = meta.search(r'v-i71-anim-img="\'([^\']*)\'"', m.group(1))
+                if link and title and image:
+                    if category == '1':
+                        addVideo(req, link, title, image)
+                    else:
+                        addPage(req, link, title, image)
     else:
-        albumId = meta.search(r'albumId:\s*(\d+)', load(url))
+        albumId = meta.search(r'data-albumid="([^"]*)"', load(url))
         if albumId:
-            avlist = load('http://cache.video.qiyi.com/jp/avlist/%s/' %(albumId))
+            avlist = load('http://cache.video.qiyi.com/jp/avlist/%s/?albumId=%s' %(albumId, albumId))
             avlist = re.sub('var tvInfoJs=', '', avlist)
             meta.comment(req, avlist)
             data = meta.parseJSON(avlist)

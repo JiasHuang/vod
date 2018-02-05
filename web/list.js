@@ -39,7 +39,13 @@ function onPageReady() {
     if (slider != 'no' && $('.imageContainer').length > entryMax) {
         setEntryCluster(entryMax);
         setWidthHeight(entryMax);
-        bxslider = $('#result').bxSlider({keyboardEnabled: true, speed: 100});
+        bxslider = $('#result').bxSlider({
+            mode: 'fade',
+            keyboardEnabled: true,
+            speed: 250,
+            swipeThreshold: 10,
+            responsive: false,
+        });
     }
 
     $( "a[target='playVideo']" ).click(onPlayVideo);

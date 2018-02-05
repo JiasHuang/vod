@@ -1,10 +1,10 @@
-/** VARIABLES 
+/** VARIABLES
 ===================================*/
 /** RESET AND LAYOUT
 ===================================*/
 .bx-wrapper {
   position: relative;
-  margin: auto;
+  margin-bottom: 60px;
   padding: 0;
   *zoom: 1;
   -ms-touch-action: pan-y;
@@ -22,8 +22,8 @@ ul.bxslider {
   list-style: none;
 }
 .bx-viewport {
-  /*fix other elements on the page moving (on Chrome)*/
-  -webkit-transform: translatez(0);
+  /* fix other elements on the page moving (in Chrome) */
+  -webkit-transform: translateZ(0);
 }
 /** THEME
 ===================================*/
@@ -58,14 +58,19 @@ ul.bxslider {
   font-family: Arial;
   font-weight: bold;
   color: #666;
+  padding-top: 20px;
 }
 .bx-wrapper .bx-pager.bx-default-pager a {
   background: #666;
+  text-indent: -9999px;
   display: block;
   width: 10px;
   height: 10px;
   margin: 0 5px;
   outline: 0;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
 }
 .bx-wrapper .bx-pager.bx-default-pager a:hover,
 .bx-wrapper .bx-pager.bx-default-pager a.active,
@@ -76,6 +81,7 @@ ul.bxslider {
 .bx-wrapper .bx-pager-item,
 .bx-wrapper .bx-controls-auto .bx-controls-auto-item {
   display: inline-block;
+  vertical-align: bottom;
   *zoom: 1;
   *display: inline;
 }
@@ -106,8 +112,8 @@ ul.bxslider {
   outline: 0;
   width: 32px;
   height: 32px;
+  text-indent: -9999px;
   z-index: 9999;
-  font-size: 0px;
 }
 .bx-wrapper .bx-controls-direction a.disabled {
   display: none;
