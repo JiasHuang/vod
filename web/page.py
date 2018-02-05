@@ -8,6 +8,7 @@ import time
 
 import meta
 import xurl
+import conf
 
 entryCnt = 0
 entryVideos = []
@@ -653,8 +654,8 @@ def page_8maple_video(req, url):
                 addVideo(req, videoURL.group(1), referer=sourceURL)
 
 def page_8maple_jschl_answer(txt):
-    local_js = '/tmp/8maple.js'
-    local_log = '/tmp/8maple.log'
+    local_js = conf.workdir+'8maple.js'
+    local_log = conf.workdir+'8maple.log'
     m = re.search(r'<script.*?</script>', txt, re.DOTALL | re.MULTILINE)
     if m:
         print('\n'+m.group()+'\n')

@@ -40,11 +40,8 @@ function onPageReady() {
         setEntryCluster(entryMax);
         setWidthHeight(entryMax);
         bxslider = $('#result').bxSlider({
-            mode: 'fade',
             keyboardEnabled: true,
-            speed: 250,
-            swipeThreshold: 10,
-            responsive: false,
+            speed: 100,
         });
     }
 

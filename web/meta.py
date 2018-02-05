@@ -14,7 +14,6 @@ import subprocess
 from StringIO import StringIO
 import gzip
 
-import conf
 import page
 import xurl
 
