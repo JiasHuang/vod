@@ -34,9 +34,14 @@ var settings = {
         'type' : 'input',
         'defs' : '',
     },
+    'buffering' : {
+        'type' : 'select',
+        'vals' : ['yes', 'no'],
+        'defs' : 'no',
+    },
 };
 
-var settings_cookies = ['format', 'autosub', 'playbackMode'];
+var settings_cookies = ['format', 'autosub', 'playbackMode', 'buffering'];
 
 function saveCookies() {
     var lists = settings_cookies;

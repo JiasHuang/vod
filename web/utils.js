@@ -31,6 +31,7 @@ var logs = {
     'bookmark'      : ['Bookmark', '書籤'],
     'settings'      : ['Settings', '設定'],
     'history'       : ['History', '紀錄'],
+    'buffering'     : ['Buffering', '緩衝播放'],
 };
 
 function getExpire() {

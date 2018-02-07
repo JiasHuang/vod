@@ -56,14 +56,17 @@ def getOption(req):
     fmt      = getCookie(req, 'format')
     autosub  = getCookie(req, 'autosub')
     pagelist = getCookie(req, 'pagelist')
-    opt = ''
+    buffering = getCookie(req, 'buffering')
+    opt = []
     if fmt:
-        opt += '-f \'%s\' ' %(fmt)
+        opt.append('-f \'%s\'' %(fmt))
     if autosub:
-        opt += '--autosub %s ' %(autosub)
+        opt.append('--autosub %s' %(autosub))
     if pagelist:
-        opt += '--pagelist %s ' %(pagelist)
-    return opt
+        opt.append('--pagelist %s' %(pagelist))
+    if buffering:
+        opt.append('--buffering %s' %(buffering))
+    return ' '.join(opt)
 
 def metadata(name, value=None):
     local = None

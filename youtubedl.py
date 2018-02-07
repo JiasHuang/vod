@@ -16,7 +16,6 @@ import xarg
 import xdef
 import xurl
 import xplay
-import mpv
 
 def redirectURL(url):
     if re.search(r'youku', url):
@@ -106,7 +105,7 @@ def parseJson(path):
         print('\tret : %s' %(m3u))
         return m3u, cookies
 
-def extractPlayList(local, url, player):
+def extractPlayList(local, url):
     txt = xurl.readLocal(url)
     times = []
     links = []
@@ -134,8 +133,6 @@ def extractPlayList(local, url, player):
                 fd.write('#EXTINF:%s, %s\n' %(time, desc))
                 fd.write(src+'\n')
                 fd.close()
-                if player == 'mpv':
-                    mpv.append(src)
 
     if not os.path.exists(local):
         fd = open(local, 'w')
@@ -144,31 +141,7 @@ def extractPlayList(local, url, player):
 
     return
 
-def createSubprocess(url):
-
-    local = xdef.workdir+'vod_list_'+hashlib.md5(url).hexdigest()+'.m3u'
-
-    if os.path.exists(local) and not xurl.checkExpire(local):
-        print('\tret : %s' %(local))
-        return local, None
-
-    if os.path.exists(local):
-        os.remove(local)
-
-    cmd = 'python %s --url %s --local %s --player %s' %(os.path.realpath(__file__), url, local, xplay.getPlayer())
-    p = subprocess.Popen(cmd, shell=True)
-
-    while not os.path.exists(local):
-        time.sleep(1)
-
-    print('\n[ytdl][createSubprocess]\n')
-    print('\tret : %s' %(local))
-    return local, None
-
 def extractURL(url, key=None, ref=None, dontParseJson=False):
-
-    if url.endswith(xdef.ytdlm3u):
-        return createSubprocess(url)
 
     print('\n[ytdl][extractURL]\n')
 
@@ -251,9 +224,8 @@ def main():
     parser = OptionParser()
     parser.add_option("--local", dest="local")
     parser.add_option("--url", dest="url")
-    parser.add_option("--player", dest="player")
     (options, args) = parser.parse_args()
-    extractPlayList(options.local, options.url, options.player)
+    extractPlayList(options.local, options.url)
     return
 
 if __name__ == '__main__':
