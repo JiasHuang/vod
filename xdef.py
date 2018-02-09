@@ -11,8 +11,7 @@ log      = workdir+'vod_%s.log' %(os.getuid())
 ytdlarg  = '--no-warnings'
 ytdlm3u  = '.youtubedl.m3u'
 ytdlsub  = '--no-warnings --write-sub --skip-download --sub-lang=en,en-US'
-#mpv      = 'mpv --fs --ontop --ytdl=no'
-mpv      = 'mpv'
+mpv      = 'mpv --fs --ontop --ytdl=no'
 omxp     = 'omxplayer -b -o both -I'
 ffplay   = 'ffplay -fs -window_title ffplay'
 playlist = workdir+'vod_%s_playlist' %(os.getuid())
