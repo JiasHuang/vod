@@ -15,6 +15,7 @@ import mpv
 import omxp
 import ffplay
 import xsrc
+import buffering
 
 def getPlayer():
 
@@ -105,6 +106,10 @@ def playURL_core(url, ref):
 
 def playURL(url, ref):
 
+    if xarg.buffering:
+        buffering.play(url, ref)
+        return
+
     if isPlayerRunning():
         if os.path.exists(xdef.playlist):
             playbackMode = xurl.readLocal(xdef.playbackMode, 0).lower()
@@ -144,6 +149,10 @@ def checkActVal(act, val):
     return True
 
 def setAct(act, val):
+
+    if xarg.buffering:
+        buffering.setAct(act, val)
+        return
 
     if checkActVal(act, val) == False:
         print('\n[xplay][setAct] invalid command: %s %s\n' %(act, val))

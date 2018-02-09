@@ -27,6 +27,7 @@ def main():
     parser.add_option("--autosub", dest="autosub")
     parser.add_option("--pagelist", dest="pagelist")
     parser.add_option("--playbackMode", dest="playbackMode")
+    parser.add_option("--buffering", dest="buffering", action='store_true')
     (options, args) = parser.parse_args()
 
     if options.player:
@@ -43,6 +44,9 @@ def main():
 
     if options.playbackMode:
         xarg.playbackMode = options.playbackMode
+
+    if options.buffering:
+        xarg.buffering = True
 
     if len(args) >= 1:
         url = args[0].strip()

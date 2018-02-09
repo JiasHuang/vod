@@ -6,63 +6,57 @@ import re
 import subprocess
 import time
 import fcntl
+import signal
 
 from optparse import OptionParser
 from multiprocessing import Process, Value
 
 import xdef
+import xplay
 
 class defvals:
     lock = xdef.workdir+'vod_play_with_buffering'
-    fifo = '/home/jias_huang/work/vod/test.fifo'
+    fifo = xdef.fifo
 
-def dispatch():
-    for i in range(3):
-        print('playing '+ str(i))
-        time.sleep(1)
+def setupPipe():
+    os.system('echo start > %s' %(defvals.fifo))
 
-def readCmd(gFlags, proc):
+def readCmd(proc):
     fp = open(defvals.fifo, "r")
     flag = fcntl.fcntl(fp, fcntl.F_GETFL)
     fcntl.fcntl(fp, fcntl.F_SETFL, flag | os.O_NONBLOCK)
-    while gFlags.value == 0:
+    while 1:
+        time.sleep(1)
         cmd = fp.read().strip()
+        if proc.poll() != None:
+            break
         if cmd:
             if cmd == 'stop':
                 print('terminating current playback')
-                proc.terminate()
+                os.killpg(os.getpgid(proc.pid), signal.SIGTERM)
                 break
-            elif cmd == 'start':
-                continue
             else:
                 print('unknown command : \'%s\'' %(cmd))
-        else:
-            time.sleep(1)
     fp.close()
     print('readCmd End')
-    return
-
-def playURL(gFlags, url, ref=None):
-    dispatch()
-    gFlags.value = 1
-    print('playURL End')
     return
 
 def play_with_buffering(url, ref=None):
     fp = open(defvals.lock, 'w')
     try:
         fcntl.lockf(fp, fcntl.LOCK_EX | fcntl.LOCK_NB)
-    except IOError:
+    except:
         return False
 
     if url:
-        gFlags = Value('i', 0)
-        proc_playURL = Process(target=playURL, args=(gFlags, url, ref))
-        proc_readCmd = Process(target=readCmd, args=(gFlags, proc_playURL))
-        proc_playURL.start()
-        proc_readCmd.start()
-        os.system('echo start > %s' %(defvals.fifo))
-        proc_readCmd.join()
+        p = Process(target=setupPipe)
+        p.start()
+        data = {'omxp' : xdef.omxp, 'mpv' : xdef.mpv, 'ffplay' : xdef.ffplay}
+        cmd = '%s -o - \'%s\' | %s - ' %(xdef.ytdlcmd(), url, data[xplay.getPlayer()])
+        proc = subprocess.Popen(cmd, shell=True, preexec_fn=os.setsid)
+        readCmd(proc)
+        p.join()
+        return True
 
     fp.close()
     return True

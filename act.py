@@ -13,10 +13,14 @@ def main():
 
     parser = OptionParser()
     parser.add_option("-p", "--player", dest="player")
+    parser.add_option("--buffering", dest="buffering", action='store_true')
     (options, args) = parser.parse_args()
 
     if options.player:
         xarg.player = options.player
+
+    if options.buffering:
+        xarg.buffering = True
 
     if len(args) >= 1:
         act = args[0]

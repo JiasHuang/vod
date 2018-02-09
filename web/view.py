@@ -31,10 +31,10 @@ def playURL(url, opt=None):
     else:
         subprocess.Popen(cmd, shell=True)
 
-def sendACT(act, num):
+def sendACT(act, num, opt=None):
     if not os.path.exists(conf.act):
         return
-    cmd = 'python -u %s \'%s\' \'%s\' | tee -a %s' %(conf.act, act, num, conf.log)
+    cmd = 'python -u %s \'%s\' \'%s\' %s | tee -a %s' %(conf.act, act, num, opt or '', conf.log)
     if os.path.exists('/usr/bin/xterm'):
         subprocess.Popen(['/usr/bin/xterm', '-geometry', '80x24-50+50', '-display', ':0', '-e', cmd]).communicate()
     else:
@@ -64,8 +64,8 @@ def getOption(req):
         opt.append('--autosub %s' %(autosub))
     if pagelist:
         opt.append('--pagelist %s' %(pagelist))
-    if buffering:
-        opt.append('--buffering %s' %(buffering))
+    if buffering and buffering == 'yes':
+        opt.append('--buffering')
     return ' '.join(opt)
 
 def metadata(name, value=None):
@@ -153,7 +153,7 @@ def index(req):
         page.render(req, 'panel', '<h1>%s %s</h1>' %(msgID('playing'), msgLink(v)))
 
     elif a:
-        sendACT(a, n)
+        sendACT(a, n, getOption(req))
         req.write('<h1>%s %s</h1>' %(msgID(a), n or ''))
 
     elif c:

@@ -6,3 +6,4 @@ ytdlfmt             = '720p'
 autosub             = 'no'
 pagelist            = None
 playbackMode        = None
+buffering           = False
