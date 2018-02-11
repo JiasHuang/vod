@@ -31,10 +31,10 @@ def playURL(url, opt=None):
     else:
         subprocess.Popen(cmd, shell=True)
 
-def sendACT(act, num, opt=None):
+def sendACT(act, num):
     if not os.path.exists(conf.act):
         return
-    cmd = 'python -u %s \'%s\' \'%s\' %s | tee -a %s' %(conf.act, act, num, opt or '', conf.log)
+    cmd = 'python -u %s \'%s\' \'%s\' | tee -a %s' %(conf.act, act, num, conf.log)
     os.system('echo \'*** [%s] *** \' >> %s' %(cmd, conf.log))
     if os.path.exists('/usr/bin/xterm'):
         subprocess.Popen(['/usr/bin/xterm', '-geometry', '80x24-50+50', '-display', ':0', '-e', cmd]).communicate()
@@ -65,13 +65,6 @@ def getOption(req):
         opt.append('--autosub %s' %(autosub))
     if pagelist:
         opt.append('--pagelist %s' %(pagelist))
-    if buffering and buffering == 'yes':
-        opt.append('--buffering')
-    return ' '.join(opt)
-
-def getActOption(req):
-    buffering = getCookie(req, 'buffering')
-    opt = []
     if buffering and buffering == 'yes':
         opt.append('--buffering')
     return ' '.join(opt)
@@ -161,7 +154,7 @@ def index(req):
         page.render(req, 'panel', '<h1>%s %s</h1>' %(msgID('playing'), msgLink(v)))
 
     elif a:
-        sendACT(a, n, getActOption(req))
+        sendACT(a, n)
         req.write('<h1>%s %s</h1>' %(msgID(a), n or ''))
 
     elif c:

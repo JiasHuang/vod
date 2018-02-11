@@ -48,7 +48,6 @@ def play(url, ref):
 
         xargs.append('--user-agent=\'%s\'' %(xurl.defvals.ua))
         xargs.append('--referrer=\'%s\'' %(ref))
-        xargs.append('--input-file=\'%s\'' %(xdef.fifo))
 
         if cookies:
             xargs.append('--http-header-fields="Cookie:%s"' %(cookies))

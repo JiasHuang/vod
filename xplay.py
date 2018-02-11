@@ -151,10 +151,6 @@ def checkActVal(act, val):
 
 def setAct(act, val):
 
-    if xarg.buffering:
-        buffering.setAct(act, val)
-        return
-
     if checkActVal(act, val) == False:
         print('\n[xplay][setAct] invalid command: %s %s\n' %(act, val))
         return
