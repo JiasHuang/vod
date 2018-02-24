@@ -1189,6 +1189,13 @@
       touchPoints = (typeof orig.changedTouches !== 'undefined') ? orig.changedTouches : [orig],
       value       = 0,
       distance    = 0;
+
+      /* XXX */
+      var ua = navigator.userAgent.toLowerCase();
+      if (ua.indexOf("android") > -1) {
+              touchPoints = orig.changedTouches;
+      }
+
       // record end x, y positions
       slider.touch.end.x = touchPoints[0].pageX;
       slider.touch.end.y = touchPoints[0].pageY;
