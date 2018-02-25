@@ -21,24 +21,15 @@ function gotoSlide(index) {
     }
     $("#slideIndexBox a").removeClass('slideIndexFocus');
     $("#slideIndexBox a:nth-child("+(index+1).toString()+")").addClass('slideIndexFocus');
+    slideIdx = index;
 }
 
 function gotoNext() {
-    if (slideIdx >= slideCnt - 1) {
-        slideIdx = 0;
-    } else {
-        slideIdx = slideIdx + 1;
-    }
-    gotoSlide(slideIdx);
+    gotoSlide((slideIdx + 1) % slideCnt);
 }
 
 function gotoPrev() {
-    if (slideIdx <= 0) {
-        slideIdx = slideCnt - 1;
-    } else {
-        slideIdx = slideIdx - 1;
-    }
-    gotoSlide(slideIdx);
+    gotoSlide((slideIdx + slideCnt - 1) % slideCnt);
 }
 
 function handleTouchStart(evt) {
