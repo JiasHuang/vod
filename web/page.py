@@ -66,7 +66,6 @@ def darg(d, *arg):
 
 def addEntry(req, link, title, image=None, desc=None, password=None, video=True, referer=None):
     global entryCnt, entryVideos
-    entryCnt = entryCnt + 1
     req.write('\n<!--Entry%s-->\n' %(entryCnt))
     if link:
         req.write('<!--link="%s"-->\n' %(link))
@@ -87,7 +86,7 @@ def addEntry(req, link, title, image=None, desc=None, password=None, video=True,
     else:
         anchor = 'href="view.py?p=%s" onclick="onPageClick.call(this);" title="%s"' %(link, title)
     if image:
-        req.write('<div class="imageWrapper">\n')
+        req.write('<div class="imageWrapper" entryNo="%d">\n' %(entryCnt))
         req.write('<div class="imageContainer">\n')
         req.write('<a %s><img src="%s" onerror=\'this.onerror=null; this.src="Movies-icon.png"\' /></a>\n' %(anchor, image))
         if desc:
@@ -97,6 +96,7 @@ def addEntry(req, link, title, image=None, desc=None, password=None, video=True,
         req.write('</div>\n')
     else:
         req.write('<h2 class="entryTitle"><a %s>%s</a></h2>\n' %(anchor, title))
+    entryCnt = entryCnt + 1
 
 def addPage(req, link, title, image=None, desc=None):
     if not link:

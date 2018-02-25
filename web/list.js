@@ -1,41 +1,44 @@
 
-var indexCur = 0;
-var indexCnt = 0;
+var entryMax = 0;
+var slideIdx = 0;
+var slideCnt = 0;
 
 var xDown = null;
 var yDown = null;
 
-function showIndex() {
+function showSlideIndex() {
     var text = '';
-    for (i=0; i<indexCnt; i++) {
-        text += '<a class="resultIndex" onclick="gotoIndex('+i.toString()+')">+</a>\n';
+    for (i=0; i<slideCnt; i++) {
+        text += '<a class="slideIndex" onclick="gotoSlide('+i.toString()+')">+</a>\n';
     }
-    $('#resultIndexBox').html(text);
+    $('#slideIndexBox').html(text);
 }
 
-function gotoIndex(index) {
-    $(".entryCluster").hide();
-    $(".entryCluster[index='"+ index.toString() + "']").show();
-    $("#resultIndexBox a").removeClass('resultIndexFocus');
-    $("#resultIndexBox a:nth-child("+(index+1).toString()+")").addClass('resultIndexFocus');
+function gotoSlide(index) {
+    $(".imageWrapper").hide();
+    for (i=0; i<entryMax; i++) {
+        $(".imageWrapper[entryNo='"+ (index * entryMax + i).toString() + "']").show();
+    }
+    $("#slideIndexBox a").removeClass('slideIndexFocus');
+    $("#slideIndexBox a:nth-child("+(index+1).toString()+")").addClass('slideIndexFocus');
 }
 
 function gotoNext() {
-    if (indexCur >= indexCnt - 1) {
-        indexCur = 0;
+    if (slideIdx >= slideCnt - 1) {
+        slideIdx = 0;
     } else {
-        indexCur = indexCur + 1;
+        slideIdx = slideIdx + 1;
     }
-    gotoIndex(indexCur);
+    gotoSlide(slideIdx);
 }
 
 function gotoPrev() {
-    if (indexCur <= 0) {
-        indexCur = indexCnt - 1;
+    if (slideIdx <= 0) {
+        slideIdx = slideCnt - 1;
     } else {
-        indexCur = indexCur - 1;
+        slideIdx = slideIdx - 1;
     }
-    gotoIndex(indexCur);
+    gotoSlide(slideIdx);
 }
 
 function handleTouchStart(evt) {
@@ -80,22 +83,7 @@ function handleKeyDown(evt) {
     }
 }
 
-function setEntryCluster(entryMax) {
-    for (var i = 1; i <= $('.imageContainer').length; i++) {
-        if (i % entryMax == 1) {
-            var old_str = '<!--Entry'+i.toString()+'-->';
-            var new_str = '<div class=entryCluster index='+indexCnt.toString()+'>';
-            indexCnt = indexCnt + 1
-            if (i > entryMax) {
-                new_str = '</div>'+new_str;
-            }
-            document.body.innerHTML = document.body.innerHTML.replace(old_str, new_str);
-        }
-    }
-    document.body.innerHTML = document.body.innerHTML.replace('<!--EntryEnd-->', '</div>');
-}
-
-function setWidthHeight(entryMax) {
+function setWidthHeight() {
     var windowHeight = $(window).innerHeight();
     var windowWidth = $(window).innerWidth();
     var imageHeight = windowHeight * 90 / entryMax / 100;
@@ -116,16 +104,15 @@ function onPlayVideo() {
 function onPageReady() {
 
     var slider = localStorage.getItem('slider');
-    var entryMax = parseInt(localStorage.getItem('entryMax') || '5');
-
-    if (slider != 'no' && $('.imageContainer').length > entryMax) {
-        setEntryCluster(entryMax);
-        setWidthHeight(entryMax);
+    entryMax = parseInt(localStorage.getItem('entryMax') || '5');
+    slideCnt = Math.ceil($('.imageWrapper').length / entryMax)
+    if (slider != 'no' && slideCnt >= 1) {
+        setWidthHeight();
         document.addEventListener('touchstart', handleTouchStart, false);
         document.addEventListener('touchmove', handleTouchMove, false);
         document.addEventListener('keydown', handleKeyDown, false);
-        showIndex();
-        gotoIndex(0);
+        showSlideIndex();
+        gotoSlide(0);
     }
 
     $( "a[target='playVideo']" ).click(onPlayVideo);
