@@ -6,21 +6,25 @@ var slideCnt = 0;
 var xDown = null;
 var yDown = null;
 
-function showSlideIndex() {
+function initSlide() {
     var text = '';
+
+    text += '<select onchange="gotoSlide(this.selectedIndex)">';
     for (i=0; i<slideCnt; i++) {
-        text += '<a class="slideIndex" onclick="gotoSlide('+i.toString()+')">+</a>\n';
+        text += '<option value="'+i.toString()+'">'+(i+1).toString()+'</option>';
     }
+    text += '</select>';
+
     $('#slideIndexBox').html(text);
+    $(".imageWrapper").hide();
 }
 
 function gotoSlide(index) {
-    $(".imageWrapper").hide();
     for (i=0; i<entryMax; i++) {
+        $(".imageWrapper[entryNo='"+ (slideIdx * entryMax + i).toString() + "']").hide();
         $(".imageWrapper[entryNo='"+ (index * entryMax + i).toString() + "']").show();
     }
-    $("#slideIndexBox a").removeClass('slideIndexFocus');
-    $("#slideIndexBox a:nth-child("+(index+1).toString()+")").addClass('slideIndexFocus');
+    $("#slideIndexBox select").val(index);
     slideIdx = index;
 }
 
@@ -97,12 +101,12 @@ function onPageReady() {
     var slider = localStorage.getItem('slider');
     entryMax = parseInt(localStorage.getItem('entryMax') || '5');
     slideCnt = Math.ceil($('.imageWrapper').length / entryMax)
-    if (slider != 'no' && slideCnt >= 1) {
+    if (slider != 'no' && slideCnt > 1) {
         setWidthHeight();
         document.addEventListener('touchstart', handleTouchStart, false);
         document.addEventListener('touchmove', handleTouchMove, false);
         document.addEventListener('keydown', handleKeyDown, false);
-        showSlideIndex();
+        initSlide();
         gotoSlide(0);
     }
 

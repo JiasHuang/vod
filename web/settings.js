@@ -7,7 +7,7 @@ var settings = {
     },
     'entryMax' : {
         'type' : 'select',
-        'vals' : ['3', '4', '5'],
+        'vals' : ['3', '4', '5', '6', '7'],
         'defs' : '5',
     },
     'format' : {
