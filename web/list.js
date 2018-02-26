@@ -9,21 +9,25 @@ var yDown = null;
 function initSlide() {
     var text = '';
 
-    text += '<select onchange="gotoSlide(this.selectedIndex)">';
+    text += '<select onchange="gotoSlide(this.selectedIndex)">\n';
     for (i=0; i<slideCnt; i++) {
-        text += '<option value="'+i.toString()+'">'+(i+1).toString()+'</option>';
+        text += '\t<option value="'+i+'">'+(i+1)+'</option>\n';
     }
-    text += '</select>';
+    text += '</select>\n';
+    text += '<span>/'+slideCnt+'</span>\n';
 
+    //console.log(text);
     $('#slideIndexBox').html(text);
     $(".imageWrapper").hide();
 }
 
 function gotoSlide(index) {
-    for (i=0; i<entryMax; i++) {
-        $(".imageWrapper[entryNo='"+ (slideIdx * entryMax + i).toString() + "']").hide();
-        $(".imageWrapper[entryNo='"+ (index * entryMax + i).toString() + "']").show();
-    }
+    $(".imageWrapper").filter(function() {
+        return (Math.floor($(this).attr('entryNo')/entryMax) == slideIdx);
+    }).hide();
+    $(".imageWrapper").filter(function() {
+        return (Math.floor($(this).attr('entryNo')/entryMax) == index);
+    }).show();
     $("#slideIndexBox select").val(index);
     slideIdx = index;
 }
