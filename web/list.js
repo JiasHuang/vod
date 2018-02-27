@@ -1,44 +1,6 @@
 
-var entryMax = 0;
-var slideIdx = 0;
-var slideCnt = 0;
-
 var xDown = null;
 var yDown = null;
-
-function initSlide() {
-    var text = '';
-
-    text += '<select onchange="gotoSlide(this.selectedIndex)">\n';
-    for (i=0; i<slideCnt; i++) {
-        text += '\t<option value="'+i+'">'+(i+1)+'</option>\n';
-    }
-    text += '</select>\n';
-    text += '<span>/'+slideCnt+'</span>\n';
-
-    //console.log(text);
-    $('#slideIndexBox').html(text);
-    $(".imageWrapper").hide();
-}
-
-function gotoSlide(index) {
-    $(".imageWrapper").filter(function() {
-        return (Math.floor($(this).attr('entryNo')/entryMax) == slideIdx);
-    }).hide();
-    $(".imageWrapper").filter(function() {
-        return (Math.floor($(this).attr('entryNo')/entryMax) == index);
-    }).show();
-    $("#slideIndexBox select").val(index);
-    slideIdx = index;
-}
-
-function gotoNext() {
-    gotoSlide((slideIdx + 1) % slideCnt);
-}
-
-function gotoPrev() {
-    gotoSlide((slideIdx + slideCnt - 1) % slideCnt);
-}
 
 function handleTouchStart(evt) {
     xDown = evt.touches[0].clientX;
@@ -61,9 +23,9 @@ function handleTouchMove(evt) {
 
     if ( Math.abs(xDiff) > 10 ) {
         if ( xDiff > 0 ) {
-            gotoNext();
+            $('#result').gotoSlide(-1, 1);
         } else {
-            gotoPrev();
+            $('#result').gotoSlide(-1, -1);
         }
     }
 
@@ -75,10 +37,10 @@ function handleTouchMove(evt) {
 function handleKeyDown(evt) {
     if (evt.keyCode == 39) {
         evt.preventDefault();
-        gotoNext();
+        $('#result').gotoSlide(-1, 1);
     } else if (evt.keyCode == 37) {
         evt.preventDefault();
-        gotoPrev();
+        $('#result').gotoSlide(-1, -1);
     }
 }
 
@@ -96,22 +58,20 @@ function setWidthHeight() {
 }
 
 function onPlayVideo() {
-    if ($('#pageinfo').length)
-        saveCookie('pagelist', $('#pageinfo').attr('pagelist'));
+    if ($('#pagelist').length)
+        saveCookie('pagelist', $('#pagelist').attr('pagelist'));
 }
 
 function onPageReady() {
 
     var slider = localStorage.getItem('slider');
     entryMax = parseInt(localStorage.getItem('entryMax') || '5');
-    slideCnt = Math.ceil($('.imageWrapper').length / entryMax)
-    if (slider != 'no' && slideCnt > 1) {
+    if (slider != 'no' && $('.imageWrapper').length > entryMax) {
         setWidthHeight();
         document.addEventListener('touchstart', handleTouchStart, false);
         document.addEventListener('touchmove', handleTouchMove, false);
         document.addEventListener('keydown', handleKeyDown, false);
-        initSlide();
-        gotoSlide(0);
+        $('#result').initSlide({divGroup:entryMax, slideIndexBox:'slideIndexBox'});
     }
 
     $( "a[target='playVideo']" ).click(onPlayVideo);

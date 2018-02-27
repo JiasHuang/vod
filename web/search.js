@@ -67,8 +67,8 @@ function onPageNav(e) {
 }
 
 function onPlayVideo() {
-    if ($('#pageinfo').length)
-        saveCookie('pagelist', $('pagelist').attr('pagelist'));
+    if ($('#pagelist').length)
+        saveCookie('pagelist', $('#pagelist').attr('pagelist'));
 }
 
 function onSearchReady() {
