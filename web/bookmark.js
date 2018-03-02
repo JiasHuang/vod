@@ -12,9 +12,6 @@ function loadgist(gistid, filename) {
         parseJSON(JSON.parse(content));
     }).error( function(e) {
         console.log(e);
-        $.getJSON("bookmark.json", function(json) {
-            parseJSON(json);
-        });
     });
 }
 
@@ -79,7 +76,6 @@ function parseJSON(obj) {
 
 function onTimeout () {
     console.log('timeout');
-    $.getJSON("bookmark.json", parseJSON);
 }
 
 function onDocumentReady() {
