@@ -1,11 +1,6 @@
 
 $.fn.gotoSlide = function(index, offset = 0) {
 
-    if (this.data('target') !== undefined) {
-        $(this.data('target')).gotoSlide(index, offset);
-        return;
-    }
-
     var slideIdx = this.data('slideIdx');
     var slideCnt = this.data('slideCnt');
     var settings = this.data('settings');
@@ -48,14 +43,13 @@ $.fn.initSlide = function(options) {
     this.data('settings', settings);
 
     if (settings.slideIndexBox) {
-        var text = '<select onchange="$(this).gotoSlide(this.selectedIndex)">\n';
+        var text = '<select onchange="$(\'#'+ this.attr('id') +'\').gotoSlide(this.selectedIndex)">\n';
         for (i=0; i<slideCnt; i++) {
             text += '\t<option value="'+i+'">'+(i+1)+'</option>\n';
         }
         text += '</select>\n';
         text += '<span>/'+this.data('slideCnt')+'</span>\n';
         $('#'+settings.slideIndexBox).html(text);
-        $('#'+settings.slideIndexBox + ' select').data('target', this);
     }
 
     this.children('div').hide();
