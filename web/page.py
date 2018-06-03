@@ -427,10 +427,10 @@ def page_lovetv(req, url):
     elif re.search(r'(drama-list.html|/)$', url):
         for m in re.finditer(r'<a href=[\'|"]([^\'"]*)[\'|"]>([^<]*)</a>', load(url)):
             meta.comment(req, m.group())
-            if re.search(r'-list', m.group(1)):
+            if re.search(r'(-list|/label/)', m.group(1)):
                 addPage(req, xurl.absURL(m.group(1)), m.group(2))
-    elif re.search(r'-list', url):
-        for m in re.finditer(r'<a href="([^"]*)">([^<]*)</a>', load(url)):
+    elif re.search(r'(-list|/label/)', url):
+        for m in re.finditer(r'<a href=["|\'](.*?)["|\']>([^<]*)</a>', load(url)):
             meta.comment(req, m.group())
             if re.search(r'-ep([0-9]+).html$', m.group(1)):
                 addPage(req, xurl.absURL(m.group(1)), m.group(2))
@@ -496,6 +496,9 @@ def page_maplestage(req, url):
                                 if vtype in ['youtube', 'dailymotion']:
                                     title = getTitle(vtype, videoIndex, vcnt)
                                     addVideo(req, getLink(vtype, vid), title)
+                                if vtype == 'html':
+                                    vsrc = meta.search(r'src="([^"]*)"', vid)
+                                    addVideo(req, vsrc)
                     except:
                         meta.comment(req, 'Exception')
 
