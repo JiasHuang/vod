@@ -82,8 +82,11 @@ def metadata(name, value=None):
     return value
 
 def handleCmd(cmd):
-    os.system('rm -f '+conf.workdir+'vod_*')
+    cmd = cmd.lower()
     if cmd in ['update', 'updatedb']:
+        os.system('rm -f '+conf.workdir+'vod_*')
+        runCmd(cmd)
+    elif cmd in ['normal', 'autonext', 'loopone', 'loopall']:
         runCmd(cmd)
     else:
         return 'error'

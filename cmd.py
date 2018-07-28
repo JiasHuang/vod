@@ -5,6 +5,7 @@ import os
 import re
 import sys
 
+import xdef
 import xurl
 
 def search(patten, txt):
@@ -39,6 +40,10 @@ def updatedb():
         updateDataBaseEntry(fd, m.group(1), m.group(2))
     fd.close()
 
+def playbackMode(mode):
+    xurl.saveLocal(xdef.playbackMode, mode or 'normal', 0)
+    return
+
 def main():
 
     if len(sys.argv) < 2:
@@ -50,6 +55,8 @@ def main():
         update()
     elif cmd == 'updatedb':
         updatedb()
+    elif cmd in ['normal', 'autonext', 'loopone', 'loopall']:
+        playbackMode(cmd)
 
     return
 

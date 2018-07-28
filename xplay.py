@@ -133,7 +133,7 @@ def playURL(url, ref):
                 url = ref = nextURL
             else:
                 playURL_core(url, ref)
-                url = None
+                url = getNext(url, playlist)
     else:
         playURL_core(url, ref)
 

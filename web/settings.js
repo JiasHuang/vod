@@ -20,12 +20,6 @@ var settings = {
         'vals' : ['yes', 'no'],
         'defs' : 'no',
     },
-    'playbackMode' : {
-        'type' : 'select',
-        'vals' : ['Normal', 'AutoNext', 'LoopOne', 'LoopAll'],
-        'defs' : 'Normal',
-        'sync' : 'div_playbackMode',
-    },
     'youtubeID' : {
         'type' : 'input',
         'defs' : '',
@@ -34,14 +28,9 @@ var settings = {
         'type' : 'input',
         'defs' : '',
     },
-    'buffering' : {
-        'type' : 'select',
-        'vals' : ['yes', 'no'],
-        'defs' : 'no',
-    },
 };
 
-var settings_cookies = ['format', 'autosub', 'playbackMode', 'buffering'];
+var settings_cookies = ['format', 'autosub'];
 
 function saveCookies() {
     var lists = settings_cookies;

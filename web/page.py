@@ -558,7 +558,7 @@ def page_youtube_playlists(req, url):
         for x in meta.findItem(data, ['gridPlaylistRenderer']):
             try:
                 playlistId = x['playlistId'].encode('utf8')
-                title = x['title']['simpleText'].encode('utf8')
+                title = x['title']['runs'][0]['text'].encode('utf8')
                 image = x['thumbnail']['thumbnails'][0]['url'].encode('utf8')
                 addPage(req, 'https://www.youtube.com/playlist?list='+playlistId, title, image, 'Playlist')
             except:
