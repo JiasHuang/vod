@@ -14,6 +14,7 @@
     window.onload = function() {
         showMenuLink();
         showServerMessage();
+        initPlaybackMode();
     }
 </script>
 
@@ -65,8 +66,22 @@
         <td><a href=settings.html><span class="menulink" id="settings"></span></a></td>
         <td><a href=settings.html><img src="settings-icon-32.png" /></a></td>
     </tr></table>
+
     <br>
-    <img src="mic-icon.png" onload="loadImage()" onclick="startDictation()" id="ximage" />
+    <img id="btn_more" src="Add-icon.png" onclick="showStuff('more', 'btn_more')" />
+
+    <div id="more" style="display: none;">
+      <img src="Close-icon.png" onclick="showStuff('btn_more', 'more')" />
+      <br><br><img src="mic-icon.png" onload="loadImage()" onclick="startDictation()" id="ximage" />
+      <br><br><table>
+      <tr>
+          <td class="btn" id="btn_autoNext" onclick="setPlaybackMode('AutoNext')"><span class="message" id="autoNext"></span></td>
+          <td class="btn" id="btn_loopAll" onclick="setPlaybackMode('LoopAll')"><span class="message" id="loopAll"></span></td>
+          <td class="btn" id="btn_loopOne" onclick="setPlaybackMode('LoopOne')"><span class="message" id="loopOne"></span></td>
+      </tr>
+      </table>
+    </div>
+
 </div>
 
 </center>

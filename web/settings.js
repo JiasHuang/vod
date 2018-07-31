@@ -44,7 +44,7 @@ function save() {
         localStorage.setItem(id, $('#'+id).val());
     }
     saveCookies();
-    window.location.href = 'view.py?m=sync';
+    window.location.href = 'view.py';
 }
 
 function resetSettings() {

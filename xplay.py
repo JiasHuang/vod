@@ -159,6 +159,10 @@ def setAct(act, val):
         if os.path.exists(xdef.playlist):
             os.remove(xdef.playlist)
 
+    if act == 'playbackMode':
+        xurl.saveLocal(xdef.playbackMode, val, 0)
+        return
+
     player = getPlayer()
     print('\n[xplay][setAct]\n\n\t'+ '%s,%s,%s' %(player, act, val))
 

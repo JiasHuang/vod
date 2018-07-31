@@ -1,6 +1,7 @@
 
 var act = ''
 var num = ''
+var playbackMode = 'Normal'
 
 function addCode(key) {
 	num = num + key;
@@ -53,6 +54,39 @@ function setAct(key) {
 function onLoadCompleted (responseTxt, statusTxt, xhr) {
     if (statusTxt == "success")
         showServerMessage();
-    if(statusTxt == "error")
+    if (statusTxt == "error")
         alert("Error: " + xhr.status + ": " + xhr.statusText);
+}
+
+function showStuff (id, btn = null) {
+    document.getElementById(id).style.display = 'block';
+    if (btn)
+        document.getElementById(btn).style.display = 'none';
+}
+
+function setPlaybackMode (mode) {
+    if (playbackMode.toLowerCase() == mode.toLowerCase())
+        playbackMode = 'Normal';
+    else
+        playbackMode = mode;
+    $("#result").load("view.py?a=playbackMode&n="+playbackMode, onLoadCompleted);
+    highlightPlaybackMode(playbackMode);
+}
+
+function initPlaybackMode () {
+    playbackMode = document.getElementById('playbackMode').getAttribute('playbackMode');
+    highlightPlaybackMode(playbackMode);
+}
+
+function highlightPlaybackMode (mode) {
+    mode = mode.toLowerCase();
+    document.getElementById('btn_autoNext').classList.remove("btn_hl");
+    document.getElementById('btn_loopAll').classList.remove("btn_hl");
+    document.getElementById('btn_loopOne').classList.remove("btn_hl");
+    if (mode == 'autonext')
+        document.getElementById('btn_autoNext').classList.add("btn_hl");
+    if (mode == 'loopall')
+        document.getElementById('btn_loopAll').classList.add("btn_hl");
+    if (mode == 'loopone')
+        document.getElementById('btn_loopOne').classList.add("btn_hl");
 }

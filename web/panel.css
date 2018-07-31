@@ -53,6 +53,16 @@
     vertical-align: middle;
 }
 
+.btn {
+    font-size: 36px;
+    line-height: 64px;
+    border:2px dashed gray;
+}
+
+.btn_hl {
+    border:2px solid blue;
+}
+
 .result {
     word-wrap: break-word;
 }

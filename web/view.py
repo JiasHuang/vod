@@ -69,24 +69,10 @@ def getOption(req):
         opt.append('--buffering')
     return ' '.join(opt)
 
-def metadata(name, value=None):
-    local = None
-    if name == 'playbackMode':
-        local = conf.playbackMode
-    if not local:
-        return ''
-    if value and len(value) > 0:
-        xurl.saveLocal(local, value, 0)
-    else:
-        value = xurl.readLocal(local, 0)
-    return value
-
 def handleCmd(cmd):
     cmd = cmd.lower()
     if cmd in ['update', 'updatedb']:
         os.system('rm -f '+conf.workdir+'vod_*')
-        runCmd(cmd)
-    elif cmd in ['normal', 'autonext', 'loopone', 'loopall']:
         runCmd(cmd)
     else:
         return 'error'
@@ -97,6 +83,9 @@ def msgID(ID):
 
 def msgLink(link):
     return '<a target=_blank href=%s>%s</a>' %(link, link)
+
+def getPlaybackMode():
+    return '<meta id="playbackMode" playbackMode="%s">' %(xurl.readLocal(conf.playbackMode))
 
 def index(req):
 
@@ -114,10 +103,6 @@ def index(req):
     f = form.get('f', None) # file
     c = form.get('c', None) # command
     x = form.get('x', None) # extra
-    m = form.get('m', None) # metadata
-
-    if not os.path.exists(conf.playbackMode):
-        metadata('playbackMode', getCookie(req, 'playbackMode'))
 
     if i:
         i = i.strip()
@@ -149,12 +134,14 @@ def index(req):
 
     elif f:
         playURL(f)
-        page.render(req, 'panel', '<h1>%s %s</h1>' %(msgID('playing'), f))
+        result = '%s<h1>%s %s</h1>' %(getPlaybackMode(), msgID('playing'), f)
+        page.render(req, 'panel', result)
 
     elif v:
         v = getUnparsedURL(req) or v
         playURL(v, getOption(req))
-        page.render(req, 'panel', '<h1>%s %s</h1>' %(msgID('playing'), msgLink(v)))
+        result = '%s<h1>%s %s</h1>' %(getPlaybackMode(), msgID('playing'), msgLink(v))
+        page.render(req, 'panel', result)
 
     elif a:
         sendACT(a, n)
@@ -163,15 +150,9 @@ def index(req):
     elif c:
         page.render(req, 'status', '<h1>%s</h1>' %(msgID(handleCmd(c))))
 
-    elif m:
-        if m == 'sync':
-            metadata('playbackMode', getCookie(req, 'playbackMode'))
-            page.render(req, 'panel', None)
-        else:
-            req.write('<div id="div_%s" value="%s"></div>' %(m, metadata(m)))
-
     else:
-        page.render(req, 'panel', None)
+        result = getPlaybackMode()
+        page.render(req, 'panel', result)
 
     return
 
