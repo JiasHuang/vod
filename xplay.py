@@ -115,6 +115,7 @@ def playURL(url, ref):
         if os.path.exists(xdef.playlist):
             playbackMode = xurl.readLocal(xdef.playbackMode, 0).lower()
             if len(playbackMode) > 0 and playbackMode != 'normal':
+                os.remove(xdef.playlist)
                 setAct('stop', None)
 
     if xarg.playbackMode:
