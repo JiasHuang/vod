@@ -731,16 +731,16 @@ def page_odnoklassniki(req, url):
 
 def page_cctv(req, url):
     txt = load(url)
-    jsonData2 = meta.search(r'var jsonData2=(.*?);', txt, re.DOTALL|re.MULTILINE)
-    jsonData2 = '{"list":%s}' %(re.sub('\'', '"', jsonData2))
-    meta.comment(req, jsonData2)
-    try:
-        data = json.loads(jsonData2)
-        for d in data['list']:
-            url, title, img = darg(d, 'url', 'title', 'img')
-            addVideo(req, url, title, img)
-    except:
-        return
+    for m in re.finditer(r'var jsonData\d*=(.*?);', txt, re.DOTALL|re.MULTILINE):
+        ctx = '{"list":%s}' %(re.sub('\'', '"', m.group(1)))
+        meta.comment(req, ctx)
+        try:
+            data = json.loads(ctx)
+            for d in data['list']:
+                url, title, img = darg(d, 'url', 'title', 'img')
+                addVideo(req, url, title, img)
+        except:
+            meta.comment(req, 'Exception')
     return
 
 def page_cntv(req, url):
