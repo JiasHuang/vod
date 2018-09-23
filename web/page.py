@@ -5,6 +5,7 @@ import re
 import os
 import urlparse
 import time
+import json
 
 import meta
 import xurl
@@ -728,6 +729,32 @@ def page_odnoklassniki(req, url):
     cmd = 'wget'
     return meta.findVideoLink(req, url, showImage=True, ImageExt=None, cmd=cmd)
 
+def page_cctv(req, url):
+    txt = load(url)
+    jsonData2 = meta.search(r'var jsonData2=(.*?);', txt, re.DOTALL|re.MULTILINE)
+    jsonData2 = '{"list":%s}' %(re.sub('\'', '"', jsonData2))
+    meta.comment(req, jsonData2)
+    try:
+        data = json.loads(jsonData2)
+        for d in data['list']:
+            url, title, img = darg(d, 'url', 'title', 'img')
+            addVideo(req, url, title, img)
+    except:
+        return
+    return
+
+def page_cntv(req, url):
+    txt = load(url)
+    meta.comment(req, txt)
+    try:
+        data = json.loads(txt)
+        for d in data['list']:
+            name, photo, url = darg(d, 'name', 'video_album_photo_url', 'video_album_url')
+            addPage(req, url, name, photo)
+    except:
+        return
+    return
+
 def savePageList():
     global entryVideos
     local = '/var/tmp/vod_list_pagelist_%s' %(str(os.getpid() % 100))
@@ -774,6 +801,10 @@ def page_core(req, url):
         page_8maple(req, url)
     elif re.search(r'ok.ru', url):
         page_odnoklassniki(req, url)
+    elif re.search(r'cctv.com', url):
+        page_cctv(req, url)
+    elif re.search(r'api.cntv.cn', url):
+        page_cntv(req, url)
     else:
         page_def(req, url)
     onPageEnd(req)
