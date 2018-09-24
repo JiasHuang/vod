@@ -11,6 +11,7 @@ import odnoklassniki
 import xuite
 import goodtv
 import litv
+import iqiyi
 import youtubedl
 import xurl
 
@@ -78,6 +79,9 @@ def getSource(url, key=None, ref=None):
 
         elif re.search('litv', url):
             src = litv.getSource(url)
+
+        elif re.search('cache.video.iqiyi.com/.*?/dash', url):
+            src = iqiyi.getSource(url)
 
         elif not xurl.getContentType(url).startswith('text'):
             src = url
