@@ -770,7 +770,7 @@ def onPageEnd(req):
         req.write('<h1><span class="message" id="NotFound"></span></h1>\n')
     req.write('\n<!--EntryEnd-->\n')
     req.write('\n<!--PageList-->\n')
-    req.write('<meta id="pagelist" pagelist="%s"></div>\n' %(savePageList()))
+    req.write('<meta id="pagelist" pagelist="%s">\n' %(savePageList()))
     xurl.showDebugLog(req)
 
 def page_core(req, url):

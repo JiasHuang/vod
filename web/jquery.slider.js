@@ -50,6 +50,7 @@ $.fn.initSlide = function(options) {
         text += '</select>\n';
         text += '<span>/'+this.data('slideCnt')+'</span>\n';
         $('#'+settings.slideIndexBox).html(text);
+        $('#'+settings.slideIndexBox).show();
     }
 
     this.children('div').hide();
