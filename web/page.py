@@ -217,20 +217,24 @@ def search_youtube(req, q, sp=None):
     addYouTubeNextPage(req, q, url)
 
 def search_google(req, q, start=None):
-    url = 'http://www.google.com/search?num=30&hl=en&q=site%3Adrive.google.com%20video%20'+q
+    url = 'http://www.google.com/search?num=30&hl=en&q=site%3Adrive.google.com%20'+q
     if start:
         url = url+'&start='+start
     txt = load(url)
-    for m in re.finditer(r'<h3 class="r"><a href="([^"]*)" .*?>(.*?)</a>', txt):
+    for m in re.finditer(r'<a href="([^"]*)".*?>(.*?)</a>', txt):
+        meta.comment(req, m.group())
         link, title = m.group(1), m.group(2)
+        m2 = re.search(r'<h3.*?>(.*?)</h3>', title)
+        if m2:
+            title = m2.group(1)
         link = re.sub('preview', 'view', link)
-        title = re.sub('- Google Drive', '', title)
+        title = re.sub('- Google Drive', '', title).rstrip()
         q1 = re.sub('\*', '+', q)
         for x in re.split('\+', q1):
             if not re.search(re.escape(x), title, re.IGNORECASE):
                 link = title = None
                 break
-        if link and title:
+        if link and title and re.search(r'(mp4|mkv|avi)$', title, re.IGNORECASE):
             addVideo(req, link, title)
     addGoogleNextPage(req, q, txt)
 

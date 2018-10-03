@@ -69,6 +69,8 @@ def getImage(link, referer=None):
     return None
 
 def comment(req, msg):
+    msg = re.sub('<!--', '<___>', msg)
+    msg = re.sub('-->', '</___>', msg)
     req.write('\n<!--\n')
     req.write(msg)
     req.write('\n-->\n')
