@@ -217,7 +217,7 @@ def search_youtube(req, q, sp=None):
     addYouTubeNextPage(req, q, url)
 
 def search_google(req, q, start=None):
-    url = 'http://www.google.com/search?num=30&hl=en&q=site%3Adrive.google.com%20'+q
+    url = 'http://www.google.com/search?num=50&hl=en&q=site%3Adrive.google.com%20'+q
     if start:
         url = url+'&start='+start
     txt = load(url)
@@ -234,7 +234,7 @@ def search_google(req, q, start=None):
             if not re.search(re.escape(x), title, re.IGNORECASE):
                 link = title = None
                 break
-        if link and title and re.search(r'(mp4|mkv|avi)$', title, re.IGNORECASE):
+        if link and title and re.search(r'(mp4|mkv|avi|wmv)$', title, re.IGNORECASE):
             addVideo(req, link, title)
     addGoogleNextPage(req, q, txt)
 
@@ -759,6 +759,17 @@ def page_cntv(req, url):
         return
     return
 
+def page_pianku(req, url):
+    txt = load(url)
+    if re.search(r'--_', url):
+        for m in re.finditer(r'<div class="li-img">.*?<a href="(.*?)" title="(.*?)"><img src="(.*?)"', txt):
+            link, title, img = m.group(1), m.group(2), m.group(3)
+            addPage(req, link, title, img)
+    else:
+        for m in re.finditer(r'<li><a href="([^"]*)" target="_blank">(.*?)</a></li>', txt):
+            link, title = m.group(1), m.group(2)
+            addVideo(req, 'https://www.pianku.tv'+link, title)
+
 def savePageList():
     global entryVideos
     local = '/var/tmp/vod_list_pagelist_%s' %(str(os.getpid() % 100))
@@ -809,6 +820,8 @@ def page_core(req, url):
         page_cctv(req, url)
     elif re.search(r'api.cntv.cn', url):
         page_cntv(req, url)
+    elif re.search(r'pianku.tv', url):
+        page_pianku(req, url)
     else:
         page_def(req, url)
     onPageEnd(req)
