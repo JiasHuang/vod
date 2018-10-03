@@ -761,14 +761,15 @@ def page_cntv(req, url):
 
 def page_pianku(req, url):
     txt = load(url)
-    if re.search(r'--_', url):
-        for m in re.finditer(r'<div class="li-img">.*?<a href="(.*?)" title="(.*?)"><img src="(.*?)"', txt):
-            link, title, img = m.group(1), m.group(2), m.group(3)
-            addPage(req, link, title, img)
-    else:
+    basename = url.split('/')[-1]
+    if len(basename) == 15:
         for m in re.finditer(r'<li><a href="([^"]*)" target="_blank">(.*?)</a></li>', txt):
             link, title = m.group(1), m.group(2)
             addVideo(req, 'https://www.pianku.tv'+link, title)
+    else:
+        for m in re.finditer(r'<div class="li-img">.*?<a href="(.*?)" title="(.*?)"><img src="(.*?)"', txt):
+            link, title, img = m.group(1), m.group(2), m.group(3)
+            addPage(req, link, title, img)
 
 def savePageList():
     global entryVideos
