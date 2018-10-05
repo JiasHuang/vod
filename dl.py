@@ -24,8 +24,8 @@ def filter(url, flt):
             print('\t'+link)
     return results
 
-def genName(name, suffix):
-    i = 1
+def genName(name, suffix, sn):
+    i = int(sn)
     while os.path.exists("%s_%03d.%s" %(name , i, suffix)):
         i += 1
     return '%s_%03d.%s' %(name, i, suffix)
@@ -36,7 +36,7 @@ def dl(url, options):
         return subprocess.Popen(cmd, shell=True)
     elif options.execute == 'ffmpeg':
         src, cookie, ref = xsrc.getSource(url)
-        local = genName(options.name, options.type)
+        local = genName(options.name, options.type, options.sn)
         cmd = 'ffmpeg -i \'%s\' -vcodec copy -acodec copy %s' %(src, local)
         return subprocess.Popen(cmd, shell=True)
     else:
@@ -64,6 +64,7 @@ def main():
     parser.add_option("-j", "--jobs", dest="jobs", default='1')
     parser.add_option("-n", "--name", dest="name", default='dl')
     parser.add_option("-t", "--type", dest="type", default='mp4')
+    parser.add_option("--sn", dest="sn", default='1')
     (options, args) = parser.parse_args()
 
     if options.chdir:
