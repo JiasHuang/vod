@@ -3,6 +3,8 @@
 
 import os
 import re
+import subprocess
+import time
 
 import xurl
 import xsrc
@@ -16,7 +18,7 @@ def filter(url, flt):
         url = 'http://127.0.0.1/vod/' + url
     results = []
     for m in re.finditer(flt, xurl.load2(url)):
-        link = m.group(1)
+        link = m.group()
         if link not in results:
             results.append(link)
             print('\t'+link)
@@ -31,14 +33,25 @@ def genName(name, suffix):
 def dl(url, options):
     if options.execute == 'ytdl':
         cmd = 'youtube-dl \'%s\'' %(url)
-        os.system(cmd)
+        return subprocess.Popen(cmd, shell=True)
     elif options.execute == 'ffmpeg':
         src, cookie, ref = xsrc.getSource(url)
         local = genName(options.name, options.type)
         cmd = 'ffmpeg -i \'%s\' -vcodec copy -acodec copy %s' %(src, local)
-        os.system(cmd)
+        return subprocess.Popen(cmd, shell=True)
     else:
         print('[dl] '+ url)
+        return None
+
+def waitJobs(procs, options):
+    while len(procs) >= int(options.jobs):
+        time.sleep(1)
+        for p in procs:
+            if p.poll() != None:
+                p.communicate()
+                procs.remove(p)
+                break
+    return procs
 
 def main():
 
@@ -48,7 +61,7 @@ def main():
     parser.add_option("-f", "--filter", dest="filter", action='append')
     parser.add_option("-s", "--sort", dest="sort", action='append')
     parser.add_option("-x", "--execute", dest="execute")
-    parser.add_option("-j", "--jobs", dest="jobs")
+    parser.add_option("-j", "--jobs", dest="jobs", default='1')
     parser.add_option("-n", "--name", dest="name", default='dl')
     parser.add_option("-t", "--type", dest="type", default='mp4')
     (options, args) = parser.parse_args()
@@ -58,6 +71,7 @@ def main():
 
     results = [options.input]
     results_next = []
+    procs = []
     for i in range(len(options.filter)):
         for x in results:
             results_next.extend(filter(x, options.filter[i]))
@@ -67,7 +81,13 @@ def main():
         results_next = []
 
     for x in results:
-        dl(x, options)
+        p = dl(x, options)
+        if p:
+            procs.append(p)
+            procs = waitJobs(procs, options)
+
+    for p in procs:
+        p.communicate()
 
     return
 
