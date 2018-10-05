@@ -29,10 +29,10 @@ def genName(name, suffix):
     return '%s_%03d.%s' %(name, i, suffix)
 
 def dl(url, options):
-    if options.proc == 'youtubedl':
+    if options.execute == 'ytdl':
         cmd = 'youtube-dl \'%s\'' %(url)
         os.system(cmd)
-    elif options.proc == 'ffmpeg':
+    elif options.execute == 'ffmpeg':
         src, cookie, ref = xsrc.getSource(url)
         local = genName(options.name, options.type)
         cmd = 'ffmpeg -i \'%s\' -vcodec copy -acodec copy %s' %(src, local)
@@ -47,7 +47,8 @@ def main():
     parser.add_option("-c", "--chdir", dest="chdir")
     parser.add_option("-f", "--filter", dest="filter", action='append')
     parser.add_option("-s", "--sort", dest="sort", action='append')
-    parser.add_option("-p", "--proc", dest="proc")
+    parser.add_option("-x", "--execute", dest="execute")
+    parser.add_option("-j", "--jobs", dest="jobs")
     parser.add_option("-n", "--name", dest="name", default='dl')
     parser.add_option("-t", "--type", dest="type", default='mp4')
     (options, args) = parser.parse_args()
