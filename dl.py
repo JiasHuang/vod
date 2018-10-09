@@ -4,6 +4,7 @@
 import os
 import re
 import subprocess
+import urlparse
 import time
 
 import xurl
@@ -11,14 +12,25 @@ import xsrc
 
 from optparse import OptionParser
 
+def absURL(current, target):
+    if target.startswith('http'):
+        return target
+    o = urlparse.urlparse(current)
+    if target.startswith('//'):
+        return '%s:%s' %(parsed.scheme, target)
+    if target.startswith('/'):
+        return '%s://%s%s' %(o.scheme, o.netloc, target)
+    return '%s://%s%s%s' %(o.scheme, o.netloc, os.path.split(o.path)[0], target)
+
 def filter(url, flt):
     print('[url] ' + url)
     print('[flt] ' + flt)
-    if not url.startswith('http'):
-        url = 'http://127.0.0.1/vod/' + url
     results = []
     for m in re.finditer(flt, xurl.load2(url)):
-        link = m.group()
+        if re.compile(flt).groups > 0:
+            link = absURL(url, m.group(1))
+        else:
+            link = absURL(url, m.group())
         if link not in results:
             results.append(link)
             print('\t'+link)
