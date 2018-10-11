@@ -12,15 +12,15 @@ import xsrc
 
 from optparse import OptionParser
 
-def absURL(current, target):
+def absURL(ref, target):
     if target.startswith('http'):
         return target
-    o = urlparse.urlparse(current)
+    o = urlparse.urlparse(ref)
     if target.startswith('//'):
         return '%s:%s' %(parsed.scheme, target)
     if target.startswith('/'):
         return '%s://%s%s' %(o.scheme, o.netloc, target)
-    return '%s://%s%s/%s' %(o.scheme, o.netloc, os.path.split(o.path)[0], target)
+    return '%s://%s%s/%s' %(o.scheme, o.netloc, os.path.dirname(o.path) or '', target)
 
 def filter(url, flt):
     print('[url] ' + url)
