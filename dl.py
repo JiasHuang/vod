@@ -20,7 +20,7 @@ def absURL(current, target):
         return '%s:%s' %(parsed.scheme, target)
     if target.startswith('/'):
         return '%s://%s%s' %(o.scheme, o.netloc, target)
-    return '%s://%s%s%s' %(o.scheme, o.netloc, os.path.split(o.path)[0], target)
+    return '%s://%s%s/%s' %(o.scheme, o.netloc, os.path.split(o.path)[0], target)
 
 def filter(url, flt):
     print('[url] ' + url)
