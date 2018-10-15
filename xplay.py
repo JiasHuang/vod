@@ -131,10 +131,9 @@ def playURL(url, ref):
                 p.start()
                 playURL_core(url, ref)
                 p.join()
-                url = ref = nextURL
             else:
                 playURL_core(url, ref)
-                url = getNext(url, playlist)
+            url = ref = getNext(url, playlist)
     else:
         playURL_core(url, ref)
 
