@@ -234,7 +234,7 @@ def search_google(req, q, start=None):
             if not re.search(re.escape(x), title, re.IGNORECASE):
                 link = title = None
                 break
-        if link and title and re.search(r'(mp4|mkv|avi|wmv)$', title, re.IGNORECASE):
+        if link and title and not re.search(r'(pdf|doc)$', title, re.IGNORECASE):
             addVideo(req, link, title)
     addGoogleNextPage(req, q, txt)
 
