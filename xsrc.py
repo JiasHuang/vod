@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import re
+import subprocess
 
 import videomega
 import videowood
@@ -39,6 +40,20 @@ def parseParameters(url, key, ref):
         url = m.group(1)
 
     return url, key, ref
+
+def getRedirectLink(url):
+    cmd = 'curl -I %s' %(url)
+    output = subprocess.check_output(cmd, shell=True)
+    m = re.search('Location: (.*?)\n', output)
+    if m:
+        return m.group(1)
+    return url
+
+def removeHashTag(url):
+    m = re.search('(.*?)#', url)
+    if m:
+        return m.group(1)
+    return url
 
 def getSource(url, key=None, ref=None):
 
@@ -93,6 +108,9 @@ def getSource(url, key=None, ref=None):
         else:
             src, cookies = youtubedl.extractURL(url, key=key, ref=ref)
             srcRef = url
+            if re.search('dailymotion', src):
+                src = getRedirectLink(src)
+                src = removeHashTag(src)
 
     if not src:
         src = getIframeSrc(url)
