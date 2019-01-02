@@ -602,6 +602,7 @@ def page_youtube_channel(req, url):
                 break
             except:
                 meta.comment(req, 'Exception:\n'+str(x))
+    page_youtube_videos(req, url+'/videos?view=2')
     page_youtube_playlists(req, url+'/playlists')
 
 def page_youtube(req, url):
@@ -771,6 +772,18 @@ def page_pianku(req, url):
             link, title, img = m.group(1), m.group(2), m.group(3)
             addPage(req, link, title, img)
 
+def page_pangzitv(req, url):
+    if re.search(r'vod-detail-id', url):
+        for m in re.finditer(r'href="(/\?m=vod-play-id-[^"]*)" title="(.*?)"', load(url)):
+            ep_url, ep_title = 'http://www.pangzitv.com' + m.group(1), m.group(2)
+            addVideo(req, ep_url, ep_title)
+    elif re.search(r'vod-type-id', url):
+        for m in re.finditer(r'href="([^"]*)" .*? <img class="lazy" src="([^"]*)" alt="([^"]*)"', load(url)):
+            p_url = 'http://www.pangzitv.com' + m.group(1)
+            p_image = 'http://www.pangzitv.com' + m.group(2)
+            p_title = m.group(3)
+            addPage(req, p_url, p_title, p_image)
+
 def savePageList():
     global entryVideos
     local = '/var/tmp/vod_list_pagelist_%s' %(str(os.getpid() % 100))
@@ -823,6 +836,8 @@ def page_core(req, url):
         page_cntv(req, url)
     elif re.search(r'pianku.tv', url):
         page_pianku(req, url)
+    elif re.search(r'pangzitv', url):
+        page_pangzitv(req, url)
     else:
         page_def(req, url)
     onPageEnd(req)

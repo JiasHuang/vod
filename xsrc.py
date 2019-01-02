@@ -14,6 +14,7 @@ import goodtv
 import litv
 import iqiyi
 import pianku
+import pangzitv
 import youtubedl
 import xurl
 
@@ -101,6 +102,9 @@ def getSource(url, key=None, ref=None):
 
         elif re.search(r'pianku.tv', url):
             src = pianku.getSource(url)
+
+        elif re.search(r'pangzitv', url):
+            src = pangzitv.getSource(url)
 
         elif not xurl.getContentType(url).startswith('text'):
             src = url
