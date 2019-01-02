@@ -777,7 +777,7 @@ def page_pangzitv(req, url):
         for m in re.finditer(r'href="(/\?m=vod-play-id-[^"]*)" title="(.*?)"', load(url)):
             ep_url, ep_title = 'http://www.pangzitv.com' + m.group(1), m.group(2)
             addVideo(req, ep_url, ep_title)
-    elif re.search(r'vod-type-id', url):
+    elif re.search(r'(vod-type-id|vod-list-id)', url):
         for m in re.finditer(r'href="([^"]*)" .*? <img class="lazy" src="([^"]*)" alt="([^"]*)"', load(url)):
             p_url = 'http://www.pangzitv.com' + m.group(1)
             p_image = 'http://www.pangzitv.com' + m.group(2)
