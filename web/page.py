@@ -799,7 +799,10 @@ def page_bilibili(req, url):
     txt = load(url)
     if re.search(r'/video/', url):
         for m in re.finditer(r'"page":(\d+),"from":"[^"]*","part":"([^"]*)","duration":(\d+)', txt):
-            link = url+'?p='+m.group(1)
+            if re.search(r'\?', url):
+                link = url+'&p='+m.group(1)
+            else:
+                link = url+'?p='+m.group(1)
             title = m.group(2)
             desc = time.strftime('%H:%M:%S', time.gmtime(int(m.group(3))))
             addVideo(req, link, title, desc=desc)

@@ -104,6 +104,12 @@ def index(req):
     c = form.get('c', None) # command
     x = form.get('x', None) # extra
 
+    if p and not re.search(r'view\.py\?p=', req.unparsed_uri):
+        p = None
+
+    if v and not re.search(r'view\.py\?v=', req.unparsed_uri):
+        v = None
+
     if i:
         i = i.strip()
         if i.startswith('#'):
