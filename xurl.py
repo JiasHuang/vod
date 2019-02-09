@@ -10,6 +10,8 @@ import hashlib
 import urlparse
 import time
 import subprocess
+import StringIO
+import gzip
 
 gDebugLog = []
 domain = None
@@ -17,11 +19,9 @@ domain = None
 class defvals:
     workdir             = '/var/tmp/'
     wget_path_cookie    = workdir+'vod_wget.cookie'
-    wget_path_log       = workdir+'vod_wget.log'
     ua                  = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Safari/537.36'
     wget_opt_base       = 'wget -T 10 -S'
     wget_opt_cookie     = '--save-cookies %s --load-cookies %s' %(wget_path_cookie, wget_path_cookie)
-    wget_opt_log        = '-o %s' %(wget_path_log)
     wget_opt_ua         = '-U \'%s\'' %(ua)
     wget_opt_lang       = '--header=\'Accept-Language:zh-TW,zh;q=0.9,en-US;q=0.8,en;q=0.7\''
     wget                = '%s %s' %(wget_opt_base, wget_opt_ua)
@@ -134,8 +134,6 @@ def load(url, local=None, headers=None, cache=True):
         return 'Exception HTTPError: ' + str(e.code)
     except urllib2.URLError, e:
         return 'Exception URLError: ' + str(e.reason)
-    except httplib.HTTPException, e:
-        return 'Exception HTTPException'
     except:
         return 'Exception'
 
@@ -162,9 +160,12 @@ def post(url, payload, local=None, headers=None, cache=True):
 def wget(url, local, options=None, cmd=None):
     print('[wget] %s -> %s' %(url, local))
     c = '%s %s' %(cmd or defvals.wget, options or '')
-    cmd = '%s %s -O %s \'%s\'' %(c, defvals.wget_opt_log, local, url)
+    cmd = '%s -O %s \'%s\'' %(c, local, url)
     try:
-        subprocess.check_output(cmd, shell=True)
+        output = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True)
+        if re.search('Content-Encoding: gzip', output):
+            cmd2 = 'mv %s %s.gz; gunzip %s.gz' %(local, local, local)
+            subprocess.check_output(cmd2, shell=True)
     except:
         print('Exception: '+cmd)
     return

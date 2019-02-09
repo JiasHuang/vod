@@ -15,6 +15,7 @@ import litv
 import iqiyi
 import pianku
 import pangzitv
+import bilibili
 import youtubedl
 import xurl
 
@@ -105,6 +106,9 @@ def getSource(url, key=None, ref=None):
 
         elif re.search(r'pangzitv', url):
             src = pangzitv.getSource(url)
+
+        elif re.search(r'bilibili', url):
+            src = bilibili.getSource(url)
 
         elif not xurl.getContentType(url).startswith('text'):
             src = url

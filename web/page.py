@@ -263,9 +263,8 @@ def search_bilibili(req, q):
     txt = load(url)
     for m in re.finditer(r'<a href="([^"]*)" target="_blank" title="([^"]*)"(.*?)</a>', txt, re.DOTALL | re.MULTILINE):
         link, title = m.group(1), m.group(2)
-        desc = meta.search(r'span class="so-imgTag_rb">(.*?)</span>', m.group(), re.DOTALL | re.MULTILINE)
         if re.search('/video/', link):
-            addVideo(req, link, title, desc=desc)
+            addPage(req, link, title)
 
 def search(req, q, s=None, x=None):
     s = (s or 'youtube').lower()
@@ -796,6 +795,15 @@ def page_pangzitv(req, url):
             p_title = m.group(3)
             addPage(req, p_url, p_title, p_image)
 
+def page_bilibili(req, url):
+    txt = load(url)
+    if re.search(r'/video/', url):
+        for m in re.finditer(r'"page":(\d+),"from":"[^"]*","part":"([^"]*)","duration":(\d+)', txt):
+            link = url+'?p='+m.group(1)
+            title = m.group(2)
+            desc = time.strftime('%H:%M:%S', time.gmtime(int(m.group(3))))
+            addVideo(req, link, title, desc=desc)
+
 def savePageList():
     global entryVideos
     local = '/var/tmp/vod_list_pagelist_%s' %(str(os.getpid() % 100))
@@ -850,6 +858,8 @@ def page_core(req, url):
         page_pianku(req, url)
     elif re.search(r'pangzitv', url):
         page_pangzitv(req, url)
+    elif re.search(r'bilibili', url):
+        page_bilibili(req, url)
     else:
         page_def(req, url)
     onPageEnd(req)
