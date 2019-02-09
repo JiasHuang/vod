@@ -75,6 +75,7 @@ def addEntry(req, link, title, image=None, desc=None, password=None, video=True,
     if image:
         req.write('<!--image="%s"-->\n' %(image))
     if desc:
+        desc = desc.strip()
         req.write('<!--desc="%s"-->\n' %(desc))
     if video:
         if password:
@@ -257,6 +258,15 @@ def search_dailymotion(req, q):
     url = 'https://api.dailymotion.com/videos/?search="'+q+'"&limit=100&fields=id,title,duration'
     return parseDailyMotionJSON(req, url)
 
+def search_bilibili(req, q):
+    url = 'https://search.bilibili.com/video?keyword='+q
+    txt = load(url)
+    for m in re.finditer(r'<a href="([^"]*)" target="_blank" title="([^"]*)"(.*?)</a>', txt, re.DOTALL | re.MULTILINE):
+        link, title = m.group(1), m.group(2)
+        desc = meta.search(r'span class="so-imgTag_rb">(.*?)</span>', m.group(), re.DOTALL | re.MULTILINE)
+        if re.search('/video/', link):
+            addVideo(req, link, title, desc=desc)
+
 def search(req, q, s=None, x=None):
     s = (s or 'youtube').lower()
     q1 = re.sub(' ', '+', q)
@@ -272,6 +282,8 @@ def search(req, q, s=None, x=None):
         search_xuite(req, q1)
     elif s == 'dailymotion':
         search_dailymotion(req, q1)
+    elif s == 'bilibili':
+        search_bilibili(req, q1)
     onPageEnd(req)
 
 def page_def(req, url):
