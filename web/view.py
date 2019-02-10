@@ -12,6 +12,14 @@ import xurl
 
 from mod_python import util, Cookie
 
+def search_unquote(pattern, txt, flags=0):
+    if not txt:
+        return None
+    m = re.search(pattern, txt, flags)
+    if m:
+        return urllib.unquote(m.group(1))
+    return None
+
 def runCmd(cmd):
     if not os.path.exists(conf.vod):
         return
@@ -40,12 +48,6 @@ def sendACT(act, num):
         subprocess.Popen(['/usr/bin/xterm', '-geometry', '80x24-50+50', '-display', ':0', '-e', cmd]).communicate()
     else:
         subprocess.Popen(cmd, shell=True).communicate()
-
-def getUnparsedURL(req):
-    m = re.search(r'=(.*)$', req.unparsed_uri, re.DOTALL)
-    if m:
-        return urllib.unquote(m.group(1))
-    return None
 
 def getCookie(req, key):
     cookies = Cookie.get_cookies(req)
@@ -92,23 +94,18 @@ def index(req):
     req.content_type = 'text/html; charset=utf-8'
     form = req.form or util.FieldStorage(req)
 
+    p = search_unquote(r'view\.py\?p=(.*)$', req.unparsed_uri, re.DOTALL)
+    v = search_unquote(r'view\.py\?v=(.*)$', req.unparsed_uri, re.DOTALL)
+
+    i = form.get('i', None) # input
     a = form.get('a', None) # action
     n = form.get('n', None) # number
-    i = form.get('i', None) # input
-    p = form.get('p', None) # page
-    v = form.get('v', None) # video
     q = form.get('q', None) # query
     s = form.get('s', None) # search
     d = form.get('d', None) # directory
     f = form.get('f', None) # file
     c = form.get('c', None) # command
     x = form.get('x', None) # extra
-
-    if p and not re.search(r'view\.py\?p=', req.unparsed_uri):
-        p = None
-
-    if v and not re.search(r'view\.py\?v=', req.unparsed_uri):
-        v = None
 
     if i:
         i = i.strip()
@@ -124,8 +121,12 @@ def index(req):
             q = re.sub('\s+', ' ', i)
 
     if p:
-        p = getUnparsedURL(req) or p
         page.page(req, p)
+
+    elif v:
+        playURL(v, getOption(req))
+        result = '%s<h1>%s %s</h1>' %(getPlaybackMode(), msgID('playing'), msgLink(v))
+        page.render(req, 'panel', result)
 
     elif q:
         url = 'search.html?q='+q
@@ -141,12 +142,6 @@ def index(req):
     elif f:
         playURL(f)
         result = '%s<h1>%s %s</h1>' %(getPlaybackMode(), msgID('playing'), f)
-        page.render(req, 'panel', result)
-
-    elif v:
-        v = getUnparsedURL(req) or v
-        playURL(v, getOption(req))
-        result = '%s<h1>%s %s</h1>' %(getPlaybackMode(), msgID('playing'), msgLink(v))
         page.render(req, 'panel', result)
 
     elif a:
