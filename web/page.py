@@ -105,6 +105,8 @@ def addPage(req, link, title, image=None, desc=None):
         return
     if link.startswith('//'):
         link = re.sub('//', 'http://', link)
+    if image.startswith('//'):
+        image = re.sub('//', 'http://', image)
     addEntry(req, link, title, image, desc, video=False)
 
 def addVideo(req, link, title=None, image=None, desc=None, password=None, referer=None):
@@ -112,6 +114,8 @@ def addVideo(req, link, title=None, image=None, desc=None, password=None, refere
         return
     if link.startswith('//'):
         link = 'http:' + link
+    if image.startswith('//'):
+        image = re.sub('//', 'http://', image)
     addEntry(req, link, title or link, image or meta.getImage(link, referer) or 'Movies-icon.png', desc, password, referer=referer)
 
 def getLink(site, vid):
@@ -261,6 +265,20 @@ def search_dailymotion(req, q):
 def search_bilibili(req, q):
     url = 'https://search.bilibili.com/video?keyword='+q
     txt = load(url)
+    jsonTxt = meta.search(r'__INITIAL_STATE__=(.*?});', txt);
+    if jsonTxt:
+        data = meta.parseJSON(jsonTxt)
+        meta.comment(req, str(data))
+        try:
+            for videoData in data['videoData']:
+                meta.comment(req, str(videoData))
+                arcurl, title, pic, duration = darg(videoData, 'arcurl', 'title', 'pic', 'duration')
+                title = re.sub('<.*?>', '', title)
+                title = re.sub('</.*?>', '', title)
+                addPage(req, arcurl, title, pic, desc=duration)
+        except:
+            meta.comment(req, 'Exception')
+        return
     for m in re.finditer(r'<a href="([^"]*)" target="_blank" title="([^"]*)"(.*?)</a>', txt, re.DOTALL | re.MULTILINE):
         link, title = m.group(1), m.group(2)
         if re.search('/video/', link):
@@ -798,6 +816,24 @@ def page_pangzitv(req, url):
 def page_bilibili(req, url):
     txt = load(url)
     if re.search(r'/video/', url):
+        jsonTxt = meta.search(r'__INITIAL_STATE__=(.*?});', txt);
+        if jsonTxt:
+            data = meta.parseJSON(jsonTxt)
+            meta.comment(req, str(data))
+            try:
+                image = darg(data['videoData'], 'pic')
+                for vp in data['videoData']['pages']:
+                    meta.comment(req, str(vp))
+                    if re.search(r'\?', url):
+                        link = url+'&p='+str(vp['page'])
+                    else:
+                        link = url+'?p='+str(vp['page'])
+                    title = darg(vp, 'part')
+                    desc = time.strftime('%H:%M:%S', time.gmtime(vp['duration']))
+                    addVideo(req, link, title, image, desc)
+            except:
+                meta.comment(req, 'Exception')
+            return
         for m in re.finditer(r'"page":(\d+),"from":"[^"]*","part":"([^"]*)","duration":(\d+)', txt):
             if re.search(r'\?', url):
                 link = url+'&p='+m.group(1)
