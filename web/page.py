@@ -69,10 +69,12 @@ def addEntry(req, link, title, image=None, desc=None, password=None, video=True,
     global entryCnt, entryVideos
     req.write('\n<!--Entry%s-->\n' %(entryCnt))
     if link:
+        link = xurl.absURL(link)
         req.write('<!--link="%s"-->\n' %(link))
     if title:
         req.write('<!--title="%s"-->\n' %(title))
     if image:
+        image = xurl.absURL(image)
         req.write('<!--image="%s"-->\n' %(image))
     if desc:
         desc = desc.strip()
@@ -103,19 +105,11 @@ def addEntry(req, link, title, image=None, desc=None, password=None, video=True,
 def addPage(req, link, title, image=None, desc=None):
     if not link:
         return
-    if link.startswith('//'):
-        link = re.sub('//', 'http://', link)
-    if image.startswith('//'):
-        image = re.sub('//', 'http://', image)
     addEntry(req, link, title, image, desc, video=False)
 
 def addVideo(req, link, title=None, image=None, desc=None, password=None, referer=None):
     if not link:
         return
-    if link.startswith('//'):
-        link = 'http:' + link
-    if image.startswith('//'):
-        image = re.sub('//', 'http://', image)
     addEntry(req, link, title or link, image or meta.getImage(link, referer) or 'Movies-icon.png', desc, password, referer=referer)
 
 def getLink(site, vid):
