@@ -27,10 +27,11 @@ class entryObj(object):
     title = None
     image = None
 
-    def __init__(self, url, title, image):
+    def __init__(self, url, title, image, html):
         self.url = url
         self.title = title
         self.image = image
+        self.html = html
 
 def search(pattern, txt, flags=0):
     if not txt:
@@ -101,20 +102,22 @@ def findVideoLink(req, url, showPage=False, showImage=False, ImageSrc='src', Ima
             else:
                 page.addPage(req, link, title)
 
-def findImageLink(req, url, unquote=False, showPage=False):
+def findImageLink(req, url, unquote=False, showPage=False, ImageExt='jpg'):
     parsed_uri = urlparse.urlparse(url)
     domain = '{uri.scheme}://{uri.netloc}'.format(uri=parsed_uri)
     txt = xurl.load2(url)
     objs = []
     for m in re.finditer(r'<a\s.*?</a>', txt, re.DOTALL|re.MULTILINE):
         link = search(r'href\s*=\s*"([^"]*)"', m.group(0))
-        image = search(r'src\s*=\s*"(.*?\.jpg)"', m.group(0))
+        image = search(r'src\s*=\s*"([^"]*)"', m.group(0))
         title = search(r'alt\s*=\s*"([^"]*)"', m.group(0)) or search(r'title\s*=\s*"([^"]*)"', m.group(0))
+        if image and ImageExt and not image.endswith(ImageExt):
+            continue
         if link and image:
             if unquote == True:
                 link = urllib.unquote(link)
             if not req:
-                objs.append(entryObj(link, title or link, image))
+                objs.append(entryObj(link, title or link, image, m.group(0)))
                 continue
             if showPage == False:
                 page.addVideo(req, link, title or link, image)

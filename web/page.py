@@ -346,15 +346,7 @@ def page_xuiteDIR(req, url):
     return
 
 def page_litv(req, url):
-    if re.search(r'/movie/', url):
-        for m in re.finditer(r'<div class="movie_poster play_by_content_id" (.*?)>', load(url)):
-            contentId = meta.search(r'data-content-id="(.*?)"', m.group())
-            title = meta.search(r'title="(.*?)"', m.group())
-            image = meta.search(r'background-image:url\((.*?)\)', m.group())
-            if contentId and title and image:
-                addVideo(req, 'https://www.litv.tv/vod/movie/content.do?id='+contentId, title, image)
-        return
-    m = re.search(r'(\?|&)id=([a-zA-Z0-9]*)', url)
+    m = re.search(r'(\?|&)content_id=([a-zA-Z0-9]*)', url)
     if m:
         _contentId = m.group(2)
         dataURL = 'https://www.litv.tv/vod/ajax/getProgramInfo?contentId='+_contentId
@@ -371,7 +363,12 @@ def page_litv(req, url):
             imageFile = meta.search(r'"videoImage":"([^"]*)"', m.group())
             addVideo(req, re.sub(_contentId, contentId, url), subtitle, imageFile)
     else:
-        meta.findVideoLink(req, url, True, True, ImagePattern=r'\"([^ ]*jpg)\"')
+        objs = meta.findImageLink(None, url, True, ImageExt=None)
+        for obj in objs:
+            if obj.url.startswith('/'):
+                link = 'https://www.litv.tv' + obj.url
+                image = meta.search(r'\"([^"]*\.jpg)\"', obj.html)
+                addPage(req, link, obj.title, image)
 
 def page_iqiyi(req, url):
     if re.search(r'list.', url):
@@ -419,32 +416,21 @@ def page_letv(req, url):
                     pages.append(m.group(1))
     '''
     for page in pages[0:5]:
-        objs = meta.findImageLink(None, page, True)
+        objs = meta.findImageLink(None, page, True, ImageExt='png')
         for obj in objs:
             if re.search(r'/tv/', obj.url):
-                addPage(req, obj.url, obj.title, obj.image)
+                image = meta.search(r'\'(.*?.jpg)\'', obj.html)
+                addPage(req, obj.url, obj.title, image)
             elif re.search(r'/vplay/', obj.url):
-                addVideo(req, obj.url, obj.title, obj.image)
+                image = meta.search(r'\'([^\']*\.jpg)\'', obj.html)
+                addVideo(req, obj.url, obj.title, image)
 
 def page_youku(req, url):
-    if re.search(r'/v_show/', url):
-        txt = load(url)
-        if re.search(r'tvlist', txt):
-            pattern = r'name="tvlist"(.*?)</div>'
-        else:
-            pattern = r'<div class="program(.*?)</div>'
-        for m in re.finditer(pattern, txt):
-            url = meta.search(r'href="([^"]*)"', m.group())
-            title = meta.search(r'title="([^"]*)"', m.group())
-            if url and title:
-                addVideo(req, url, title)
-    else:
-        for m in re.finditer(r'<div class="p-thumb">(.*?)</div>', load(url)):
-            url = meta.search(r'href="([^"]*)"', m.group())
-            title = meta.search(r'title="([^"]*)"', m.group())
-            image = meta.search(r'src="([^"]*)"', m.group())
-            addPage(req, url, title, image)
-    return
+    for m in re.finditer(r'<div class="p-thumb">(.*?)</div>', load(url)):
+        url = meta.search(r'href="([^"]*)"', m.group())
+        title = meta.search(r'title="([^"]*)"', m.group())
+        image = meta.search(r'src="([^"]*)"', m.group())
+        addVideo(req, url, title, image)
 
 def page_lovetv(req, url):
     if re.search(r'special-drama-list.html$', url):
@@ -670,89 +656,6 @@ def page_gdrive(req, url):
             meta.comment(req, 'exception in page_gdrive')
             return
 
-def page_8maple_video(req, url):
-    cmd = 'wget -S %s %s' %(xurl.defvals.wget_opt_cookie, xurl.defvals.wget_opt_lang)
-    txt = xurl.load2(url, cmd=cmd)
-    source = []
-    for m in re.finditer(r'(\w+)(_openload|_filescdn|\$\$drama|\$\$maple)(\d*)', txt):
-        source.append(m.groups())
-    for s in set(source):
-        sourceDomain = re.sub(r'(\$|_)', '', s[1])
-        sourceURL = 'http://8video.tv/'+sourceDomain+'/?url='+''.join(s)
-        meta.comment(req, 'sourceURL : ' + sourceURL)
-        if sourceDomain in ['drama', 'maple']:
-            continue
-        else:
-            sourceURLTxt = xurl.load2(sourceURL, ref=url, cmd=cmd)
-            videoURL = re.search(r'innerHTML=\'<iframe .*? src="([^"]*)"', sourceURLTxt)
-            if videoURL:
-                addVideo(req, videoURL.group(1), referer=sourceURL)
-
-def page_8maple_jschl_answer(txt):
-    local_js = conf.workdir+'8maple.js'
-    local_log = conf.workdir+'8maple.log'
-    m = re.search(r'<script.*?</script>', txt, re.DOTALL | re.MULTILINE)
-    if m:
-        print('\n'+m.group()+'\n')
-        val = re.search(r'var s,t,o,p,b,r,e,a,k,i,n,g,f, ([^=]+)=.*?;', m.group(), re.DOTALL)
-        if val:
-            fd = open(local_js, 'w')
-            fd.write(val.group()+'\n')
-            valname = val.group(1)
-            for vals in re.finditer(re.escape(valname)+r'.*?;', m.group()):
-                if re.search('=', vals.group()):
-                    fd.write(vals.group()+'\n')
-            parseInt = re.search(r'parseInt\(.*?\)', m.group())
-            if parseInt:
-                fd.write('console.log(%s + 9);\n' %(parseInt.group()))
-            fd.close()
-            print(xurl.readLocal(local_js))
-            os.system('js %s > %s' %(local_js, local_log))
-            return int(xurl.readLocal(local_log))
-    return 0
-
-def page_8maple_setup_cookie():
-    m = re.search(r'(\d+)(\t| )+cf_clearance', xurl.readLocal(xurl.defvals.wget_path_cookie))
-    if m:
-        if int(m.group(1)) > int(time.time()):
-            t = time.localtime(float(m.group(1)))
-            print('cf_clearance is unexpired (%s)' %(time.strftime('%Y-%m-%d %H:%M', t)))
-            return True
-    cmd = 'wget -S --content-on-error %s %s' %(xurl.defvals.wget_opt_cookie, xurl.defvals.wget_opt_lang)
-    txt = xurl.load2('http://8maple.ru', cache=False, cmd=cmd)
-    if len(txt) == 0:
-        return False
-    challengeForm = meta.search(r'<form id="challenge-form"(.*?)</form', txt, re.DOTALL | re.MULTILINE)
-    if challengeForm:
-        v_action = meta.search(r'action="([^"]*)"', challengeForm)
-        v_jschl_vc = meta.search(r'name="jschl_vc" value="([^"]*)"', challengeForm)
-        v_pass = meta.search(r'name="pass" value="([^"]*)"', challengeForm)
-        v_jschl_answer = page_8maple_jschl_answer(txt)
-        newURL = xurl.absURL(v_action)+'?jschl_vc=%s&pass=%s&jschl_answer=%d' %(v_jschl_vc, v_pass, v_jschl_answer)
-        print(newURL)
-        time.sleep(4)
-        txt = xurl.load2(newURL, ref='http://8maple.ru/', cmd=cmd)
-        if not re.search('cf_clearance', xurl.readLocal(xurl.defvals.wget_path_cookie)):
-            print('cf_clearance NotFound')
-            return False
-    return True
-
-def page_8maple(req, url):
-    if not page_8maple_setup_cookie():
-        return
-    cmd = 'wget -S %s %s' %(xurl.defvals.wget_opt_cookie, xurl.defvals.wget_opt_lang)
-    if re.search(r'/category/', url):
-        meta.findVideoLink(req, url, showPage=True, showImage=False, ImageExt=None, cmd=cmd)
-    else:
-        txt = xurl.load2(url, cmd=cmd)
-        lists = meta.search(r'<tbody>(.*?)</table>', txt, re.DOTALL|re.MULTILINE)
-        if lists:
-            for m in re.finditer(r'<a href="([^"]*)">(.*?)</a>', lists):
-                pageURL, pageTitle = m.group(1), m.group(2)
-                addPage(req, pageURL, pageTitle, image=None, desc=None)
-        else:
-            page_8maple_video(req, url)
-
 def page_odnoklassniki(req, url):
     cmd = 'wget'
     return meta.findVideoLink(req, url, showImage=True, ImageExt=None, cmd=cmd)
@@ -787,11 +690,13 @@ def page_pianku(req, url):
     txt = load(url)
     basename = url.split('/')[-1]
     if len(basename) == 15:
-        for m in re.finditer(r'<li><a href="([^"]*)" target="_blank">(.*?)</a></li>', txt):
+        url_tv = 'https://www.pianku.tv/ajax/downurl/%s_tv/' %(basename[0:10])
+        for m in re.finditer(r'<li><a rel="nofollow" href="([^"]*)" target="_blank">(.*?)</a></li>', load(url_tv)):
             link, title = m.group(1), m.group(2)
-            addVideo(req, 'https://www.pianku.tv'+link, title)
+            if link.startswith('/'):
+                addVideo(req, 'https://www.pianku.tv'+link, title)
     else:
-        for m in re.finditer(r'<div class="li-img">.*?<a href="(.*?)" title="(.*?)"><img src="(.*?)"', txt):
+        for m in re.finditer(r'<a href="(.*?)" title="(.*?)" target="_blank"><img src="(.*?)"', txt):
             link, title, img = m.group(1), m.group(2), m.group(3)
             addPage(req, link, title, img)
 
@@ -879,8 +784,6 @@ def page_core(req, url):
         page_youku(req, url)
     elif re.search(r'drive\.google\.com', url):
         page_gdrive(req, url)
-    elif re.search(r'8maple', url):
-        page_8maple(req, url)
     elif re.search(r'ok.ru', url):
         page_odnoklassniki(req, url)
     elif re.search(r'cctv.com', url):
