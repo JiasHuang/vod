@@ -471,16 +471,14 @@ def page_maplestage(req, url):
         if pageProps:
             data = meta.parseJSON(pageProps)
             meta.comment(req, str(data))
-            prefix = ['熱門戲劇 : ', '最新戲劇 : ', '']
-            for index, category in enumerate(['hotShows', 'latestShows', 'shows']):
-                try:
-                    for show in data[category]:
-                        meta.comment(req, str(show))
-                        slug, cover = darg(show, 'slug', 'cover')
-                        link = 'http://maplestage.com/show/' + slug
-                        addPage(req, link, prefix[index]+slug)
-                except:
-                    meta.comment(req, 'Exception: '+category)
+            try:
+                for show in sorted(data['shows'], key=lambda x : x['updatedAt'], reverse=True):
+                    meta.comment(req, str(show))
+                    slug, cover = darg(show, 'slug', 'cover')
+                    link = 'http://maplestage.com/show/' + slug
+                    addPage(req, link, slug)
+            except:
+                meta.comment(req, 'Exception: '+category)
     elif re.search(r'/show/', url):
         pageData = meta.search(r'var pageData = (.*?});', load(url));
         if pageData:
