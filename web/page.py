@@ -363,12 +363,24 @@ def page_litv(req, url):
             imageFile = meta.search(r'"videoImage":"([^"]*)"', m.group())
             addVideo(req, re.sub(_contentId, contentId, url), subtitle, imageFile)
     else:
-        objs = meta.findImageLink(None, url, True, ImageExt=None)
-        for obj in objs:
-            if obj.url.startswith('/'):
-                link = 'https://www.litv.tv' + obj.url
-                image = meta.search(r'\"([^"]*\.jpg)\"', obj.html)
-                addPage(req, link, obj.title, image)
+        progs = meta.search(r'var programs = (.*?});', load(url))
+        if progs:
+            data = meta.parseJSON(progs)
+            try:
+                for vod in data['vodList']:
+                    meta.comment(req, str(vod))
+                    contentId, title, image = darg(vod, 'contentId', 'title', 'imageFile')
+                    link = 'https://www.litv.tv/vod/drama/content.do?content_id='+contentId
+                    addPage(req, link, title, image)
+            except:
+                meta.comment(req, 'Exception: '+category)
+        else:
+            objs = meta.findImageLink(None, url, True, ImageExt=None)
+            for obj in objs:
+                if obj.url.startswith('/'):
+                    link = 'https://www.litv.tv' + obj.url
+                    image = meta.search(r'\"([^"]*\.jpg)\"', obj.html)
+                    addPage(req, link, obj.title, image)
 
 def page_iqiyi(req, url):
     if re.search(r'list.', url):
@@ -390,19 +402,11 @@ def page_iqiyi(req, url):
                     else:
                         addPage(req, link, title, image)
     else:
-        albumId = meta.search(r'data-albumid="([^"]*)"', load(url))
-        if albumId:
-            avlist = load('http://cache.video.qiyi.com/jp/avlist/%s/?albumId=%s' %(albumId, albumId))
-            avlist = re.sub('var tvInfoJs=', '', avlist)
-            meta.comment(req, avlist)
-            data = meta.parseJSON(avlist)
-            if 'data' in data and 'vlist' in data['data'] and len(data['data']['vlist']) > 0:
-                for d in data['data']['vlist']:
-                    if 'vurl' in d and 'vn' in d and 'vpic' in d:
-                        link, title, image = darg(d, 'vurl', 'vn', 'vpic')
-                        addVideo(req, link, title, image)
-            else:
-                meta.findImageLink(req, url, True, False)
+        albumPage=meta.search(r'album-page="([^"]*)"', load(url))
+        if albumPage:
+            for m in re.finditer(r'"name":"([^"]*)","url":"([^"]*)","imageUrl":"([^"]*)"', load(xurl.absURL(albumPage))):
+                title, link, image = m.group(1), m.group(2), m.group(3)
+                addVideo(req, link, title, image)
 
 def page_letv(req, url):
     pages = []
