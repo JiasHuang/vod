@@ -744,6 +744,22 @@ def page_bilibili(req, url):
             desc = time.strftime('%H:%M:%S', time.gmtime(int(m.group(3))))
             addVideo(req, link, title, desc=desc)
 
+def page_line_today(req, url):
+    if re.search(r'api.today.line.me', url):
+        link = meta.search(r'"720":"([^"]*)"', load(url))
+        if link:
+            addVideo(req, link)
+    else:
+        programId = meta.search(r'data-programId="([^"]*)"', load(url))
+        if programId:
+            link = 'https://api.today.line.me/webapi/linelive/' + programId
+            addPage(req, link, link)
+        else:
+            objs = meta.findImageLink(None, url, True, ImageExt=None, ImagePattern=r'url\((.*?)\)')
+            for obj in objs:
+                addPage(req, obj.url, obj.title, obj.image)
+    return
+
 def savePageList():
     global entryVideos
     local = '/var/tmp/vod_list_pagelist_%s' %(str(os.getpid() % 100))
@@ -798,6 +814,8 @@ def page_core(req, url):
         page_pangzitv(req, url)
     elif re.search(r'bilibili', url):
         page_bilibili(req, url)
+    elif re.search(r'today.line.me', url):
+        page_line_today(req, url)
     else:
         page_def(req, url)
     onPageEnd(req)
