@@ -375,7 +375,7 @@ def page_litv(req, url):
             except:
                 meta.comment(req, 'Exception: '+category)
         else:
-            objs = meta.findImageLink(None, url, True, ImageExt=None)
+            objs = meta.findImageLink(url, ImageExt=None)
             for obj in objs:
                 if obj.url.startswith('/'):
                     link = 'https://www.litv.tv' + obj.url
@@ -420,7 +420,7 @@ def page_letv(req, url):
                     pages.append(m.group(1))
     '''
     for page in pages[0:5]:
-        objs = meta.findImageLink(None, page, True, ImageExt='png')
+        objs = meta.findImageLink(page, ImageExt='png')
         for obj in objs:
             if re.search(r'/tv/', obj.url):
                 image = meta.search(r'\'(.*?.jpg)\'', obj.html)
@@ -632,7 +632,9 @@ def page_dailymotion(req, url):
     if url.startswith('https://api.dailymotion.com'):
         parseDailyMotionJSON(req, url)
     else:
-        meta.findImageLink(req, url, True, False)
+        objs = meta.findImageLink(url)
+        for obj in objs:
+            addVideo(req, obj.url, obj.title, obj.image)
 
 def page_gdrive(req, url):
     txt = load(url)
@@ -746,16 +748,16 @@ def page_bilibili(req, url):
 
 def page_line_today(req, url):
     if re.search(r'api.today.line.me', url):
-        link = meta.search(r'"720":"([^"]*)"', load(url))
+        link = meta.search(r'"720":"([^"]*)"', xurl.load2(url, cache=False))
         if link:
             addVideo(req, link)
     else:
-        programId = meta.search(r'data-programId="([^"]*)"', load(url))
+        programId = meta.search(r'data-programId="([^"]*)"', xurl.load2(url, cache=False))
         if programId:
             link = 'https://api.today.line.me/webapi/linelive/' + programId
             addPage(req, link, link)
         else:
-            objs = meta.findImageLink(None, url, True, ImageExt=None, ImagePattern=r'url\((.*?)\)')
+            objs = meta.findImageLink(url, ImageExt=None, ImagePattern=r'url\((.*?)\)')
             for obj in objs:
                 addPage(req, obj.url, obj.title, obj.image)
     return
