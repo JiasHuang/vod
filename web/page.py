@@ -257,26 +257,19 @@ def search_dailymotion(req, q):
     return parseDailyMotionJSON(req, url)
 
 def search_bilibili(req, q):
-    url = 'https://search.bilibili.com/video?keyword='+q
-    txt = load(url)
-    jsonTxt = meta.search(r'__INITIAL_STATE__=(.*?});', txt);
-    if jsonTxt:
-        data = meta.parseJSON(jsonTxt)
-        meta.comment(req, str(data))
-        try:
-            for videoData in data['videoData']:
-                meta.comment(req, str(videoData))
-                arcurl, title, pic, duration = darg(videoData, 'arcurl', 'title', 'pic', 'duration')
-                title = re.sub('<.*?>', '', title)
-                title = re.sub('</.*?>', '', title)
-                addPage(req, arcurl, title, pic, desc=duration)
-        except:
-            meta.comment(req, 'Exception')
-        return
-    for m in re.finditer(r'<a href="([^"]*)" target="_blank" title="([^"]*)"(.*?)</a>', txt, re.DOTALL | re.MULTILINE):
-        link, title = m.group(1), m.group(2)
-        if re.search('/video/', link):
-            addPage(req, link, title)
+    url = 'https://api.bilibili.com/x/web-interface/search/type?jsonp=jsonp&search_type=video&keyword='+q
+    jsonTxt = load(url)
+    data = meta.parseJSON(jsonTxt)
+    meta.comment(req, str(data))
+    try:
+        for res in data['data']['result']:
+            meta.comment(req, str(res))
+            arcurl, title, pic, duration = darg(res, 'arcurl', 'title', 'pic', 'duration')
+            title = re.sub('<.*?>', '', title)
+            title = re.sub('</.*?>', '', title)
+            addPage(req, arcurl, title, pic, desc=duration)
+    except:
+        meta.comment(req, 'Exception')
 
 def search(req, q, s=None, x=None):
     s = (s or 'youtube').lower()
