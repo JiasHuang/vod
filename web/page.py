@@ -203,7 +203,10 @@ def search_youtube(req, q, sp=None):
                 if 'videoId' in x:
                     vid = x['videoId'].encode('utf8')
                     title = x['title']['simpleText'].encode('utf8')
-                    desc = x['lengthText']['simpleText'].encode('utf8')
+                    if 'lengthText' in x:
+                        desc = x['lengthText']['simpleText'].encode('utf8')
+                    else:
+                        desc = 'live'
                     image = x['thumbnail']['thumbnails'][0]['url'].encode('utf8')
                     addVideo(req, getLink('youtube', vid), title, image, desc=desc)
                 elif 'playlistId' in x:
@@ -280,6 +283,8 @@ def search(req, q, s=None, x=None):
         search_youtube(req, q1, x or 'EgIYAlAU')
     elif s == 'playlist':
         search_youtube(req, q1, x or 'EgIQA1AU')
+    elif s == 'live':
+        search_youtube(req, q1, x or 'EgJAAQ%3D%3D')
     elif s == 'google':
         search_google(req, q1, x)
     elif s == 'xuite':
