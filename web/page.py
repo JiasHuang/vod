@@ -760,6 +760,16 @@ def page_line_today(req, url):
                 addPage(req, obj.url, obj.title, obj.image)
     return
 
+def page_nbahdreplay(req, url):
+    if url.endswith(r'.com/'):
+        objs = meta.findImageLink(url, ImageExt=None)
+        for obj in objs:
+            if re.search(r'clip-link', obj.html):
+                addPage(req, obj.url, obj.title, obj.image)
+    else:
+        for m in re.finditer(r'href="(http://telechargementfilmhd.com[^"]*)"', load(url)):
+            addPage(req, m.group(1), m.group(1))
+
 def savePageList():
     global entryVideos
     local = '/var/tmp/vod_list_pagelist_%s' %(str(os.getpid() % 100))
@@ -816,6 +826,8 @@ def page_core(req, url):
         page_bilibili(req, url)
     elif re.search(r'today.line.me', url):
         page_line_today(req, url)
+    elif re.search(r'nbahdreplay', url):
+        page_nbahdreplay(req, url)
     else:
         page_def(req, url)
     onPageEnd(req)

@@ -20,7 +20,7 @@ import xurl
 itemResult = []
 
 class defs:
-    linkPattern = r'http(s|)://(www.|)(redirector.googlevideo|dailymotion|videomega|videowood|youtube|openload)(.com|.tv|.co)([^"]*)'
+    linkPattern = r'http(s|)://(www.|)(redirector.googlevideo|dailymotion|videomega|videowood|youtube|openload|streamango)(.com|.tv|.co)([^"]*)'
 
 class entryObj(object):
     url = None
