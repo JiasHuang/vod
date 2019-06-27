@@ -202,7 +202,8 @@ def search_youtube(req, q, sp=None):
             try:
                 if 'videoId' in x:
                     vid = x['videoId'].encode('utf8')
-                    title = x['title']['simpleText'].encode('utf8')
+                    #title = x['title']['simpleText'].encode('utf8')
+                    title = x['title']['runs'][0]['text'].encode('utf8')
                     if 'lengthText' in x:
                         desc = x['lengthText']['simpleText'].encode('utf8')
                     else:
