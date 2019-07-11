@@ -190,14 +190,20 @@ def parseDailyMotionJSON(req, url):
             continue
     return
 
+def parseYoutubeInitialDataJSON(url):
+    txt = loadYouTube(url)
+    ytInitialData = meta.search(r'window\["ytInitialData"\] = JSON.parse\("(.*?)"\);', txt)
+    ytInitialData = ytInitialData.decode('string_escape')
+    if ytInitialData:
+        return meta.parseJSON(ytInitialData)
+    return None
+
 def search_youtube(req, q, sp=None):
     url = 'https://www.youtube.com/results?q='+q
     if sp:
         url = url+'&sp='+sp
-    txt = loadYouTube(url)
-    ytInitialData = meta.search(r'window\["ytInitialData"\] = (.*?});', txt)
-    if ytInitialData:
-        data = meta.parseJSON(ytInitialData)
+    data = parseYoutubeInitialDataJSON(url)
+    if data:
         for x in meta.findItem(data, ['videoRenderer', 'playlistRenderer']):
             try:
                 if 'videoId' in x:
@@ -538,10 +544,8 @@ def page_japvideo(req, url):
     return
 
 def page_youtube_videos(req, url):
-    txt = loadYouTube(url)
-    ytInitialData = meta.search(r'window\["ytInitialData"\] = (.*?});', txt)
-    if ytInitialData:
-        data = meta.parseJSON(ytInitialData)
+    data = parseYoutubeInitialDataJSON(url)
+    if data:
         for x in meta.findItem(data, ['gridVideoRenderer']):
             try:
                 vid = x['videoId'].encode('utf8')
@@ -555,10 +559,8 @@ def page_youtube_videos(req, url):
                 meta.comment(req, 'Exception:\n'+str(x))
 
 def page_youtube_channels(req, url):
-    txt = loadYouTube(url)
-    ytInitialData = meta.search(r'window\["ytInitialData"\] = (.*?});', txt)
-    if ytInitialData:
-        data = meta.parseJSON(ytInitialData)
+    data = parseYoutubeInitialDataJSON(url)
+    if data:
         for x in meta.findItem(data, ['gridChannelRenderer']):
             try:
                 channelId = x['channelId'].encode('utf8')
@@ -569,10 +571,8 @@ def page_youtube_channels(req, url):
                 meta.comment(req, 'Exception:\n'+str(x))
 
 def page_youtube_playlists(req, url):
-    txt = loadYouTube(url)
-    ytInitialData = meta.search(r'window\["ytInitialData"\] = (.*?});', txt)
-    if ytInitialData:
-        data = meta.parseJSON(ytInitialData)
+    data = parseYoutubeInitialDataJSON(url)
+    if data:
         for x in meta.findItem(data, ['gridPlaylistRenderer']):
             try:
                 playlistId = x['playlistId'].encode('utf8')
@@ -583,10 +583,8 @@ def page_youtube_playlists(req, url):
                 meta.comment(req, 'Exception:\n'+str(x))
 
 def page_youtube_playlistVideo(req, url):
-    txt = loadYouTube(url)
-    ytInitialData = meta.search(r'window\["ytInitialData"\] = (.*?});', txt)
-    if ytInitialData:
-        data = meta.parseJSON(ytInitialData)
+    data = parseYoutubeInitialDataJSON(url)
+    if data:
         for x in meta.findItem(data, ['playlistVideoRenderer']):
             try:
                 videoId = x['videoId'].encode('utf8')
@@ -599,10 +597,8 @@ def page_youtube_playlistVideo(req, url):
                 meta.comment(req, 'Exception:\n'+str(x))
 
 def page_youtube_channel(req, url):
-    txt = loadYouTube(url+'/videos')
-    ytInitialData = meta.search(r'window\["ytInitialData"\] = (.*?});', txt)
-    if ytInitialData:
-        data = meta.parseJSON(ytInitialData)
+    data = parseYoutubeInitialDataJSON(url)
+    if data:
         for x in meta.findItem(data, ['gridVideoRenderer']):
             try:
                 vid = x['videoId'].encode('utf8')
