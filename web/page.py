@@ -192,10 +192,12 @@ def parseDailyMotionJSON(req, url):
 
 def parseYoutubeInitialDataJSON(url):
     txt = loadYouTube(url)
-    ytInitialData = meta.search(r'window\["ytInitialData"\] = JSON.parse\("(.*?)"\);', txt)
-    ytInitialData = ytInitialData.decode('string_escape')
+    ytInitialData = meta.search(r'window\["ytInitialData"\] = (.*?});', txt)
     if ytInitialData:
         return meta.parseJSON(ytInitialData)
+    ytInitialData = meta.search(r'window\["ytInitialData"\] = JSON.parse\("(.*?)"\);', txt)
+    if ytInitialData:
+        return meta.parseJSON(ytInitialData.decode('string_escape'))
     return None
 
 def search_youtube(req, q, sp=None):
