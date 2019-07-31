@@ -28,6 +28,7 @@ def main():
     parser.add_option("--pagelist", dest="pagelist")
     parser.add_option("--playbackMode", dest="playbackMode")
     parser.add_option("--buffering", dest="buffering", action='store_true')
+    parser.add_option("--dl-threads", dest="dl_threads")
     (options, args) = parser.parse_args()
 
     if options.player:
@@ -47,6 +48,9 @@ def main():
 
     if options.buffering:
         xarg.buffering = True
+
+    if options.dl_threads:
+        xarg.dl_threads = options.dl_threads
 
     if len(args) >= 1:
         url = args[0].strip()

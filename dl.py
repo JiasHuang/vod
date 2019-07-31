@@ -26,7 +26,7 @@ def filter(url, flt):
     print('[url] ' + url)
     print('[flt] ' + flt)
     results = []
-    for m in re.finditer(flt, xurl.load2(url)):
+    for m in re.finditer(flt, xurl.load2(url, local=os.path.basename(url))):
         if re.compile(flt).groups > 0:
             link = absURL(url, m.group(1))
         else:

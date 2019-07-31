@@ -7,3 +7,4 @@ autosub             = 'no'
 pagelist            = None
 playbackMode        = None
 buffering           = False
+dl_threads          = None

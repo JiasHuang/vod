@@ -111,6 +111,17 @@ def playURL(url, ref):
         buffering.play(url, ref)
         return
 
+    if xarg.dl_threads:
+        src, cookies, ref = xsrc.getSource(url, ref=ref)
+        local = xdef.dldir + os.path.basename(src)
+        procs = subprocess.check_output('ps aux', shell=True)
+        if not re.search(r'dl.py -i ' + re.escape(src), procs):
+            flt = '#EXTINF:.*?\n(.*?)\n'
+            cmd = '%sdl.py -i \'%s\' -c %s -f \'%s\' --cmd \'wget -qc -o /dev/null\'' %(xdef.codedir, src, xdef.dldir, flt)
+            p = subprocess.Popen(cmd, shell=True)
+            print('create download process %s' %(p.pid))
+        url = local
+
     if isPlayerRunning():
         if os.path.exists(xdef.playlist):
             playbackMode = xurl.readLocal(xdef.playbackMode, 0).lower()
