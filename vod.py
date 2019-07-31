@@ -61,6 +61,10 @@ def main():
     if len(args) >= 2:
         ref = args[1].strip()
 
+    # UGLY CODE
+    if re.search(r'pangzitv', url):
+        xarg.dl_threads = xarg.dl_threads or 4
+
     try:
         xplay.playURL(url, ref or url)
         return
