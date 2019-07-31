@@ -23,8 +23,6 @@ def absURL(ref, target):
     return '%s://%s%s/%s' %(o.scheme, o.netloc, os.path.dirname(o.path) or '', target)
 
 def filter(url, flt):
-    print('[url] ' + url)
-    print('[flt] ' + flt)
     results = []
     for m in re.finditer(flt, xurl.load2(url, local=os.path.basename(url))):
         if re.compile(flt).groups > 0:
@@ -33,7 +31,6 @@ def filter(url, flt):
             link = absURL(url, m.group())
         if link not in results:
             results.append(link)
-            print('\t'+link)
     return results
 
 def genName(name, suffix, sn):
@@ -55,12 +52,11 @@ def dl(url, options):
         cmd = '%s \'%s\'' %(options.cmd, url)
         return subprocess.Popen(cmd, shell=True)
     else:
-        print('[dl] '+ url)
         return None
 
 def waitJobs(procs, options):
     while len(procs) >= int(options.jobs):
-        time.sleep(1)
+        time.sleep(0.1)
         for p in procs:
             if p.poll() != None:
                 p.communicate()
