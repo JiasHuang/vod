@@ -117,7 +117,7 @@ def playURL(url, ref):
         procs = subprocess.check_output('ps aux', shell=True)
         if not re.search(r'dl.py -i ' + re.escape(src), procs):
             flt = '#EXTINF:.*?\n(.*?)\n'
-            cmd = '%sdl.py -i \'%s\' -c %s -f \'%s\' --cmd \'wget -qc -o /dev/null\'' %(xdef.codedir, src, xdef.dldir, flt)
+            cmd = '%sdl.py -i \'%s\' -c %s -f \'%s\' -j %s --cmd \'wget -qc -o /dev/null\'' %(xdef.codedir, src, xdef.dldir, xarg.dl_threads, flt)
             p = subprocess.Popen(cmd, shell=True)
             print('create download process %s' %(p.pid))
         url = local
