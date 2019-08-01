@@ -58,6 +58,14 @@ def isPlayerRunning():
         return True
     return False
 
+def nextLine(playing, playlist):
+    try:
+        lines = playlist.splitlines()
+        index = lines.index(playing)
+        return lines[(index + 1) % len(lines)]
+    except:
+        return None
+
 def getNext(playing, playlist):
 
     if playlist != xurl.readLocal(xdef.playlist, 0):
@@ -72,15 +80,7 @@ def getNext(playing, playlist):
         return playing
 
     if playbackMode in ['autonext', 'loopall']:
-        lines = playlist.splitlines()
-        try:
-            index = lines.index(playing)
-            if index < (len(lines) - 1):
-                return lines[index+1]
-            if playbackMode == 'loopall' and index == (len(lines) - 1):
-                return lines[0]
-        except:
-            return None
+        return nextLine(playing, playlist)
 
     return None
 
@@ -94,6 +94,8 @@ def playURL_core(url, ref):
 
     if url == None or url == '':
         return
+
+    xurl.saveLocal(xdef.playing, url, 0)
 
     if player == 'mpv':
         return mpv.play(url, ref)
@@ -166,6 +168,13 @@ def setAct(act, val):
 
     if act == 'playbackMode':
         xurl.saveLocal(xdef.playbackMode, val, 0)
+        if val.lower() in ['autonext', 'loopall']:
+            playing = xurl.readLocal(xdef.playing, 0)
+            playlist = xurl.readLocal(xdef.playlist, 0)
+            nextURL = nextLine(playing, playlist)
+            if nextURL:
+                if os.fork() == 0:
+                    xsrc.getSource(nextURL)
         return
 
     player = getPlayer()

@@ -16,6 +16,7 @@ omxp     = 'omxplayer -b -o both -I'
 ffplay   = 'ffplay -fs -window_title ffplay'
 playlist = workdir+'vod_%s_playlist' %(os.getuid())
 playbackMode = workdir+'vod_%s_playbackMode' %(os.getuid())
+playing  = workdir+'vod_%s_playing' %(os.getuid())
 
 def ytdlcmd():
     if os.path.exists('/usr/bin/python3'):
