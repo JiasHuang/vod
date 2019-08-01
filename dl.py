@@ -80,18 +80,18 @@ def getM3U8Stat(local):
 def waitM3U8Ready(local, min_dls = 4, min_dlsz = 10485760, verbose = False):
     while True:
         dls, dlsz, files = getM3U8Stat(local)
+        if verbose:
+            print('waiting jobs ... (dls %s/%s dlsz %s)' %(dls, files, dlsz))
         if files > 0 and dls == files:
             break
         if dls > min_dls or dlsz > min_dlsz:
             break
-        if verbose:
-            print('waiting jobs ... (dls %s/%s dlsz %s)' %(dls, files, dlsz))
         time.sleep(2)
 
 def createJobs(url, dldir, jobs):
     prog = os.path.realpath(__file__)
     if prog.endswith('.pyc'):
-        prog = prog[:-2]
+        prog = prog[:-1]
     local = dldir + os.path.basename(url)
 
     procs = subprocess.check_output('ps aux', shell=True)

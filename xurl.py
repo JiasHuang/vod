@@ -160,12 +160,13 @@ def post(url, payload, local=None, headers=None, cache=True):
 def wget(url, local, options=None, cmd=None):
     print('[wget] %s -> %s' %(url, local))
     c = '%s %s' %(cmd or defvals.wget, options or '')
-    cmd = '%s -O %s \'%s\'' %(c, local, url)
+    cmd = '%s -O %s.part \'%s\'' %(c, local, url)
     try:
         output = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True)
         if re.search('Content-Encoding: gzip', output):
             cmd2 = 'mv %s %s.gz; gunzip %s.gz' %(local, local, local)
             subprocess.check_output(cmd2, shell=True)
+        os.rename(local+'.part', local)
     except:
         print('Exception: '+cmd)
     return
