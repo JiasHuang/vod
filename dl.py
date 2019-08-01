@@ -89,7 +89,7 @@ def waitM3U8Ready(local, min_dls = 4, min_dlsz = 10485760, verbose = False):
         time.sleep(2)
 
 def createJobs(url, dldir, jobs):
-    prog = os.path.realpath(__file__)
+    prog = os.path.realpath(__file__).replace('.pyc', 'py')
     local = dldir + os.path.basename(url)
 
     procs = subprocess.check_output('ps aux', shell=True)
