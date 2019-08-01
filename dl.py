@@ -64,6 +64,52 @@ def waitJobs(procs, options):
                 break
     return procs
 
+def getM3U8Stat(local):
+    dls = 0
+    dlsz = 0
+    files = 0
+    dldir = os.path.dirname(local)
+    for m in re.finditer(r'#EXTINF:.*?\n(.*?)\n', xurl.readLocal(local)):
+        f = os.path.join(dldir, m.group(1))
+        if os.path.exists(f):
+            dls += 1
+            dlsz += os.path.getsize(f)
+        files += 1
+    return dls, dlsz, files
+
+def waitM3U8Ready(local, min_dls = 4, min_dlsz = 10485760, verbose = False):
+    while True:
+        dls, dlsz, files = getM3U8Stat(local)
+        if files > 0 and dls == files:
+            break
+        if dls > min_dls or dlsz > min_dlsz:
+            break
+        if verbose:
+            print('waiting jobs ... (dls %s/%s dlsz %s)' %(dls, files, dlsz))
+        time.sleep(2)
+
+def createJobs(url, dldir, jobs):
+    prog = os.path.realpath(__file__)
+    local = dldir + os.path.basename(url)
+
+    procs = subprocess.check_output('ps aux', shell=True)
+    pattern = '%s -i %s' %(os.path.basename(prog), url)
+    if re.search(re.escape(pattern), procs):
+        return local
+
+    ctx = xurl.getContentType(url)
+    if ctx == 'application/vnd.apple.mpegurl' or ctx == 'application/x-mpegurl':
+        flt = '#EXTINF:.*?\n(.*?)\n'
+        cmd = '%s -i \'%s\' -c %s -f \'%s\' -j %s --cmd \'wget -qc -o /dev/null\'' %(
+                prog, url, dldir, flt, jobs)
+        p = subprocess.Popen(cmd, shell=True)
+        print('create download process %s' %(p.pid))
+        waitM3U8Ready(local, verbose = True)
+        return local
+
+    print('createJobs fail')
+    return None
+
 def main():
 
     parser = OptionParser()

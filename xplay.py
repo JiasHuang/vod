@@ -5,6 +5,7 @@ import os
 import re
 import subprocess
 import hashlib
+import dl
 
 from multiprocessing import Process
 
@@ -113,15 +114,7 @@ def playURL(url, ref):
 
     if xarg.dl_threads:
         src, cookies, ref = xsrc.getSource(url, ref=ref)
-        local = xdef.dldir + os.path.basename(src)
-        procs = subprocess.check_output('ps aux', shell=True)
-        if not re.search(r'dl.py -i ' + re.escape(src), procs):
-            flt = '#EXTINF:.*?\n(.*?)\n'
-            cmd = '%sdl.py -i \'%s\' -c %s -f \'%s\' -j %s --cmd \'wget -qc -o /dev/null\'' %(
-                    xdef.codedir, src, xdef.dldir, flt, xarg.dl_threads)
-            p = subprocess.Popen(cmd, shell=True)
-            print('create download process %s' %(p.pid))
-        url = local
+        url = dl.createJobs(src, xdef.dldir, xarg.dl_threads)
 
     if isPlayerRunning():
         if os.path.exists(xdef.playlist):
