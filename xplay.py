@@ -17,7 +17,6 @@ import mpv
 import omxp
 import ffplay
 import xsrc
-import buffering
 
 def getPlayer():
 
@@ -109,10 +108,6 @@ def playURL_core(url, ref):
     return runDBG(url, ref)
 
 def playURL(url, ref):
-
-    if xarg.buffering:
-        buffering.play(url, ref)
-        return
 
     if xarg.dl_threads:
         src, cookies, ref = xsrc.getSource(url, ref=ref)

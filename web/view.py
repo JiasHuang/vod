@@ -59,7 +59,7 @@ def getOption(req):
     fmt      = getCookie(req, 'format')
     autosub  = getCookie(req, 'autosub')
     pagelist = getCookie(req, 'pagelist')
-    buffering = getCookie(req, 'buffering')
+    dlconf   = getCookie(req, 'dlconf')
     opt = []
     if fmt:
         opt.append('-f \'%s\'' %(fmt))
@@ -67,8 +67,9 @@ def getOption(req):
         opt.append('--autosub %s' %(autosub))
     if pagelist:
         opt.append('--pagelist %s' %(pagelist))
-    if buffering and buffering == 'yes':
-        opt.append('--buffering')
+    if dlconf:
+        opt.append('--dlconf %s' %(dlconf))
+
     return ' '.join(opt)
 
 def handleCmd(cmd):

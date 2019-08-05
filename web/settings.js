@@ -28,9 +28,20 @@ var settings = {
         'type' : 'input',
         'defs' : '',
     },
+    'dlconf' : {
+        'type' : 'input',
+        'defs' : 'pangzitv=4'
+    },
 };
 
-var settings_cookies = ['format', 'autosub'];
+var settings_cookies = ['format', 'autosub', 'dlconf'];
+
+function initCookies() {
+  var lists = settings_cookies;
+  for (let i=0; i<lists.length; i++) {
+    saveCookie(lists[i], getValue(lists[i]));
+  }
+}
 
 function saveCookies() {
     var lists = settings_cookies;
@@ -76,7 +87,7 @@ function getValue(id) {
 function onLangSelect()
 {
     localStorage.setItem("lang", $(this).val());
-    onDocumentReady();
+    onSettingsDocumentReady();
 }
 
 function onActinSelect()
@@ -122,7 +133,7 @@ function result() {
     return text;
 }
 
-function onDocumentReady() {
+function onSettingsDocumentReady() {
 
     $('#'+getLangLog('lang')).prop('checked', true);
 

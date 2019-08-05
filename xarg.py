@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 
 player              = 'def'
-ytdlfmt             = '720p'
-autosub             = 'no'
+ytdlfmt             = None
+autosub             = None
 pagelist            = None
 playbackMode        = None
-buffering           = False
 dl_threads          = None
+dlconf              = None
