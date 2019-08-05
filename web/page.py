@@ -13,6 +13,7 @@ import conf
 
 entryCnt = 0
 entryVideos = []
+localImages = ['Movies-icon.png', 'folder-video-icon.png', 'Mimetypes-inode-directory-icon.png']
 
 def reset():
     global entryCnt, entryVideos
@@ -74,7 +75,8 @@ def addEntry(req, link, title, image=None, desc=None, password=None, video=True,
     if title:
         req.write('<!--title="%s"-->\n' %(title))
     if image:
-        image = xurl.absURL(image)
+        if image not in localImages:
+            image = xurl.absURL(image)
         req.write('<!--image="%s"-->\n' %(image))
     if desc:
         desc = desc.strip()
@@ -688,16 +690,28 @@ def page_cntv(req, url):
     return
 
 def page_pianku(req, url):
-    txt = load(url)
     basename = url.split('/')[-1]
     if len(basename) == 15:
         url_tv = 'https://www.pianku.tv/ajax/downurl/%s_tv/' %(basename[0:10])
-        for m in re.finditer(r'<li><a rel="nofollow" href="([^"]*)" target="_blank">(.*?)</a></li>', load(url_tv)):
+        url_downcode = 'https://www.pianku.tv/ajax/downcode.php'
+        local_cookie = xurl.genLocal(url_downcode, suffix='.cookie')
+        opts = []
+        opts.append('-c %s' %(local_cookie))
+        opts.append('-H \'accept-encoding: gzip, deflate, br\'')
+        xurl.curl(url_downcode, opts=opts)
+        opts = []
+        opts.append('-b %s' %(local_cookie))
+        opts.append('-H \'accept-encoding: gzip, deflate, br\'')
+        opts.append('-H \'x-requested-with: XMLHttpRequest\'')
+        opts.append('-H \'referer: %s\'' %(url))
+        opts.append('--compressed')
+        txt = xurl.curl(url_tv, opts=opts)
+        for m in re.finditer(r'<li><a rel="nofollow" href="([^"]*)" target="_blank">(.*?)</a></li>', txt):
             link, title = m.group(1), m.group(2)
             if link.startswith('/'):
                 addVideo(req, 'https://www.pianku.tv'+link, title)
     else:
-        for m in re.finditer(r'<a href="(.*?)" title="(.*?)" target="_blank"><img src="(.*?)"', txt):
+        for m in re.finditer(r'<a href="(.*?)" title="(.*?)" target="_blank"><img src="(.*?)"', load(url)):
             link, title, img = m.group(1), m.group(2), m.group(3)
             addPage(req, link, title, img)
 
@@ -712,6 +726,10 @@ def page_pangzitv(req, url):
             p_image = 'http://www.pangzitv.com' + m.group(2)
             p_title = m.group(3)
             addPage(req, p_url, p_title, p_image)
+        for m in re.finditer(r'<a .*? href="([^"]*)".*?>(.*?)</a>', load(url)):
+            if re.search(r'pagelink', m.group(0)):
+                p_url = 'http://www.pangzitv.com' + m.group(1)
+                addPage(req, p_url, m.group(2), 'Mimetypes-inode-directory-icon.png')
 
 def page_bilibili(req, url):
     txt = load(url)

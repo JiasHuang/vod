@@ -181,3 +181,17 @@ def load2(url, local=None, options=None, cache=True, ref=None, cmd=None):
     wget(url, local, options, cmd=cmd)
     return debug_readLocal(url, local)
 
+def curl(url, local=None, opts=[], cache=True):
+    url = absURL(url)
+    local = local or genLocal(url)
+    if cache and not checkExpire(local):
+        return debug_readLocal(url, local)
+    cmd = 'curl -k -o %s.part %s \'%s\'' %(local, ' '.join(opts), url)
+    try:
+        subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True)
+        os.rename(local+'.part', local)
+        return debug_readLocal(url, local)
+    except:
+        print('Exception: ' + cmd)
+    return None
+
