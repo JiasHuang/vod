@@ -3,9 +3,6 @@
 
 import os
 import re
-import urllib
-import urllib2
-import urlparse
 import hashlib
 import time
 import json
@@ -42,7 +39,7 @@ def search(pattern, txt, flags=0):
     return None
 
 def findPoster(link, referer=None):
-    return search(r'poster="([^"]*)"', xurl.load2(link, ref=referer))
+    return search(r'poster="([^"]*)"', xurl.curl(link, ref=referer))
 
 def getImage(link, referer=None):
 
@@ -77,8 +74,8 @@ def comment(req, msg):
     req.write('\n-->\n')
     return
 
-def findVideoLink(req, url, showPage=False, showImage=False, ImageSrc='src', ImageExt='jpg', ImagePattern=None, cmd=None):
-    txt = xurl.load2(url, cmd=cmd)
+def findVideoLink(req, url, showPage=False, showImage=False, ImageSrc='src', ImageExt='jpg', ImagePattern=None):
+    txt = xurl.curl(url)
     for m in re.finditer(r'<a .*?</a>', txt, re.DOTALL):
         link = search(r'href="([^"]*)"', m.group(0))
         title = search(r'title="([^"]*)"', m.group(0))
@@ -88,13 +85,9 @@ def findVideoLink(req, url, showPage=False, showImage=False, ImageSrc='src', Ima
             image = search(re.escape(ImageSrc)+r'="([^"]*)"', m.group(0))
         if image and ImageExt and not image.endswith(ImageExt):
             continue
-        if link and not ImageExt:
-            parsed_link = urlparse.urlparse(link)
-            if parsed_link.path == '/':
-                continue
         if link and title and image:
-            link = xurl.absURL(link)
-            image = xurl.absURL(image)
+            link = xurl.urljoin(url, link)
+            image = xurl.urljoin(url, image)
             if showPage == False:
                 page.addVideo(req, link, title, image)
             elif showImage == True:
@@ -102,8 +95,8 @@ def findVideoLink(req, url, showPage=False, showImage=False, ImageSrc='src', Ima
             else:
                 page.addPage(req, link, title)
 
-def findImageLink(url, unquote=True, ImageExt='jpg', ImagePattern=r'src\s*=\s*"([^"]*)"'):
-    txt = xurl.load2(url)
+def findImageLink(url, ImageExt='jpg', ImagePattern=r'src\s*=\s*"([^"]*)"'):
+    txt = xurl.curl(url)
     objs = []
     for m in re.finditer(r'<a\s.*?</a>', txt, re.DOTALL|re.MULTILINE):
         link = search(r'href\s*=\s*"([^"]*)"', m.group(0))
@@ -113,8 +106,7 @@ def findImageLink(url, unquote=True, ImageExt='jpg', ImagePattern=r'src\s*=\s*"(
             continue
         if ImageExt and not image.endswith(ImageExt):
             continue
-        if unquote == True:
-            link = urllib.unquote(link)
+        link = xurl.urljoin(url, xurl.unquote(link))
         objs.append(entryObj(link, title or link, image, m.group(0)))
     return objs
 
@@ -126,7 +118,7 @@ def findPage(req, url, showImage=False):
 
 def findLink(req, url):
     link = ''
-    txt = xurl.load2(url)
+    txt = xurl.curl(url)
     for m in re.finditer(defs.linkPattern, txt):
         if m.group() != link:
             link = m.group()
@@ -134,7 +126,7 @@ def findLink(req, url):
             page.addVideo(req, link, link, image)
 
 def findFrame(req, url):
-    for m in re.finditer(r'<iframe (.*?)</iframe>', xurl.load2(url)):
+    for m in re.finditer(r'<iframe (.*?)</iframe>', xurl.curl(url)):
         src = re.search(r'src="([^"]*)"', m.group(1))
         if src:
             if re.search(defs.linkPattern, src.group(1)):

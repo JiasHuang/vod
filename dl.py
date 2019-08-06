@@ -12,23 +12,13 @@ import xsrc
 
 from optparse import OptionParser
 
-def absURL(ref, target):
-    if target.startswith('http'):
-        return target
-    o = urlparse.urlparse(ref)
-    if target.startswith('//'):
-        return '%s:%s' %(parsed.scheme, target)
-    if target.startswith('/'):
-        return '%s://%s%s' %(o.scheme, o.netloc, target)
-    return '%s://%s%s/%s' %(o.scheme, o.netloc, os.path.dirname(o.path) or '', target)
-
 def filter(url, flt):
     results = []
-    for m in re.finditer(flt, xurl.load2(url, local=os.path.basename(url))):
+    for m in re.finditer(flt, xurl.curl(url, local=os.path.basename(url))):
         if re.compile(flt).groups > 0:
-            link = absURL(url, m.group(1))
+            link = xurl.urljoin(url, m.group(1))
         else:
-            link = absURL(url, m.group())
+            link = xurl.urljoin(url, m.group())
         if link not in results:
             results.append(link)
     return results

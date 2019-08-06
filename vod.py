@@ -3,7 +3,6 @@
 
 import os
 import re
-import urllib
 import sys
 import traceback
 import ast
@@ -61,7 +60,7 @@ def main():
         url = args[0].strip()
         m = re.search(r'view.py\?(v|url)=(.*)', url)
         if m:
-            url = urllib.unquote(m.group(2))
+            url = xurl.unquote(m.group(2))
 
     if len(args) >= 2:
         ref = args[1].strip()

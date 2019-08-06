@@ -7,7 +7,7 @@ import youtubedl
 import xurl
 
 def getSource(url):
-    txt = xurl.load2(url)
+    txt = xurl.curl(url)
     result = []
     for m in re.finditer(r'"url":"([^"]*)"', txt):
         result.append(m.group(1))

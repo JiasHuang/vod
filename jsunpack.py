@@ -9,7 +9,7 @@ import xurl
 import xdef
 
 def unpackURL(url):
-    txt = xurl.load2(url)
+    txt = xurl.curl(url)
     return unpack(txt)
 
 def unpackFILE(local):

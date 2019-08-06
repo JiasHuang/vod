@@ -8,7 +8,7 @@ import xdef
 import xurl
 
 def getSource(url):
-    txt = xurl.load2(url)
+    txt = xurl.curl(url)
     m = re.search(r'"assetId":"(.*?)"', txt)
     if m:
         assetId = m.group(1)

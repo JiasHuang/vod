@@ -14,7 +14,7 @@ def autotest():
     list_fail = []
     fd = open('/dev/null', 'w')
     bookmarkJSONURL = 'https://gist.githubusercontent.com/JiasHuang/30f6cc0f78ee246c1e28bd537764d6c4/raw/bookmark.json'
-    data = meta.parseJSON(xurl.load2(bookmarkJSONURL))
+    data = meta.parseJSON(xurl.curl(bookmarkJSONURL))
     for d in data['channels']:
         channel = d['channel']
         for x in d['links']:

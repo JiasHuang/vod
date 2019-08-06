@@ -3,7 +3,6 @@
 
 import re
 import os
-import urlparse
 import time
 import json
 
@@ -13,7 +12,6 @@ import conf
 
 entryCnt = 0
 entryVideos = []
-localImages = ['Movies-icon.png', 'folder-video-icon.png', 'Mimetypes-inode-directory-icon.png']
 
 def reset():
     global entryCnt, entryVideos
@@ -52,13 +50,13 @@ def renderDIR(req, d):
     req.write(html[1])
 
 def load(url):
-    return xurl.load2(url)
+    return xurl.curl(url)
 
 # FIXME
 def loadYouTube(url):
     txt = load(url)
     if not re.search(r'ytInitialData', txt):
-        txt = xurl.load2(url, cache=False)
+        txt = xurl.curl(url, cache=False)
     return txt
 
 def darg(d, *arg):
@@ -66,17 +64,19 @@ def darg(d, *arg):
         return d[arg[0]].encode('utf8')
     return [d[a].encode('utf8') for a in arg]
 
+def urljoin(url, *arg):
+    if len(arg) == 1:
+        return xurl.urljoin(url, arg[0])
+    return [xurl.urljoin(url, a) for a in arg]
+
 def addEntry(req, link, title, image=None, desc=None, password=None, video=True, referer=None):
     global entryCnt, entryVideos
     req.write('\n<!--Entry%s-->\n' %(entryCnt))
     if link:
-        link = xurl.absURL(link)
         req.write('<!--link="%s"-->\n' %(link))
     if title:
         req.write('<!--title="%s"-->\n' %(title))
     if image:
-        if image not in localImages:
-            image = xurl.absURL(image)
         req.write('<!--image="%s"-->\n' %(image))
     if desc:
         desc = desc.strip()
@@ -319,7 +319,7 @@ def page_xuite(req, url):
             load(url), re.DOTALL|re.MULTILINE)
         if next_page_links:
             for m in re.finditer('href="([^"]*)">', next_page_links):
-                meta.findVideo(req, xurl.absURL(m.group(1)))
+                meta.findVideo(req, xurl.urljoin(url, m.group(1)))
 
 def page_xuiteDIR(req, url):
 
@@ -397,7 +397,7 @@ def page_iqiyi(req, url):
         pages = []
         pages.append(url)
         for m in re.finditer(r'<a data-key.*? href="([^"]*)"', load(url), re.DOTALL):
-            page = xurl.absURL(m.group(1))
+            page = xurl.urljoin(url, m.group(1))
             if page not in pages:
                 pages.append(page)
         for page in pages[0:5]:
@@ -411,10 +411,12 @@ def page_iqiyi(req, url):
                     else:
                         addPage(req, link, title, image)
     else:
-        albumPage=meta.search(r'album-page="([^"]*)"', load(url))
-        if albumPage:
-            for m in re.finditer(r'"name":"([^"]*)","url":"([^"]*)","imageUrl":"([^"]*)"', load(xurl.absURL(albumPage))):
+        m = re.search(r'album-page="([^"]*)"', load(url))
+        if m:
+            albumPage = xurl.urljoin(url, m.group(1))
+            for m in re.finditer(r'"name":"([^"]*)","url":"([^"]*)","imageUrl":"([^"]*)"', load(albumPage)):
                 title, link, image = m.group(1), m.group(2), m.group(3)
+                link, image = urljoin(url, link, image)
                 addVideo(req, link, title, image)
 
 def page_letv(req, url):
@@ -440,9 +442,10 @@ def page_letv(req, url):
 
 def page_youku(req, url):
     for m in re.finditer(r'<div class="p-thumb">(.*?)</div>', load(url)):
-        url = meta.search(r'href="([^"]*)"', m.group())
+        link = meta.search(r'href="([^"]*)"', m.group())
         title = meta.search(r'title="([^"]*)"', m.group())
         image = meta.search(r'src="([^"]*)"', m.group())
+        link, image = urljoin(url, link, image)
         addVideo(req, url, title, image)
 
 def page_lovetv(req, url):
@@ -450,17 +453,17 @@ def page_lovetv(req, url):
         for m in re.finditer(r'<a href="([^"]*)">([^<]*)</a>', load(url)):
             meta.comment(req, m.group())
             if re.search(r'special-drama-([0-9-]+).html$', m.group(1)):
-                addPage(req, xurl.absURL(m.group(1)), m.group(2))
+                addPage(req, xurl.urljoin(url, m.group(1)), m.group(2))
     elif re.search(r'(drama-list.html|/)$', url):
         for m in re.finditer(r'<a href=[\'|"]([^\'"]*)[\'|"]>([^<]*)</a>', load(url)):
             meta.comment(req, m.group())
             if re.search(r'(-list|/label/)', m.group(1)):
-                addPage(req, xurl.absURL(m.group(1)), m.group(2))
+                addPage(req, xurl.urljoin(url, m.group(1)), m.group(2))
     elif re.search(r'(-list|/label/)', url):
         for m in re.finditer(r'<a href=["|\'](.*?)["|\']>([^<]*)</a>', load(url)):
             meta.comment(req, m.group())
             if re.search(r'-ep([0-9]+).html$', m.group(1)):
-                addPage(req, xurl.absURL(m.group(1)), m.group(2))
+                addPage(req, xurl.urljoin(url, m.group(1)), m.group(2))
     else:
         video_types = {'1':'youtube', '2':'dailymotion', '3':'openload', '21':'googledrive'}
         txt = load(url)
@@ -529,23 +532,6 @@ def page_maplestage(req, url):
                                     addVideo(req, vsrc)
                     except:
                         meta.comment(req, 'Exception')
-
-def page_japvideo(req, url):
-    if re.search(r'category', url):
-        for i in range(5):
-            pageURL = url+'page/'+str(i)
-            meta.findVideoLink(req, pageURL, showPage=True, showImage=True, ImageExt=None)
-    else:
-        txt = load(url)
-        if re.search(r'jetpack-video-wrapper', txt):
-            for m in re.finditer(r'<p>(.*?)</p>\n<div class="jetpack-video-wrapper">\n(.*?)\n', txt):
-                title = m.group(1)
-                link = meta.search(r'src="([^"]*)"', m.group(2))
-                if title and link:
-                    addVideo(req, link, title)
-        else:
-            meta.findFrame(req, url)
-    return
 
 def page_youtube_videos(req, url):
     data = parseYoutubeInitialDataJSON(url)
@@ -659,10 +645,6 @@ def page_gdrive(req, url):
             meta.comment(req, 'exception in page_gdrive')
             return
 
-def page_odnoklassniki(req, url):
-    cmd = 'wget'
-    return meta.findVideoLink(req, url, showImage=True, ImageExt=None, cmd=cmd)
-
 def page_cctv(req, url):
     txt = load(url)
     for m in re.finditer(r'var jsonData\d*=(.*?);', txt, re.DOTALL|re.MULTILINE):
@@ -697,14 +679,11 @@ def page_pianku(req, url):
         local_cookie = xurl.genLocal(url_downcode, suffix='.cookie')
         opts = []
         opts.append('-c %s' %(local_cookie))
-        opts.append('-H \'accept-encoding: gzip, deflate, br\'')
         xurl.curl(url_downcode, opts=opts)
         opts = []
         opts.append('-b %s' %(local_cookie))
-        opts.append('-H \'accept-encoding: gzip, deflate, br\'')
         opts.append('-H \'x-requested-with: XMLHttpRequest\'')
         opts.append('-H \'referer: %s\'' %(url))
-        opts.append('--compressed')
         txt = xurl.curl(url_tv, opts=opts)
         for m in re.finditer(r'<li><a rel="nofollow" href="([^"]*)" target="_blank">(.*?)</a></li>', txt):
             link, title = m.group(1), m.group(2)
@@ -732,7 +711,7 @@ def page_pangzitv(req, url):
                 addPage(req, p_url, m.group(2), 'Mimetypes-inode-directory-icon.png')
 
 def page_bilibili(req, url):
-    txt = load(url)
+    txt = xurl.curl(url)
     if re.search(r'/video/', url):
         jsonTxt = meta.search(r'__INITIAL_STATE__=(.*?});', txt);
         if jsonTxt:
@@ -763,11 +742,11 @@ def page_bilibili(req, url):
 
 def page_line_today(req, url):
     if re.search(r'api.today.line.me', url):
-        link = meta.search(r'"720":"([^"]*)"', xurl.load2(url, cache=False))
+        link = meta.search(r'"720":"([^"]*)"', xurl.curl(url, cache=False))
         if link:
             addVideo(req, link)
     else:
-        programId = meta.search(r'data-programId="([^"]*)"', xurl.load2(url, cache=False))
+        programId = meta.search(r'data-programId="([^"]*)"', xurl.curl(url, cache=False))
         if programId:
             link = 'https://api.today.line.me/webapi/linelive/' + programId
             addPage(req, link, link)
@@ -806,7 +785,6 @@ def onPageEnd(req):
     xurl.showDebugLog(req)
 
 def page_core(req, url):
-    xurl.setDomain(url)
     if re.search(r'litv', url):
         page_litv(req, url);
     elif re.search(r'iqiyi', url):
@@ -817,8 +795,6 @@ def page_core(req, url):
         page_lovetv(req, url);
     elif re.search(r'maplestage', url):
         page_maplestage(req, url);
-    elif re.search(r'japvideo', url):
-        page_japvideo(req, url)
     elif re.search(r'youtube', url):
         page_youtube(req, url)
     elif re.search(r'dailymotion', url):
@@ -829,8 +805,6 @@ def page_core(req, url):
         page_youku(req, url)
     elif re.search(r'drive\.google\.com', url):
         page_gdrive(req, url)
-    elif re.search(r'ok.ru', url):
-        page_odnoklassniki(req, url)
     elif re.search(r'cctv.com', url):
         page_cctv(req, url)
     elif re.search(r'api.cntv.cn', url):

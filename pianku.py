@@ -6,7 +6,7 @@ import re
 import xurl
 
 def getSource(url):
-    txt = xurl.load2(url)
+    txt = xurl.curl(url)
     m = re.search(r'url: \'(.*?)\'', txt)
     if m:
         return m.group(1)

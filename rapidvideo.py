@@ -6,7 +6,7 @@ import re
 import xurl
 
 def getSource(url, ref=None):
-    txt = xurl.load2(url, ref=ref)
+    txt = xurl.curl(url, ref=ref)
     videoURL = re.search('<source.*? src="([^"]*)"', txt)
     if videoURL:
         return videoURL.group(1)

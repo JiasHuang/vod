@@ -4,17 +4,24 @@
 import os
 import sys
 import re
-import urllib
-import urllib2
 import hashlib
-import urlparse
 import time
 import subprocess
 import StringIO
 import gzip
 
+try:
+    # python 3
+    from urllib.request import urlopen, build_opener
+    from urllib.parse import urlparse, urlencode, quote, unquote, urljoin
+    from urllib.error import HTTPError, URLError
+except ImportError:
+    # python 2
+    from urlparse import urlparse, urljoin
+    from urllib import urlopen, quote, unquote
+    from urllib2 import build_opener, HTTPError, URLError
+
 gDebugLog = []
-domain = None
 
 class defvals:
     workdir             = '/var/tmp/'
@@ -77,32 +84,13 @@ def genLocal(url, prefix=None, suffix=None):
     return local
 
 def parse(url):
-    p = urlparse.urlparse(url)
+    p = urlparse(url)
     prefix = p.scheme + '://' + p.netloc + os.path.dirname(p.path) + '/'
     basename = os.path.basename(p.path)
     return prefix, basename
 
-def absURL(url, site=None):
-    global domain
-    site = site or domain
-    if url.startswith('//'):
-        return 'http:'+url
-    if site and url.startswith('/'):
-        return site+url
-    if not url.startswith('http'):
-        return 'http://'+url
-    return url
-
-def setDomain(url):
-    global domain
-    if url.startswith('http'):
-        parsed_uri = urlparse.urlparse(url)
-        domain = '{uri.scheme}://{uri.netloc}'.format(uri=parsed_uri)
-        return domain
-    return None
-
 def getContentType(url):
-    res = urllib.urlopen(url)
+    res = urlopen(url)
     info = res.info()
     res.close()
     return info.type
@@ -111,12 +99,11 @@ def getContentType(url):
 # -----------------------------------------------------------------------------
 
 def load(url, local=None, headers=None, cache=True):
-    url = absURL(url)
     local = local or genLocal(url)
     if cache and not checkExpire(local):
         return debug_readLocal(url, local)
 
-    opener = urllib2.build_opener()
+    opener = build_opener()
     opener.addheaders = [('User-agent', defvals.ua)]
 
     if headers:
@@ -138,18 +125,17 @@ def load(url, local=None, headers=None, cache=True):
         return 'Exception'
 
 def post(url, payload, local=None, headers=None, cache=True):
-    url = absURL(url)
     local = local or genLocal(url)
     if cache and not checkExpire(local):
         return debug_readLocal(url, local)
 
-    opener = urllib2.build_opener()
+    opener = build_opener()
     opener.addheaders = [('User-agent', defvals.ua)]
 
     if headers:
         opener.addheaders += headers
 
-    data = urllib.urlencode(payload)
+    data = urlencode(payload)
     try:
         f = opener.open(url, data)
         txt = f.read()
@@ -157,41 +143,42 @@ def post(url, payload, local=None, headers=None, cache=True):
     except:
         return 'Exception'
 
-def wget(url, local, options=None, cmd=None):
+def wget(url, local=None, opts=[], cache=True, ref=None):
+    local = local or genLocal(url)
     print('[wget] %s -> %s' %(url, local))
-    c = '%s %s' %(cmd or defvals.wget, options or '')
-    cmd = '%s -O %s.part \'%s\'' %(c, local, url)
+    if cache and not checkExpire(local):
+        return debug_readLocal(url, local)
+    if ref:
+        opts.append('--referer=\'%s\'' %(ref))
+    opts.append('-U \'%s\'' %(defvals.ua))
+    cmd = 'wget -T 10 -S -O %s.part %s \'%s\'' %(local, ' '.join(opts), url)
     try:
         output = subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True)
         if re.search('Content-Encoding: gzip', output):
             cmd2 = 'mv %s %s.gz; gunzip %s.gz' %(local, local, local)
             subprocess.check_output(cmd2, shell=True)
         os.rename(local+'.part', local)
+        return debug_readLocal(url, local)
     except:
         print('Exception: '+cmd)
-    return
+        return None
 
-def load2(url, local=None, options=None, cache=True, ref=None, cmd=None):
-    url = absURL(url)
+def curl(url, local=None, opts=[], cache=True, ref=None):
     local = local or genLocal(url)
+    print('[curl] %s -> %s' %(url, local))
     if cache and not checkExpire(local):
         return debug_readLocal(url, local)
     if ref:
-        options = ' '.join([options or '', '--referer='+ref])
-    wget(url, local, options, cmd=cmd)
-    return debug_readLocal(url, local)
-
-def curl(url, local=None, opts=[], cache=True):
-    url = absURL(url)
-    local = local or genLocal(url)
-    if cache and not checkExpire(local):
-        return debug_readLocal(url, local)
-    cmd = 'curl -k -o %s.part %s \'%s\'' %(local, ' '.join(opts), url)
+        opts.append('-e \'%s\'' %(ref))
+    opts.append('-H \'User-Agent: %s\'' %(defvals.ua))
+    opts.append('-H \'Accept-Encoding: gzip, deflate, br\'')
+    opts.append('--compressed')
+    cmd = 'curl -kL -o %s.part %s \'%s\'' %(local, ' '.join(opts), quote(url, ':/'))
     try:
         subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True)
         os.rename(local+'.part', local)
         return debug_readLocal(url, local)
     except:
         print('Exception: ' + cmd)
-    return None
+        return None
 

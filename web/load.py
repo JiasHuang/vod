@@ -2,16 +2,16 @@
 # -*- coding: utf-8 -*-
 
 import re
-import urllib
 
 import page
+import xurl
 
 from mod_python import util, Cookie
 
 def getUnparsedURL(req):
     m = re.search(r'=(.*)$', req.unparsed_uri, re.DOTALL)
     if m:
-        return urllib.unquote(m.group(1))
+        return xurl.unquote(m.group(1))
     return None
 
 def index(req):

@@ -12,7 +12,7 @@ def getSource(url):
     m = re.search(r'"manifest_url": "([^"]*)"', xurl.readLocal(local_json))
     if m:
         manifest_url = m.group(1)
-        xurl.load2(manifest_url, local=local_m3u8)
+        xurl.curl(manifest_url, local=local_m3u8)
         return local_m3u8
     return None
 

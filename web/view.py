@@ -4,7 +4,6 @@
 import os
 import re
 import subprocess
-import urllib
 
 import page
 import conf
@@ -17,7 +16,7 @@ def search_unquote(pattern, txt, flags=0):
         return None
     m = re.search(pattern, txt, flags)
     if m:
-        return urllib.unquote(m.group(1))
+        return xurl.unquote(m.group(1))
     return None
 
 def runCmd(cmd):

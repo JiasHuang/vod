@@ -4,13 +4,12 @@
 import re
 import json
 import hashlib
-import urllib
 
 import xdef
 import xurl
 
 def loadM3U8(url):
-    txt = xurl.load2(url)
+    txt = xurl.curl(url)
     m = re.search(r'"m3u8":"([^"]*)"', txt)
     if m:
         m3u8 = m.group(1)
