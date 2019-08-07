@@ -14,8 +14,10 @@ def getSource(url):
         assetId = m.group(1)
         remote = 'https://www.litv.tv/vod/ajax/getMainUrlNoAuth'
         local = xdef.workdir+'litv.json'
-        options = '--header=\'Content-Type:application/json\' --post-data \'{"assetId":"%s"}\'' %(assetId)
-        xurl.wget(remote, local, options)
+        opts = []
+        opts.append('-H \'Content-Type: application/json\'')
+        opts.append('-d \'{"assetId":"%s"}\'' %(assetId))
+        xurl.curl(remote, local, opts)
         m = re.search(r'"fullpath":"(.*?)"', xurl.readLocal(local))
         if m:
           return m.group(1)
