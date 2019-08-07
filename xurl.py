@@ -90,10 +90,11 @@ def parse(url):
     return prefix, basename
 
 def getContentType(url):
-    res = urlopen(url)
-    info = res.info()
-    res.close()
-    return info.type
+    txt = curlHdr(url)
+    m = re.search(r'Content-Type: ([^;]*)', txt)
+    if m:
+        return m.group(1)
+    return None
 
 # -----------------------------------------------------------------------------
 # -----------------------------------------------------------------------------
@@ -117,9 +118,9 @@ def load(url, local=None, headers=None, cache=True):
         else:
             txt = f.read()
         return debug_saveLocal(url, local, txt)
-    except urllib2.HTTPError, e:
+    except HTTPError as e:
         return 'Exception HTTPError: ' + str(e.code)
-    except urllib2.URLError, e:
+    except URLError as e:
         return 'Exception URLError: ' + str(e.reason)
     except:
         return 'Exception'
@@ -181,4 +182,22 @@ def curl(url, local=None, opts=[], cache=True, ref=None):
     except:
         print('Exception: ' + cmd)
         return None
+
+def curlHdr(url, opts=[], cache=True, ref=None):
+    local = genLocal(url, suffix='.hdr')
+    print('[curlHdr] %s -> %s' %(url, local))
+    if cache and not checkExpire(local):
+        return debug_readLocal(url, local)
+    if ref:
+        opts.append('-e \'%s\'' %(ref))
+    opts.append('-H \'User-Agent: %s\'' %(defvals.ua))
+    cmd = 'curl -IkLs -o %s.part %s \'%s\'' %(local, ' '.join(opts), url)
+    try:
+        subprocess.check_output(cmd, shell=True)
+        os.rename(local+'.part', local)
+        return debug_readLocal(url, local)
+    except:
+        print('Exception: ' + cmd)
+        return None
+
 

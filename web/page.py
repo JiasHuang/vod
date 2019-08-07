@@ -760,8 +760,7 @@ def page_nbahdreplay(req, url):
     if url.endswith(r'.com/'):
         objs = meta.findImageLink(url, ImageExt=None)
         for obj in objs:
-            if re.search(r'clip-link', obj.html):
-                addPage(req, obj.url, obj.title, obj.image)
+            addPage(req, obj.url, obj.title, obj.image)
     else:
         for m in re.finditer(r'href="(http://telechargementfilmhd.com[^"]*)"', load(url)):
             addPage(req, m.group(1), m.group(1))

@@ -31,8 +31,7 @@ def runCmd(cmd):
 def playURL(url, opt=None):
     if not os.path.exists(conf.vod):
         return
-    cmd = 'python -u %s \'%s\' %s | tee -a %s' %(conf.vod, url, opt or '', conf.log)
-    os.system('echo \'*** [%s] *** \' >> %s' %(cmd, conf.log))
+    cmd = 'python %s \'%s\' %s' %(conf.vod, url, opt or '')
     if os.path.exists('/usr/bin/xterm'):
         subprocess.Popen(['/usr/bin/xterm', '-geometry', '80x24-50+50', '-display', ':0', '-e', cmd])
     else:
@@ -41,8 +40,7 @@ def playURL(url, opt=None):
 def sendACT(act, num):
     if not os.path.exists(conf.act):
         return
-    cmd = 'python -u %s \'%s\' \'%s\' | tee -a %s' %(conf.act, act, num, conf.log)
-    os.system('echo \'*** [%s] *** \' >> %s' %(cmd, conf.log))
+    cmd = 'python %s \'%s\' \'%s\'' %(conf.act, act, num)
     if os.path.exists('/usr/bin/xterm'):
         subprocess.Popen(['/usr/bin/xterm', '-geometry', '80x24-50+50', '-display', ':0', '-e', cmd]).communicate()
     else:
