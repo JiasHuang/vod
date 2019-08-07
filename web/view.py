@@ -11,12 +11,12 @@ import xurl
 
 from mod_python import util, Cookie
 
-def search_unquote(pattern, txt, flags=0):
+def search(pattern, txt, flags=0):
     if not txt:
         return None
     m = re.search(pattern, txt, flags)
     if m:
-        return xurl.unquote(m.group(1))
+        return m.group(1)
     return None
 
 def runCmd(cmd):
@@ -94,8 +94,8 @@ def index(req):
     req.content_type = 'text/html; charset=utf-8'
     form = req.form or util.FieldStorage(req)
 
-    p = search_unquote(r'view\.py\?p=(.*)$', req.unparsed_uri, re.DOTALL)
-    v = search_unquote(r'view\.py\?v=(.*)$', req.unparsed_uri, re.DOTALL)
+    p = search(r'view\.py\?p=(.*)$', req.unparsed_uri, re.DOTALL)
+    v = search(r'view\.py\?v=(.*)$', req.unparsed_uri, re.DOTALL)
 
     i = form.get('i', None) # input
     a = form.get('a', None) # action

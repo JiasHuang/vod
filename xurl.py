@@ -171,11 +171,11 @@ def curl(url, local=None, opts=[], cache=True, ref=None):
     if ref:
         opts.append('-e \'%s\'' %(ref))
     opts.append('-H \'User-Agent: %s\'' %(defvals.ua))
-    opts.append('-H \'Accept-Encoding: gzip, deflate, br\'')
+    opts.append('-H \'Accept-Encoding: gzip, deflate\'')
     opts.append('--compressed')
-    cmd = 'curl -kL -o %s.part %s \'%s\'' %(local, ' '.join(opts), quote(url, ':/'))
+    cmd = 'curl -kLs -o %s.part %s \'%s\'' %(local, ' '.join(opts), url)
     try:
-        subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True)
+        subprocess.check_output(cmd, shell=True)
         os.rename(local+'.part', local)
         return debug_readLocal(url, local)
     except:
