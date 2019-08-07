@@ -251,21 +251,6 @@ def search_google(req, q, start=None):
             addVideo(req, link, title)
     addGoogleNextPage(req, q, txt)
 
-def search_xuite(req, q):
-    for i in range(3):
-        url = 'http://m.xuite.net/rpc/search?method=vlog&kw='+q+'&offset='+str(i*10+1)
-        data = meta.parseJSON(load(url))
-        if 'rsp' not in data or 'items' not in data['rsp']:
-            return
-        for d in data['rsp']['items']:
-            try:
-                prefix = 'http://vlog.xuite.net/play/'
-                vid, title, image, desc = darg(d, 'vlog_id', 'title', 'thumb', 'duration')
-                addVideo(req, prefix+vid, title, image, desc)
-            except:
-                continue
-    return
-
 def search_dailymotion(req, q):
     url = 'https://api.dailymotion.com/videos/?search="'+q+'"&limit=100&fields=id,title,duration'
     return parseDailyMotionJSON(req, url)
@@ -298,8 +283,6 @@ def search(req, q, s=None, x=None):
         search_youtube(req, q1, x or 'EgJAAQ%3D%3D')
     elif s == 'google':
         search_google(req, q1, x)
-    elif s == 'xuite':
-        search_xuite(req, q1)
     elif s == 'dailymotion':
         search_dailymotion(req, q1)
     elif s == 'bilibili':
@@ -309,50 +292,6 @@ def search(req, q, s=None, x=None):
 def page_def(req, url):
     meta.findLink(req, url)
     meta.findVideoLink(req, url, showPage=True, showImage=True, ImageExt=None)
-
-def page_xuite(req, url):
-    if re.search(r'xuite.net/([a-zA-Z0-9]*)($)', url):
-        page_xuiteDIR(req, url)
-    else:
-        meta.findVideo(req, url)
-        next_page_links = meta.search(r'<!-- Numbered page links -->(.*?)<!-- Next page link -->', \
-            load(url), re.DOTALL|re.MULTILINE)
-        if next_page_links:
-            for m in re.finditer('href="([^"]*)">', next_page_links):
-                meta.findVideo(req, xurl.urljoin(url, m.group(1)))
-
-def page_xuiteDIR(req, url):
-
-    user = meta.search(r'xuite.net/([a-z0-9A-Z]*)($)', url)
-    if not user:
-        return
-
-    userSn = meta.search(r'userSn=([0-9]*)', load(url))
-    if not userSn:
-        return
-
-    json = 'http://vlog.xuite.net/default/media/widget?title=dir&userSn='+userSn
-    data = meta.parseJSON(load(json))
-    if 'content' not in data:
-        return
-
-    if (len(data['content']) <= 3):
-        json = 'http://vlog.xuite.net/default/media/widget?title=media&type=latest&userSn='+userSn
-        data = meta.parseJSON(load(json))
-        if 'content' not in data:
-            return
-        for d in data['content']:
-            title, vid, image = darg(d, 'TITLE', 'FILE_NAME', 'THUMBNAIL')
-            link = 'http://vlog.xuite.net/play/'+vid
-            addVideo(req, link, title, image)
-        return
-
-    for d in data['content']:
-        title, parent = darg(d, 'TITLE', 'PARENT_SEQUENCE')
-        link = 'http://vlog.xuite.net/%s?t=cat&p=%s&dir_num=0' %(user, parent)
-        addPage(req, link, title)
-
-    return
 
 def page_litv(req, url):
     m = re.search(r'(\?|&)content_id=([a-zA-Z0-9]*)', url)
@@ -406,6 +345,8 @@ def page_iqiyi(req, url):
                 title = meta.search(r'<a class="pic-title".*?>(.*?)</a>', m.group(1))
                 image = meta.search(r'v-i71-anim-img="\'([^\']*)\'"', m.group(1))
                 if link and title and image:
+                    link = xurl.urljoin(page, link)
+                    image = xurl.urljoin(page, image)
                     if category == '1':
                         addVideo(req, link, title, image)
                     else:
@@ -788,7 +729,7 @@ def page_core(req, url):
         page_litv(req, url);
     elif re.search(r'iqiyi', url):
         page_iqiyi(req, url)
-    elif re.search(r'(\.le.com|letv)', url):
+    elif re.search(r'(\.le\.com|letv)', url):
         page_letv(req, url)
     elif re.search(r'lovetv', url):
         page_lovetv(req, url);
@@ -798,8 +739,6 @@ def page_core(req, url):
         page_youtube(req, url)
     elif re.search(r'dailymotion', url):
         page_dailymotion(req, url)
-    elif re.search(r'xuite', url):
-        page_xuite(req, url)
     elif re.search(r'youku', url):
         page_youku(req, url)
     elif re.search(r'drive\.google\.com', url):

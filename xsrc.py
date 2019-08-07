@@ -9,7 +9,6 @@ import videowood
 import up2stream
 import rapidvideo
 import odnoklassniki
-import xuite
 import goodtv
 import litv
 import iqiyi
@@ -82,10 +81,7 @@ def getSource(url, key=None, ref=None):
 
         url, key, ref = parseParameters(url, key, ref)
 
-        if re.search('xuite.net', url):
-            src = xuite.getSource(url, key)
-
-        elif re.search('goodtv.org', url):
+        if re.search('goodtv.org', url):
             src = goodtv.getSource(url)
 
         elif re.search('videomega.tv', url):
