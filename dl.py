@@ -67,7 +67,7 @@ def dl(url, options):
         return subprocess.Popen(cmd, shell=True)
     elif options.execute == 'curl':
         basename = os.path.basename(xurl.urlparse(url).path)
-        cmd = 'curl -kLs -o %s \'%s\'' %(basename, url)
+        cmd = 'curl -kLs -C - -o %s \'%s\'' %(basename, url)
         return subprocess.Popen(cmd, shell=True)
     elif options.cmd:
         cmd = '%s \'%s\'' %(options.cmd, url)

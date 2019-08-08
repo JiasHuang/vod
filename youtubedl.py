@@ -174,6 +174,7 @@ def extractURL(url, key=None, ref=None, dontParseJson=False):
     except:
         elapsed = timeit.default_timer() - start_time
         print('\texception')
+        return None
 
     print('\tsec : %s' %(str(elapsed)))
     print('\tret : %s' %(local))
