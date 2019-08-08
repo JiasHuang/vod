@@ -30,7 +30,7 @@ var settings = {
     },
     'dlconf' : {
         'type' : 'input',
-        'defs' : 'pangzitv=4'
+        'defs' : 'pangzitv=4, le.com=4'
     },
 };
 

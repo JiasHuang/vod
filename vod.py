@@ -69,8 +69,8 @@ def main():
         for conf in xarg.dlconf.split(','):
             try:
                 c = conf.split('=')
-                key = c[0]
-                val = c[1]
+                key = c[0].strip()
+                val = c[1].strip()
                 if re.search(re.escape(key), url):
                     xarg.dl_threads = val
             except:

@@ -12,15 +12,38 @@ import xsrc
 
 from optparse import OptionParser
 
+def isM3U(url):
+    parsed = xurl.urlparse(url)
+    if len(parsed.netloc) > 0:
+        if xurl.getContentType(url) in ['application/vnd.apple.mpegurl', 'application/x-mpegurl']:
+            return True
+    elif os.path.exists(url):
+        if re.search(r'#EXTM3U', xurl.readLocal(url)):
+            return True
+    return False
+
 def filter(url, flt):
+
+    local = os.path.basename(url) + '.dl'
+
+    parsed = xurl.urlparse(url)
+    if len(parsed.netloc) > 0:
+        txt = xurl.curl(url, local)
+    else:
+        txt = xurl.readLocal(url)
+
+    newtxt = txt
     results = []
-    for m in re.finditer(flt, xurl.curl(url, local=os.path.basename(url))):
+    for m in re.finditer(flt, txt):
         if re.compile(flt).groups > 0:
             link = xurl.urljoin(url, m.group(1))
         else:
             link = xurl.urljoin(url, m.group())
         if link not in results:
+            basename = os.path.basename(xurl.urlparse(link).path)
+            newtxt = newtxt.replace(link, basename)
             results.append(link)
+    xurl.saveLocal(local, newtxt)
     return results
 
 def genName(name, suffix, sn):
@@ -38,7 +61,15 @@ def dl(url, options):
         local = genName(options.name, options.type, options.sn)
         cmd = 'ffmpeg -i \'%s\' -vcodec copy -acodec copy %s' %(src, local)
         return subprocess.Popen(cmd, shell=True)
-    elif options.cmd is not None:
+    elif options.execute == 'wget':
+        basename = os.path.basename(xurl.urlparse(url).path)
+        cmd = 'wget -qc -o /dev/null -O %s \'%s\'' %(basename, url)
+        return subprocess.Popen(cmd, shell=True)
+    elif options.execute == 'curl':
+        basename = os.path.basename(xurl.urlparse(url).path)
+        cmd = 'curl -kLs -o %s \'%s\'' %(basename, url)
+        return subprocess.Popen(cmd, shell=True)
+    elif options.cmd:
         cmd = '%s \'%s\'' %(options.cmd, url)
         return subprocess.Popen(cmd, shell=True)
     else:
@@ -82,17 +113,17 @@ def createJobs(url, dldir, jobs):
     prog = os.path.realpath(__file__)
     if prog.endswith('.pyc'):
         prog = prog[:-1]
-    local = dldir + os.path.basename(url)
+
+    local = dldir + os.path.basename(url) + '.dl'
 
     procs = subprocess.check_output('ps aux', shell=True)
     pattern = '%s -i %s' %(os.path.basename(prog), url)
     if re.search(re.escape(pattern), procs):
         return local
 
-    ctx = xurl.getContentType(url)
-    if ctx == 'application/vnd.apple.mpegurl' or ctx == 'application/x-mpegurl':
+    if isM3U(url):
         flt = '#EXTINF:.*?\n(.*?)\n'
-        cmd = '%s -i \'%s\' -c %s -f \'%s\' -j %s --cmd \'wget -qc -o /dev/null\'' %(
+        cmd = '%s -i \'%s\' -c %s -f \'%s\' -j %s -x curl' %(
                 prog, url, dldir, flt, jobs)
         p = subprocess.Popen(cmd, shell=True)
         print('create download process %s' %(p.pid))
