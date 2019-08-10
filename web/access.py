@@ -4,7 +4,7 @@ import re
 
 import xurl
 
-from mod_python import util, Cookie
+from mod_python import util
 
 def getUnparsedURL(req):
     m = re.search(r'=(.*)$', req.unparsed_uri, re.DOTALL)

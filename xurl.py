@@ -21,8 +21,6 @@ except ImportError:
     from urllib import urlopen, quote, unquote
     from urllib2 import build_opener, HTTPError, URLError
 
-gDebugLog = []
-
 class defvals:
     workdir             = '/var/tmp/'
     wget_path_cookie    = workdir+'vod_wget.cookie'
@@ -46,26 +44,6 @@ def saveLocal(local, text, buffering=-1):
     fd = open(local, 'w', buffering)
     fd.write(text)
     fd.close()
-    return
-
-def debug_readLocal(url, local):
-    global gDebugLog
-    gDebugLog.append('%s -> %s' %(url, local))
-    return readLocal(local)
-
-def debug_saveLocal(url, local, txt):
-    global gDebugLog
-    gDebugLog.append('%s -> %s' %(url, local))
-    saveLocal(local, txt)
-    return txt
-
-def showDebugLog(req, clear=True):
-    global gDebugLog
-    req.write('\n\n<!--DebugLog-->\n')
-    for l in gDebugLog:
-        req.write('<!-- %s -->\n' %(l))
-    if clear:
-        del gDebugLog[:]
     return
 
 def checkExpire(local):
@@ -102,7 +80,7 @@ def getContentType(url):
 def load(url, local=None, headers=None, cache=True):
     local = local or genLocal(url)
     if cache and not checkExpire(local):
-        return debug_readLocal(url, local)
+        return readLocal(local)
 
     opener = build_opener()
     opener.addheaders = [('User-agent', defvals.ua)]
@@ -117,7 +95,8 @@ def load(url, local=None, headers=None, cache=True):
             txt = gzip.GzipFile(fileobj=buf).read()
         else:
             txt = f.read()
-        return debug_saveLocal(url, local, txt)
+        saveLocal(local, txt)
+        return txt
     except HTTPError as e:
         return 'Exception HTTPError: ' + str(e.code)
     except URLError as e:
@@ -128,7 +107,7 @@ def load(url, local=None, headers=None, cache=True):
 def post(url, payload, local=None, headers=None, cache=True):
     local = local or genLocal(url)
     if cache and not checkExpire(local):
-        return debug_readLocal(url, local)
+        return readLocal(local)
 
     opener = build_opener()
     opener.addheaders = [('User-agent', defvals.ua)]
@@ -140,7 +119,8 @@ def post(url, payload, local=None, headers=None, cache=True):
     try:
         f = opener.open(url, data)
         txt = f.read()
-        return debug_saveLocal(url, local, txt)
+        saveLocal(local, txt)
+        return txt
     except:
         return 'Exception'
 
@@ -148,7 +128,7 @@ def wget(url, local=None, opts=[], cache=True, ref=None):
     local = local or genLocal(url)
     print('[wget] %s -> %s' %(url, local))
     if cache and not checkExpire(local):
-        return debug_readLocal(url, local)
+        return readLocal(local)
     if ref:
         opts.append('--referer=\'%s\'' %(ref))
     opts.append('-U \'%s\'' %(defvals.ua))
@@ -159,16 +139,16 @@ def wget(url, local=None, opts=[], cache=True, ref=None):
             cmd2 = 'mv %s %s.gz; gunzip %s.gz' %(local, local, local)
             subprocess.check_output(cmd2, shell=True)
         os.rename(local+'.part', local)
-        return debug_readLocal(url, local)
+        return readLocal(local)
     except:
-        print('Exception: '+cmd)
+        print('Exception:\n'+cmd)
         return None
 
 def curl(url, local=None, opts=[], cache=True, ref=None):
     local = local or genLocal(url)
     print('[curl] %s -> %s' %(url, local))
     if cache and not checkExpire(local):
-        return debug_readLocal(url, local)
+        return readLocal(local)
     if ref:
         opts.append('-e \'%s\'' %(ref))
     opts.append('-H \'User-Agent: %s\'' %(defvals.ua))
@@ -178,16 +158,16 @@ def curl(url, local=None, opts=[], cache=True, ref=None):
     try:
         subprocess.check_output(cmd, shell=True)
         os.rename(local+'.part', local)
-        return debug_readLocal(url, local)
+        return readLocal(local)
     except:
-        print('Exception: ' + cmd)
+        print('Exception:\n' + cmd)
         return None
 
 def curlHdr(url, opts=[], cache=True, ref=None):
     local = genLocal(url, suffix='.hdr')
     print('[curlHdr] %s -> %s' %(url, local))
     if cache and not checkExpire(local):
-        return debug_readLocal(url, local)
+        return readLocal(local)
     if ref:
         opts.append('-e \'%s\'' %(ref))
     opts.append('-H \'User-Agent: %s\'' %(defvals.ua))
@@ -195,9 +175,9 @@ def curlHdr(url, opts=[], cache=True, ref=None):
     try:
         subprocess.check_output(cmd, shell=True)
         os.rename(local+'.part', local)
-        return debug_readLocal(url, local)
+        return readLocal(local)
     except:
-        print('Exception: ' + cmd)
+        print('Exception:\n' + cmd)
         return None
 
 
