@@ -53,8 +53,8 @@ def extract(url):
                                     objs.append(entryObj(link, title, image))
                                 if vtype == 'html':
                                     vsrc = re.search(r'src="([^"]*)"', vid)
-                                    vsrc = vsrc[1] if vsrc else None
-                                    objs.append(entryObj(link, vsrc))
+                                    if vsrc:
+                                        objs.append(entryObj(vsrc.group(1)))
                     except:
                         print('Exception:\n'+str(prop))
 
