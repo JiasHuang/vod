@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import re
+import sys
 
 import xurl
 
@@ -17,11 +18,15 @@ def index(req):
     arg  = util.FieldStorage(req)
     j    = arg.get('j', None) # json
 
+    logfile = xurl.genLocal(req.unparsed_uri)
+    sys.stdout = open(logfile, 'w')
+
     if j:
         req.content_type = 'application/json'
         j = getUnparsedURL(req) or j
         req.write(xurl.curl(j))
-        return
+
+    sys.stdout.close()
 
     return
 

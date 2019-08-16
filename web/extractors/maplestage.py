@@ -49,7 +49,8 @@ def extract(url):
                                 if vtype in ['youtube', 'dailymotion']:
                                     link = getLink(vtype, vid)
                                     title = getTitle(vtype, videoIndex, vcnt)
-                                    objs.append(entryObj(link, title))
+                                    image = getImage(vtype, vid)
+                                    objs.append(entryObj(link, title, image))
                                 if vtype == 'html':
                                     vsrc = re.search(r'src="([^"]*)"', vid)
                                     vsrc = vsrc[1] if vsrc else None

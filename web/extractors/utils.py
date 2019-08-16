@@ -124,3 +124,11 @@ def getTitle(site, index, cnt):
         title += ' Part %d/%d' %(index, cnt)
     return title
 
+def getImage(site, vid):
+    if site == 'youtube':
+        return 'http://img.youtube.com/vi/%s/0.jpg' %(vid)
+    if site == 'dailymotion':
+        return 'http://www.dailymotion.com/thumbnail/video/'+vid
+    if site == 'googledrive':
+        return 'https://drive.google.com/thumbnail?authuser=0&sz=w320&id='+vid
+    return None
