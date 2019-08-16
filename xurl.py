@@ -32,6 +32,12 @@ class defvals:
     wget                = '%s %s' %(wget_opt_base, wget_opt_ua)
     expiration          = 14400
 
+def log(s):
+    if not isinstance(sys.stdout, file):
+        print('\n<!--\n%s\n-->\n' %(s.strip()))
+    else:
+        print(s)
+
 def readLocal(local, buffering=-1):
     if os.path.exists(local):
         fd = open(local, 'r', buffering)
@@ -126,7 +132,7 @@ def post(url, payload, local=None, headers=None, cache=True):
 
 def wget(url, local=None, opts=[], cache=True, ref=None):
     local = local or genLocal(url)
-    print('[wget] %s -> %s' %(url, local))
+    log('[wget] %s -> %s' %(url, local))
     if cache and not checkExpire(local):
         return readLocal(local)
     if ref:
@@ -141,12 +147,12 @@ def wget(url, local=None, opts=[], cache=True, ref=None):
         os.rename(local+'.part', local)
         return readLocal(local)
     except:
-        print('Exception:\n'+cmd)
+        log('Exception:\n'+cmd)
         return None
 
 def curl(url, local=None, opts=[], cache=True, ref=None):
     local = local or genLocal(url)
-    print('[curl] %s -> %s' %(url, local))
+    log('[curl] %s -> %s' %(url, local))
     if cache and not checkExpire(local):
         return readLocal(local)
     if ref:
@@ -160,12 +166,12 @@ def curl(url, local=None, opts=[], cache=True, ref=None):
         os.rename(local+'.part', local)
         return readLocal(local)
     except:
-        print('Exception:\n' + cmd)
+        log('Exception:\n' + cmd)
         return None
 
 def curlHdr(url, opts=[], cache=True, ref=None):
     local = genLocal(url, suffix='.hdr')
-    print('[curlHdr] %s -> %s' %(url, local))
+    log('[curlHdr] %s -> %s' %(url, local))
     if cache and not checkExpire(local):
         return readLocal(local)
     if ref:
@@ -177,7 +183,7 @@ def curlHdr(url, opts=[], cache=True, ref=None):
         os.rename(local+'.part', local)
         return readLocal(local)
     except:
-        print('Exception:\n' + cmd)
+        log('Exception:\n' + cmd)
         return None
 
 

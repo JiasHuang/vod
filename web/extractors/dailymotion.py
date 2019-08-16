@@ -10,6 +10,7 @@ VALID_URL = r'dailymotion'
 
 def parseDailyMotionJSON(url):
     data = json.loads(load(url))
+    log(json.dumps(data, indent=4))
     objs = []
     if 'list' not in data:
         return None

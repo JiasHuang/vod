@@ -39,6 +39,7 @@ def extract(url):
         pageData = re.search(r'var pageData = (.*?});', load(url));
         if pageData:
             data =  json.loads(pageData.group(1))
+            log(json.dumps(data, indent=4))
             for prop in data['props']:
                 if 'value' in prop and 'videoSources' in prop['value']:
                     try:

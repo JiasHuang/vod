@@ -132,3 +132,6 @@ def getImage(site, vid):
     if site == 'googledrive':
         return 'https://drive.google.com/thumbnail?authuser=0&sz=w320&id='+vid
     return None
+
+def log(s):
+    print('\n<!--\n%s\n-->\n' %(s.strip()))

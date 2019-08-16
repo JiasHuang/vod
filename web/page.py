@@ -106,11 +106,8 @@ def search_core(req, q, s=None, x=None):
         onPageNotFound(req)
 
 def search(req, q, s=None, x=None):
-    logfile = xurl.genLocal('q=%s&s=%s&x=%s' %(q, s or '', x or ''), suffix='.log')
-    req.write('\n\n<!-- logfile: %s -->\n\n' %(logfile))
-    sys.stdout = open(logfile, 'w')
+    sys.stdout = req
     search_core(req, q, s, x)
-    sys.stdout.close()
 
 def onPageNotFound(req):
     req.write('<h1><span class="message" id="NotFound"></span></h1>\n')
@@ -123,12 +120,10 @@ def page_core(req, url):
         onPageNotFound(req)
 
 def page(req, url):
-    logfile = xurl.genLocal(url, suffix='.log')
     html = re.split('<!--result-->', loadFile('list.html'))
     req.write(html[0])
-    req.write('\n\n<!-- logfile: %s -->\n\n' %(logfile))
-    sys.stdout = open(logfile, 'w')
+    sys.stdout = req
     page_core(req, url)
-    sys.stdout.close()
     req.write(html[1])
+
 
