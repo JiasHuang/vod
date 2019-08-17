@@ -3,7 +3,7 @@
 cd $(dirname $(readlink -f $0))
 
 sudo mkdir -p /var/www/html/vod/
-sudo cp -vL web/* /var/www/html/vod/
+sudo cp -vLr web/* /var/www/html/vod/
 
 sudo mkdir -p /opt/vod/
 sudo cp -vL * /opt/vod/
