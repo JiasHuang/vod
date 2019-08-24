@@ -19,6 +19,6 @@ def extract(url):
                 url, title, img = darg(d, 'url', 'title', 'img')
                 objs.append(entryObj(url, title, img))
         except:
-            print('Exception:\n'+str(data))
+            log('Exception:\n'+str(data))
 
     return objs

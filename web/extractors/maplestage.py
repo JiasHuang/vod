@@ -20,7 +20,7 @@ def extract(url):
                     link = 'http://maplestage.com/show/' + slug
                     objs.append(entryObj(link, slug, video=False))
             except:
-                print('Exception:\n'+str(data))
+                log('Exception:\n'+str(data))
     elif re.search(r'/show/', url):
         pageData = re.search(r'var pageData = (.*?});', load(url));
         if pageData:
@@ -34,7 +34,7 @@ def extract(url):
                         title += darg(ep, 'topic')
                     objs.append(entryObj(link, title, video=False))
             except:
-                print('Exception:\n'+str(data))
+                log('Exception:\n'+str(data))
     elif re.search(r'/episode/', url):
         pageData = re.search(r'var pageData = (.*?});', load(url));
         if pageData:
@@ -57,6 +57,6 @@ def extract(url):
                                     if vsrc:
                                         objs.append(entryObj(vsrc.group(1)))
                     except:
-                        print('Exception:\n'+str(prop))
+                        log('Exception:\n'+str(prop))
 
     return objs

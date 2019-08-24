@@ -22,7 +22,7 @@ def parseYoutubeInitialDataJSON(url):
         try:
             return json.loads(m.group(1))
         except:
-            print('Exception:\n'+m.group(1))
+            log('Exception:\n'+m.group(1))
     return None
 
 def findYouTubeNextPage(url, q):
@@ -58,7 +58,7 @@ def extract_youtube_videos(url):
                     desc = timeStatus['text']['simpleText'].encode('utf8')
                 objs.append(entryObj(link, title, image, desc))
             except:
-                print('Exception:\n'+str(x))
+                log('Exception:\n'+str(x))
 
     return objs
 
@@ -74,7 +74,7 @@ def extract_youtube_channels(url):
                 image = x['thumbnail']['thumbnails'][0]['url'].encode('utf8')
                 objs.append(entryObj(link, title, image, 'Channel', False))
             except:
-                print('Exception:\n'+str(x))
+                log('Exception:\n'+str(x))
 
     return objs
 
@@ -90,7 +90,7 @@ def extract_youtube_playlists(url):
                 image = x['thumbnail']['thumbnails'][0]['url'].encode('utf8')
                 objs.append(entryObj(link, title, image, 'Playlist', False))
             except:
-                print('Exception:\n'+str(x))
+                log('Exception:\n'+str(x))
 
     return objs
 
@@ -109,7 +109,7 @@ def extract_youtube_playlistVideo(url):
                     desc = timeStatus['text']['simpleText'].encode('utf8')
                 objs.append(entryObj(link, title, image, desc))
             except:
-                print('Exception:\n'+str(x))
+                log('Exception:\n'+str(x))
 
     return objs
 
@@ -123,7 +123,7 @@ def extract_youtube_channel(url):
                 objs.append(entryObj(url+'videos', 'VIDEOS', image, 'Videos', False))
                 break
             except:
-                print('Exception:\n'+str(x))
+                log('Exception:\n'+str(x))
 
     objs.extend(extract_youtube_videos(url+'/videos?view=2'))
     objs.extend(extract_youtube_playlists(url+'/playlists'))
@@ -168,7 +168,7 @@ def search_youtube(q, sp=None):
                     image = x['thumbnails'][0]['thumbnails'][0]['url'].encode('utf8')
                     objs.append(pageObj(link, title, image, 'Playlist'))
             except:
-                print('Exception:\n'+str(x))
+                log('Exception:\n'+str(x))
 
     objs.extend(findYouTubeNextPage(url, q))
 

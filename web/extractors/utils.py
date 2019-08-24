@@ -3,6 +3,7 @@
 
 import re
 import json
+import sys
 
 import xurl
 
@@ -16,11 +17,11 @@ class entryObj(object):
         self.desc = desc
         self.video = video
     def show(self):
-        print('\tlink: %s' %(self.link))
-        print('\ttitle: %s' %(self.title or ''))
-        print('\timage: %s' %(self.image or ''))
-        print('\tdesc: %s' %(self.desc or ''))
-        print('\tvideo: %s' %(self.video))
+        log('\tlink: %s' %(self.link))
+        log('\ttitle: %s' %(self.title or ''))
+        log('\timage: %s' %(self.image or ''))
+        log('\tdesc: %s' %(self.desc or ''))
+        log('\tvideo: %s' %(self.video))
 
 class videoObj(entryObj):
     def __init__(self, link, title=None, image=None, desc=None):
@@ -43,8 +44,8 @@ class navObj(object):
         self.label = label
         self.link = link
     def show(self):
-        print('\tlabel: %s' %(self.label))
-        print('\tlink: %s' %(self.link))
+        log('\tlabel: %s' %(self.label))
+        log('\tlink: %s' %(self.link))
 
 class imageObj(object):
     def __init__(self, link, title, image, html):
@@ -134,4 +135,7 @@ def getImage(site, vid):
     return None
 
 def log(s):
-    print('\n<!--\n%s\n-->\n' %(s.strip()))
+    if not isinstance(sys.stdout, file):
+        print('\n<!--\n%s\n-->\n' %(s.strip()))
+    else:
+        print(s)

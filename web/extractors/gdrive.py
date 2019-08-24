@@ -52,7 +52,7 @@ def extract(url):
                         link = 'https://drive.google.com/drive/folders/'+vid
                         objs.append(pageObj(link, title, 'folder-video-icon.png'))
         except:
-            print('Exception:\n'+drive_ivd_txt)
+            log('Exception:\n'+drive_ivd_txt)
 
     return objs
 

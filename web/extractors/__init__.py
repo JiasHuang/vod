@@ -2,7 +2,7 @@ from os.path import dirname, basename, isfile, join
 import glob
 import re
 
-from .utils import entryObj, navObj
+from .utils import entryObj, navObj, log
 
 mods = []
 searches = {}
@@ -29,21 +29,19 @@ def extract_debug(url):
     results = extract(url)
     if results:
         for idx, obj in enumerate(results, 1):
-            print('%s:' %(idx))
+            log('%s:' %(idx))
             obj.show()
 
 def search(q, s=None, x=None):
     s = s or 'youtube'
     if searches.has_key(s):
         return searches[s](q, x)
-    print('Not found: '+s)
-    print(searches)
     return None
 
 def search_debug(q, s='youtube', x=None):
     results = search(q, s, x)
     if results:
         for idx, obj in enumerate(results, 1):
-            print('%s:' %(idx))
+            log('%s:' %(idx))
             obj.show()
 

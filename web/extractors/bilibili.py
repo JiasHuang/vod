@@ -27,7 +27,7 @@ def extract(url):
                     desc = time.strftime('%H:%M:%S', time.gmtime(vp['duration']))
                     objs.append(entryObj(link, title, image, desc))
             except:
-                print('Exception:\n'+str(data))
+                log('Exception:\n'+str(data))
 
         else:
             for m in re.finditer(r'"page":(\d+),"from":"[^"]*","part":"([^"]*)","duration":(\d+)', txt):
@@ -53,6 +53,6 @@ def search_bilibili(q, x=None):
             title = re.sub('</.*?>', '', title)
             objs.append(pageObj(arcurl, title, pic, duration))
     except:
-        print('Exception:\n'+str(data))
+        log('Exception:\n'+str(data))
 
     return objs

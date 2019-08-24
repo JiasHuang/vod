@@ -36,7 +36,7 @@ def extract(url):
                     link = 'https://www.litv.tv/vod/drama/content.do?content_id='+contentId
                     objs.append(entryObj(link, title, image, None, False))
             except:
-                print('Exception:\n'+str(data))
+                log('Exception:\n'+str(data))
     return objs
 
 
