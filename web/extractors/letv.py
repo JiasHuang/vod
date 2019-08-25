@@ -22,11 +22,11 @@ def extract(url):
         for obj in findImageLink(page, ImageExt='png'):
             if re.search(r'/tv/', obj.link):
                 image = re.search(r'\'(.*?.jpg)\'', obj.html)
-                image = image.group(1) if image else None
+                obj.image = image.group(1) if image else None
                 objs.append(obj.to_page())
             elif re.search(r'/vplay/', obj.link):
                 image = re.search(r'\'([^\']*\.jpg)\'', obj.html)
-                image = image.group(1) if image else None
+                obj.image = image.group(1) if image else None
                 objs.append(obj.to_video())
 
     return objs

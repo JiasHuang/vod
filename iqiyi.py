@@ -11,13 +11,27 @@ import xurl
 
 def loadM3U8(url):
     txt = xurl.curl(url)
+    txt = txt.replace('\/', '/')
+    txt = txt.replace('\\n', '\n')
     m = re.search(r'"m3u8":"([^"]*)"', txt)
     if m:
         m3u8 = m.group(1)
-        m3u8 = m3u8.replace('\/', '/')
-        m3u8 = m3u8.replace('\\n', '\n')
         local = xdef.workdir+'vod_list_'+hashlib.md5(url).hexdigest()+'.m3u8'
         xurl.saveLocal(local, m3u8)
+        return local
+    results = []
+    for l in re.finditer(r'"l":"([^"]*)"', txt):
+        part = l.group(1)
+        if re.search(r'f4v\?', part):
+            if part.startswith('http'):
+                results.append(part)
+            else:
+                data_url = 'https://data.video.iqiyi.com/videos' + part
+                for v in re.finditer(r'"l":"([^"]*)"', xurl.curl(data_url)):
+                    results.append(v.group(1))
+    if len(results):
+        local = xurl.genLocal(url, suffix='.m3u8')
+        xurl.saveM3U8(local, results)
         return local
     return None
 

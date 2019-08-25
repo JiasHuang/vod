@@ -52,6 +52,16 @@ def saveLocal(local, text, buffering=-1):
     fd.close()
     return
 
+def saveM3U8(local, result):
+    fd = open(local, 'w')
+    fd.write('#EXTM3U\n')
+    for r in result:
+        fd.write('#EXTINF:-1,0\n')
+        fd.write(r+'\n')
+    fd.write('#EXT-X-ENDLIST\n')
+    fd.close()
+    return
+
 def checkExpire(local):
     if not os.path.exists(local):
         return True
