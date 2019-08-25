@@ -30,7 +30,10 @@ def getDashURL(url):
     return None
 
 def getSource(url):
-    dashURL = getDashURL(url)
-    if dashURL:
-        return loadM3U8(dashURL)
+    if re.search(r'/dash\?', url):
+        return loadM3U8(url)
+    else:
+        dashURL = getDashURL(url)
+        if dashURL:
+            return loadM3U8(dashURL)
     return None

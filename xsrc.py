@@ -100,11 +100,8 @@ def getSource(url, key=None, ref=None):
         elif re.search('litv', url):
             src = litv.getSource(url)
 
-        elif re.search('iqiyi\.com/v_', url):
+        elif re.search('iqiyi\.com', url):
             src = iqiyi.getSource(url)
-
-        elif re.search(r'/dash\?tvid=', url):
-            src = iqiyi.loadM3U8(url)
 
         elif re.search(r'pianku.tv', url):
             src = pianku.getSource(url)
