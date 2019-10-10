@@ -120,7 +120,7 @@ def extract_youtube_channel(url):
         for x in findItem(data, ['gridVideoRenderer']):
             try:
                 image = x['thumbnail']['thumbnails'][0]['url'].encode('utf8')
-                objs.append(entryObj(url+'videos', 'VIDEOS', image, 'Videos', False))
+                objs.append(entryObj(url+'/videos', 'VIDEOS', image, 'Videos', False))
                 break
             except:
                 log('Exception:\n'+str(x))
