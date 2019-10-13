@@ -16,7 +16,7 @@ def getSource(url):
             code = m.group(1)
             decoded = xurl.unquote(base64.b64decode(code))
             print('\n[pangzitv][DBG][decoded]\n\n\t%s' %(decoded))
-            for m in re.finditer(r'(\d\d).*?(http[^#$\n]*)', decoded):
+            for m in re.finditer(r'(\d+).*?(http[^#$\n]*)', decoded):
                 if (int(m.group(1)) == int(ep_num)):
                     return m.group(2)
             m = re.search(r'(http[^#$\n]*)', decoded)
