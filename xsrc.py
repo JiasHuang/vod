@@ -43,7 +43,7 @@ def parseParameters(url, key, ref):
     return url, key, ref
 
 def getRedirectLink(url):
-    cmd = 'curl -I %s' %(url)
+    cmd = 'curl -I \"%s\"' %(url)
     output = subprocess.check_output(cmd, shell=True)
     cookies = []
     cookies_str = None
@@ -54,7 +54,7 @@ def getRedirectLink(url):
     m = re.search('Location: (.*?)\n', output)
     if m:
         return m.group(1), cookies_str
-    return url
+    return url, None
 
 def removeHashTag(url):
     m = re.search('(.*?)#', url)
