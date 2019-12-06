@@ -21,6 +21,8 @@ def setAct(act, val):
         cmd = 'seek %s absolute-percent' %(val)
     elif act in ['osd', 'mute', 'pause', 'stop', 'playlist-next', 'playlist-prev', 'sub-remove']:
         cmd = '%s' %(act)
+    elif act in ['audio-next']:
+        cmd = 'cycle aid'
     else:
         print('unsupported: %s %s' %(act, val))
         return

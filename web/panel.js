@@ -40,6 +40,10 @@ function setAct(key) {
         act = "sub-prev";
         num = "";
     }
+    else if (key == "forward" && num == "##") {
+        act = "audio-next";
+        num = "";
+    }
     else if (key == "stop" && num == "*") {
         act = "sub-remove";
         num = "";
