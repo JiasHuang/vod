@@ -61,11 +61,11 @@ def getOption(req):
     if fmt:
         opt.append('-f \'%s\'' %(fmt))
     if autosub:
-        opt.append('--autosub %s' %(autosub))
+        opt.append('--autosub \'%s\'' %(autosub))
     if pagelist:
-        opt.append('--pagelist %s' %(pagelist))
+        opt.append('--pagelist \'%s\'' %(pagelist))
     if dlconf:
-        opt.append('--dlconf %s' %(dlconf))
+        opt.append('--dlconf \'%s\'' %(dlconf))
 
     return ' '.join(opt)
 
