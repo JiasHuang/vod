@@ -13,9 +13,9 @@ def extract(url):
     txt = load(url)
     try:
         data = json.loads(txt)
-        for d in data['list']:
-            name, photo, url = darg(d, 'name', 'video_album_photo_url', 'video_album_url')
-            objs.append(entryObj(url, name, photo, video=False))
+        for d in data['data']['list']:
+            title, image, url = darg(d, 'title', 'image', 'url')
+            objs.append(entryObj(url, title, image, video=False))
     except:
         log('Exception:\n'+txt)
 
