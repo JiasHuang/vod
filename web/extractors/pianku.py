@@ -23,13 +23,12 @@ def extract(url):
         opts.append('-H \'x-requested-with: XMLHttpRequest\'')
         opts.append('-H \'referer: %s\'' %(url))
         txt = xurl.curl(url_tv, opts=opts)
-        for m in re.finditer(r'<li><a rel="nofollow" href="([^"]*)" target="_blank">(.*?)</a></li>', txt):
-            link, title = m.group(1), m.group(2)
-            if link.startswith('/'):
-                objs.append(entryObj('https://www.pianku.tv'+link, title))
+        for m in re.finditer(r'<li><a href="([^"]*)">(.*?)</a></li>', txt):
+            link, title = urljoin(url, m.group(1)), m.group(2)
+            objs.append(entryObj(link, title))
     else:
         for m in re.finditer(r'<a href="(.*?)" title="(.*?)" target="_blank"><img src="(.*?)"', load(url)):
-            link, title, img = m.group(1), m.group(2), m.group(3)
+            link, title, img = urljoin(url, m.group(1)), m.group(2), urljoin(url, m.group(3))
             objs.append(pageObj(link, title, img))
 
     return objs
