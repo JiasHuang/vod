@@ -22,9 +22,9 @@ def extract(url):
         for m in re.finditer(r'{"contentId":"([^"]*)",.*?}', data, re.DOTALL):
             link = url.replace(contentId, m.group(1))
             title = re.search(r'"subtitle":"([^"]*)"', m.group()) or re.search(r'"episode":"([^"]*)"', m.group())
-            title = title[1] if title else None
+            title = title.group(1) if title else None
             image = re.search(r'"videoImage":"([^"]*)"', m.group())
-            image = image[1] if image else None
+            image = image.group(1) if image else None
             objs.append(entryObj(link, title, image, None))
     else:
         progs = re.search(r'var programs = (.*?});', load(url))
