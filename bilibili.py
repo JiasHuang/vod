@@ -11,10 +11,10 @@ def getSource(url):
     result = []
     m = re.search(r'av(\d+)', url)
     avid = m.group(1) if m else None
-    m = re.search(r'"cid":(\d+)', txt)
+    m = re.search(r'cid=(\d+)', txt)
     cid = m.group(1) if m else None
     if avid and cid:
-        api_url = 'https://api.bilibili.com/x/player/playurl?cid=%s&avid=%s&otype=json' %(cid, avid)
+        api_url = 'https://api.bilibili.com/x/player/playurl?avid=%s&cid=%s&otype=json' %(avid, cid)
         for m in re.finditer(r'"url":"([^"]*)"', xurl.curl(api_url)):
             result.append(m.group(1).decode('unicode_escape'))
     return youtubedl.genM3U(url, result)
