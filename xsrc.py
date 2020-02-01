@@ -15,6 +15,7 @@ import iqiyi
 import pianku
 import pangzitv
 import bilibili
+import mixdrop
 import youtubedl
 import xurl
 
@@ -111,6 +112,9 @@ def getSource(url, key=None, ref=None):
 
         elif re.search(r'bilibili', url):
             src = bilibili.getSource(url)
+
+        elif re.search(r'mixdrop', url):
+            src = mixdrop.getSource(url)
 
         elif not xurl.getContentType(url).startswith('text'):
             src = url
