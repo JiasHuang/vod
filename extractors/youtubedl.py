@@ -10,12 +10,9 @@ import time
 import base64
 import timeit
 
-from optparse import OptionParser
-
 import xarg
 import xdef
 import xurl
-import xplay
 
 def redirectURL(url):
     if re.search(r'youku', url):
@@ -43,16 +40,6 @@ def getFormat(url):
         formats.append(xarg.ytdlfmt)
     formats.append('best[ext!=webm]')
     return '/'.join(formats)
-
-def genM3U(url, result):
-    local = xdef.workdir+'vod_list_'+hashlib.md5(url).hexdigest()+'.m3u'
-    fd = open(local, 'w')
-    fd.write('#EXTM3U\n')
-    for r in result:
-        fd.write('#EXTINF:-1,0\n')
-        fd.write(r+'\n')
-    fd.close()
-    return local
 
 def parseJson(path):
 
@@ -101,7 +88,8 @@ def parseJson(path):
         print('\tret : %s' %(results[0]))
         return results[0], cookies
     else:
-        m3u = genM3U(path, results)
+        m3u = xurl.genLocal(path, prefix='vod_list_', suffix='.m3u8')
+        xurl.saveM3U8(m3u, results)
         print('\tret : %s' %(m3u))
         return m3u, cookies
 
@@ -220,14 +208,3 @@ def extractSUB(url):
 
     return None
 
-
-def main():
-    parser = OptionParser()
-    parser.add_option("--local", dest="local")
-    parser.add_option("--url", dest="url")
-    (options, args) = parser.parse_args()
-    extractPlayList(options.local, options.url)
-    return
-
-if __name__ == '__main__':
-    main()

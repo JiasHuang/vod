@@ -2,10 +2,11 @@
 # -*- coding: utf-8 -*-
 
 import re
-import json
 
 import xdef
 import xurl
+
+VALID_URL = r'litv\.tv'
 
 def getSource(url):
     txt = xurl.curl(url)

@@ -6,6 +6,8 @@ import base64
 
 import xurl
 
+VALID_URL = r'pangzitv\.com'
+
 def getSource(url):
     if re.search(r'vod-play-id', url):
         try:

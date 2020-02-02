@@ -62,7 +62,7 @@ def play(url, ref):
         os.system('echo loadfile \"%s\" > %s' %(url, xdef.fifo))
         os.system('echo sub-remove > %s' %(xdef.fifo))
 
-    sub = xsrc.getSUB(ref)
+    sub = xsrc.getSub(ref)
     if sub:
         os.system('echo sub-add \"%s\" select > %s' %(sub, xdef.fifo))
 

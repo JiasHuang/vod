@@ -5,10 +5,10 @@ import re
 
 import xurl
 
+VALID_URL = r'rapidvideo\.com'
+
 def getSource(url, ref=None):
     txt = xurl.curl(url, ref=ref)
-    videoURL = re.search('<source.*? src="([^"]*)"', txt)
-    if videoURL:
-        return videoURL.group(1)
-    return None
+    m = re.search('<source.*? src="([^"]*)"', txt)
+    return m.group(1) if m else None
 

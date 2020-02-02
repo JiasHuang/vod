@@ -36,7 +36,7 @@ def getPlayer():
 
 def runDBG(url, ref):
     src, cookies, ref = xsrc.getSource(url, ref=ref)
-    sub = xsrc.getSUB(url)
+    sub = xsrc.getSub(url)
     if src:
         print('\n[xplay][DBG][src]\n\n\t%s' %(src))
     if ref:

@@ -2,12 +2,13 @@
 # -*- coding: utf-8 -*-
 
 import re
-import json
 import hashlib
 import subprocess
 
 import xdef
 import xurl
+
+VALID_URL = r'iqiyi\.com'
 
 def loadM3U8(url):
     txt = xurl.curl(url)
@@ -16,7 +17,7 @@ def loadM3U8(url):
     m = re.search(r'"m3u8":"([^"]*)"', txt)
     if m:
         m3u8 = m.group(1)
-        local = xdef.workdir+'vod_list_'+hashlib.md5(url).hexdigest()+'.m3u8'
+        local = xurl.genLocal(url, prefix='vod_list_', suffix='.m3u8')
         xurl.saveLocal(local, m3u8)
         return local
     results = []
@@ -30,7 +31,7 @@ def loadM3U8(url):
                 for v in re.finditer(r'"l":"([^"]*)"', xurl.curl(data_url)):
                     results.append(v.group(1))
     if len(results):
-        local = xurl.genLocal(url, suffix='.m3u8')
+        local = xurl.genLocal(url, prefix='vod_list_', suffix='.m3u8')
         xurl.saveM3U8(local, results)
         return local
     return None
