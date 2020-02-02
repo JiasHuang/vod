@@ -32,6 +32,12 @@ class defvals:
     wget                = '%s %s' %(wget_opt_base, wget_opt_ua)
     expiration          = 14400
 
+class xurlObj(object):
+    def __init__(self, url, cookies=None, ref=None):
+        self.url = url
+        self.cookies = cookies
+        self.ref = ref
+
 def log(s):
     if not isinstance(sys.stdout, file):
         print('\n<!--\n%s\n-->\n' %(s.strip()))
