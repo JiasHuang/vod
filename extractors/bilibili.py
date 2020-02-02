@@ -12,7 +12,12 @@ def getSource(url):
     result = []
     m = re.search(r'av(\d+)', url)
     avid = m.group(1) if m else None
-    m = re.search(r'cid=(\d+)', txt)
+    m = re.search(r'\?p=(\d+)', url)
+    p = m.group(1) if m else None
+    if p:
+        m = re.search(r'"cid":(\d+),"page":' + re.escape(p) + re.escape(','), txt)
+    else:
+        m = re.search(r'cid=(\d+)' , txt)
     cid = m.group(1) if m else None
     if avid and cid:
         api_url = 'https://api.bilibili.com/x/player/playurl?avid=%s&cid=%s&otype=json' %(avid, cid)
