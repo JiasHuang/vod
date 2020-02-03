@@ -8,9 +8,6 @@ codedir  = '/opt/vod/'
 dldir    = '/var/tmp/'
 fifo     = codedir+'vod.fifo'
 log      = workdir+'vod_%s.log' %(os.getuid())
-ytdlarg  = '--no-warnings'
-ytdlm3u  = '.youtubedl.m3u'
-ytdlsub  = '--no-warnings --write-sub --skip-download --sub-lang=en,en-US'
 mpv      = 'mpv --fs --ontop --ytdl=no --input-file=%s --save-position-on-quit' %(fifo)
 omxp     = 'omxplayer -b -o both -I'
 ffplay   = 'ffplay -fs -window_title ffplay'
@@ -18,9 +15,3 @@ playlist = workdir+'vod_%s_playlist' %(os.getuid())
 playbackMode = workdir+'vod_%s_playbackMode' %(os.getuid())
 playing  = workdir+'vod_%s_playing' %(os.getuid())
 
-def ytdlcmd():
-    if os.path.exists('/usr/bin/python3'):
-        for f in ['/usr/local/bin/youtube-dl', os.path.expanduser('~/bin/youtube-dl')]:
-            if os.path.exists(f):
-                return 'python3 ' + f
-    return 'youtube-dl'

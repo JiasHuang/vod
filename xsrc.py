@@ -1,13 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import os
-import sys
-
-path = os.path.realpath(os.path.abspath(__file__))
-sys.path.insert(0, os.path.dirname(path))
-
 import extractors
+import xarg
 
 def getSource(url, ref=None):
 
@@ -24,7 +19,7 @@ def getSource(url, ref=None):
         src = None
 
     else:
-        src, cookies, ref = extractors.getSource(url, ref)
+        src, cookies, ref = extractors.getSource(url, xarg.ytdlfmt, ref)
 
     if src:
         return src, cookies, ref
@@ -33,5 +28,5 @@ def getSource(url, ref=None):
     return None, None, None
 
 def getSub(url):
-    return extractors.getSub(url)
+    return extractors.getSub(url, xarg.autosub)
 

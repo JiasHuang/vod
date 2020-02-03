@@ -6,7 +6,6 @@ import os
 import subprocess
 
 import xurl
-import xdef
 
 def unpackURL(url):
     txt = xurl.curl(url)
@@ -54,7 +53,7 @@ def unpack(txt):
     return None
 
 def executeJSCode(code):
-    local = xdef.workdir+'vod_code_'+str(os.getuid())
+    local = xurl.genLocal(str(os.getuid), prefix='vod_code_')
     xurl.saveLocal(local, code)
     try:
         output = subprocess.check_output('nodejs '+local, shell=True).rstrip('\n')

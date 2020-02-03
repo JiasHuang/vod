@@ -5,7 +5,6 @@ import re
 import hashlib
 import subprocess
 
-import xdef
 import xurl
 
 VALID_URL = r'iqiyi\.com'

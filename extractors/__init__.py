@@ -19,7 +19,7 @@ for f in files:
         if hasattr(mod, 'VALID_URL') and hasattr(mod, 'getSource'):
             mods.append(mod)
 
-def getSource(url, ref):
+def getSource(url, fmt, ref):
     for m in mods:
         if re.search(m.VALID_URL, url):
             ret = m.getSource(url)
@@ -28,7 +28,7 @@ def getSource(url, ref):
             return ret, None, None
 
     # apply youtubedl if no module matched
-    src, cookies = youtubedl.extractURL(url, ref=ref)
+    src, cookies = youtubedl.extractURL(url, fmt, ref=ref)
     ref = url
 
     if not src:
@@ -36,8 +36,8 @@ def getSource(url, ref):
 
     return src, cookies, ref
 
-def getSub(url):
-    return youtubedl.extractSUB(url)
+def getSub(url, autosub):
+    return youtubedl.extractSUB(url, autosub)
 
 def getIframeSrc(url):
     if url[0:4] != 'http':

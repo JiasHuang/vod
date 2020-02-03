@@ -10,18 +10,27 @@ import time
 import base64
 import timeit
 
-import xarg
-import xdef
 import xurl
+
+class defvals:
+    ytdlsub  = '--no-warnings --write-sub --skip-download --sub-lang=en,en-US'
+    ua = xurl.defvals.ua
+
+def ytdlcmd():
+    if os.path.exists('/usr/bin/python3'):
+        for f in ['/usr/local/bin/youtube-dl', os.path.expanduser('~/bin/youtube-dl')]:
+            if os.path.exists(f):
+                return 'python3 ' + f
+    return 'youtube-dl'
 
 def redirectURL(url):
     if re.search(r'youku', url):
         url = re.sub('player.youku.com/embed/', 'v.youku.com/v_show/id_', url)
     return url
 
-def getFormat(url):
+def getFormat(url, fmt):
     formats = []
-    m = re.search(r'^(\d+)p($)', xarg.ytdlfmt, re.IGNORECASE)
+    m = re.search(r'^(\d+)p($)', fmt, re.IGNORECASE)
     if m:
         h = int(m.group(1))
         if h >= 1080:
@@ -37,7 +46,7 @@ def getFormat(url):
         formats.append('best[ext!=webm][protocol^=http][height<=%s]' %(h))
         formats.append('best[ext!=webm][height<=%s]' %(h))
     else:
-        formats.append(xarg.ytdlfmt)
+        formats.append(fmt)
     formats.append('best[ext!=webm]')
     return '/'.join(formats)
 
@@ -71,7 +80,7 @@ def parseJson(path):
         else:
             encoded = re.search(r'data:application/vnd.apple.mpegurl;base64,([a-zA-Z0-9+/=]*)', urls)
             if encoded:
-                local = xdef.workdir+'vod_list_'+hashlib.md5(path).hexdigest()+'.m3u'
+                local = xurl.genLocal(path, prefix='vod_list_', suffix='.m3u')
                 decoded = base64.b64decode(encoded.group(1))
                 xurl.saveLocal(local, decoded)
                 results.append(local)
@@ -93,50 +102,14 @@ def parseJson(path):
         print('\tret : %s' %(m3u))
         return m3u, cookies
 
-def extractPlayList(local, url):
-    txt = xurl.readLocal(url)
-    times = []
-    links = []
-    descs = []
-
-    for m in re.finditer(r'EXTINF:\s*(.*?),\s*(.*?)\n(.*?)\n', txt, re.DOTALL|re.MULTILINE):
-        time, desc, link = m.group(1), m.group(2), m.group(3)
-        times.append(time)
-        links.append(link)
-        descs.append(desc)
-
-    for index,link in enumerate(links):
-        src, cookies = extractURL(link)
-        time = times[index]
-        desc = descs[index]
-        if src:
-            if not os.path.exists(local):
-                fd = open(local, 'w')
-                fd.write('#EXTM3U\n')
-                fd.write('#EXTINF:%s, %s\n' %(time, desc))
-                fd.write(src+'\n')
-                fd.close()
-            else:
-                fd = open(local, 'a')
-                fd.write('#EXTINF:%s, %s\n' %(time, desc))
-                fd.write(src+'\n')
-                fd.close()
-
-    if not os.path.exists(local):
-        fd = open(local, 'w')
-        fd.write('#EXTM3U\n')
-        fd.close()
-
-    return
-
-def extractURL(url, key=None, ref=None, dontParseJson=False):
+def extractURL(url, fmt, key=None, ref=None, dontParseJson=False):
 
     print('\n[ytdl][extractURL]\n')
 
     url = redirectURL(url)
     arg = '-i -j --no-playlist --no-warnings'
-    fmt = getFormat(url)
-    local = xdef.workdir+'vod_list_'+hashlib.md5(url+fmt).hexdigest()+'.json'
+    fmt = getFormat(url, fmt)
+    local = xurl.genLocal(url+fmt, prefix='vod_list_', suffix='.json')
 
     if key:
         arg = ' '.join([arg, '--video-password='+key])
@@ -153,7 +126,7 @@ def extractURL(url, key=None, ref=None, dontParseJson=False):
             return local
         return parseJson(local)
 
-    cmd = '%s -f \'%s\' --user-agent \'%s\' %s \'%s\' > %s' %(xdef.ytdlcmd(), fmt, xurl.defvals.ua, arg, url, local)
+    cmd = '%s -f \'%s\' --user-agent \'%s\' %s \'%s\' > %s' %(ytdlcmd(), fmt, defvals.ua, arg, url, local)
 
     try:
         start_time = timeit.default_timer()
@@ -172,25 +145,26 @@ def extractURL(url, key=None, ref=None, dontParseJson=False):
 
     return parseJson(local)
 
-def extractSUB(url):
+def extractSUB(url, autosub=None):
 
     if not url or not re.search(r'youtube.com/watch\?v=', url):
         return None
 
     print('\n[ytdl][extracSUB]\n')
 
-    sub = 'vod_sub_'+hashlib.md5(url).hexdigest()
+    sub = xurl.genLocal(url, prefix='vod_sub_')
+    sub_dir = os.path.dirname(sub)
 
-    for files in os.listdir(xdef.workdir):
-        if files.startswith(sub):
-            print('\tsub: '+xdef.workdir+files)
-            return files
+    for f in os.listdir(sub_dir):
+        if f.startswith(sub):
+            print('\tsub: '+sub_dir+f)
+            return f
 
     try:
         opt = ''
-        if xarg.autosub == 'yes':
+        if autosub == 'yes':
             opt += '--write-auto-sub '
-        cmd = '%s %s %s -o %s%s \'%s\'' %(xdef.ytdlcmd(), xdef.ytdlsub, opt, xdef.workdir, sub, url)
+        cmd = '%s %s %s -o %s \'%s\'' %(ytdlcmd(), defvals.ytdlsub, opt, sub, url)
 
         start_time = timeit.default_timer()
         output = subprocess.check_output(cmd, shell=True)

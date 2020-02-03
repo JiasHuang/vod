@@ -3,7 +3,6 @@
 
 import re
 
-import xdef
 import xurl
 
 VALID_URL = r'litv\.tv'
@@ -14,7 +13,7 @@ def getSource(url):
     if m:
         assetId = m.group(1)
         remote = 'https://www.litv.tv/vod/ajax/getMainUrlNoAuth'
-        local = xdef.workdir+'litv.json'
+        local = xurl.genLocal(url, suffix='.json')
         opts = []
         opts.append('-H \'Content-Type: application/json\'')
         opts.append('-d \'{"assetId":"%s"}\'' %(assetId))
