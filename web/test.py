@@ -4,10 +4,8 @@
 import sys
 import re
 import json
-import traceback
 
 import extractors
-import page
 import xurl
 
 def autotest():

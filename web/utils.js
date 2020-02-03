@@ -76,6 +76,13 @@ function onPageClick() {
             if (pages[i].link == plink) {
                 data.plink = pages[i].link;
                 data.ptitle = pages[i].title;
+                pages.splice(i, 1);
+                break;
+            }
+            else if (pages[i].plink == plink) {
+                data.plink = pages[i].plink;
+                data.ptitle = pages[i].ptitle;
+                pages.splice(i, 1);
                 break;
             }
         }

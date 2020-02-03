@@ -3,16 +3,12 @@
 
 import re
 import os
-import time
-import json
 import sys
 
 path = os.path.realpath(os.path.abspath(__file__))
 sys.path.insert(0, os.path.dirname(path))
 
 import extractors
-import xurl
-import conf
 
 def loadFile(filename):
     path = os.path.dirname(os.path.abspath(__file__))+'/'+filename
