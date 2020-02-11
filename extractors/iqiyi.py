@@ -43,7 +43,7 @@ def getDashURL(url):
         return m.group(0)
     return None
 
-def getSource(url):
+def getSource(url, fmt, ref):
     if re.search(r'/dash\?', url):
         return loadM3U8(url)
     else:

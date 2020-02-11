@@ -7,7 +7,7 @@ import xurl
 
 VALID_URL = r'pianku\.tv'
 
-def getSource(url):
+def getSource(url, fmt, ref):
     txt = xurl.curl(url)
     m = re.search(r'url: \'(.*?)\'', txt)
     return m.group(1) if m else None

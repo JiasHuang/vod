@@ -29,8 +29,8 @@ def removeHashTag(url):
         return m.group(1)
     return url
 
-def getSource(url):
-    src, cookies = youtubedl.extractURL(url)
+def getSource(url, fmt, ref):
+    src, cookies = youtubedl.extractURL(url, fmt)
     src, extra_cookies = getRedirectLink(src)
     src = removeHashTag(src)
     if extra_cookies:

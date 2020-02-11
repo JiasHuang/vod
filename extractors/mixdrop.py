@@ -8,7 +8,7 @@ import xurl
 
 VALID_URL = r'mixdrop\.co'
 
-def getSource(url):
+def getSource(url, fmt, ref):
     txt = jsunpack.unpackURL(url) or ''
     m = re.search(r'MDCore.wurl="([^"]+)"', txt)
     return xurl.urljoin(url, m.group(1)) if m else None

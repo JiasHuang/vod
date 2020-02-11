@@ -22,7 +22,7 @@ for f in files:
 def getSource(url, fmt, ref):
     for m in mods:
         if re.search(m.VALID_URL, url):
-            ret = m.getSource(url)
+            ret = m.getSource(url, fmt, ref)
             if type(ret) is xurl.xurlObj:
                 return ret.url, ret.cookies, ret.ref
             return ret, None, None

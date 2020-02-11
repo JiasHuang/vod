@@ -8,7 +8,7 @@ import xurl
 
 VALID_URL = r'ok\.ru'
 
-def getSource(url):
+def getSource(url, fmt, ref):
     local_json = youtubedl.extractURL(url, dontParseJson=True)
     local_m3u8 = re.sub('.json', '.m3u8', local_json)
     m = re.search(r'"manifest_url": "([^"]*)"', xurl.readLocal(local_json))

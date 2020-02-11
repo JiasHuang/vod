@@ -8,7 +8,7 @@ import xurl
 
 VALID_URL = r'pangzitv\.com'
 
-def getSource(url):
+def getSource(url, fmt, ref):
     if re.search(r'vod-play-id', url):
         try:
             m = re.search(r'num-(\d+)', url)

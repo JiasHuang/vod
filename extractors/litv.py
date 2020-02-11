@@ -7,7 +7,7 @@ import xurl
 
 VALID_URL = r'litv\.tv'
 
-def getSource(url):
+def getSource(url, fmt, ref):
     txt = xurl.curl(url)
     m = re.search(r'"assetId":"(.*?)"', txt)
     if m:

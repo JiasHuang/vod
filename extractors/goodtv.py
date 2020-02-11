@@ -7,7 +7,7 @@ import xurl
 
 VALID_URL = r'goodtv\.org'
 
-def getSource(url):
+def getSource(url, fmt, ref):
     txt = xurl.load(url)
     for m in re.finditer(r'source src="([^"]*)"', txt):
         src = m.group(1)

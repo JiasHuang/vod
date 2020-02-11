@@ -8,7 +8,7 @@ import xurl
 
 VALID_URL = r'bilibili\.com'
 
-def getSource(url):
+def getSource(url, fmt, ref):
     txt = xurl.curl(url)
     result = []
     m = re.search(r'av(\d+)', url)
