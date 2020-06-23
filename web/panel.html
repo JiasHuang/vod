@@ -6,10 +6,10 @@
 <link rel="stylesheet" href="panel.css?v=775f5b783dbad4ecffec4f6d3250382a">
 
 <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-<script type="text/javascript" src="panel.js?v=77c70d63c86e707b7030dbef03e418f2"></script>
+<script type="text/javascript" src="panel.js?v=c2c9980943ac2d013b3decbd2fe26ccd"></script>
 <script type="text/javascript" src="speech.js?v=9d41d8bc63ceb75db39077b06bd6dde5"></script>
-<script type="text/javascript" src="utils.js?v=6661d9c2e201b56ab14baa4bc9c2def1"></script>
-<script type="text/javascript" src="settings.js?v=680895389489a6b3a0373eec09d3c767"></script>
+<script type="text/javascript" src="utils.js?v=94b26a79bdbb71d57573a47e350adca1"></script>
+<script type="text/javascript" src="settings.js?v=bacf38fd58313b486cdba0c73a288978"></script>
 
 <script type="text/javascript">
     window.onload = function() {
@@ -50,10 +50,10 @@
     </tr>
     </table>
 
-    <button onclick="setAct('backward')"><img src="Actions-media-skip-backward-icon.png" /></button>
-    <button onclick="setAct('stop')"><img src="Actions-media-playback-stop-icon.png" /></button>
-    <button onclick="setAct('pause')"><img src="Actions-media-playback-start-icon.png" /></button>
-    <button onclick="setAct('forward')" ><img src="Actions-media-skip-forward-icon.png" /></button>
+    <button onclick="setKey('backward')"><img src="Actions-media-skip-backward-icon.png" /></button>
+    <button onclick="setKey('stop')"><img src="Actions-media-playback-stop-icon.png" /></button>
+    <button onclick="setKey('pause')"><img src="Actions-media-playback-start-icon.png" /></button>
+    <button onclick="setKey('forward')" ><img src="Actions-media-skip-forward-icon.png" /></button>
 
 </div>
 
@@ -79,6 +79,11 @@
           <td class="btn" id="btn_autoNext" onclick="setPlaybackMode('AutoNext')"><span class="message" id="autoNext"></span></td>
           <td class="btn" id="btn_loopAll" onclick="setPlaybackMode('LoopAll')"><span class="message" id="loopAll"></span></td>
           <td class="btn" id="btn_loopOne" onclick="setPlaybackMode('LoopOne')"><span class="message" id="loopOne"></span></td>
+      </tr>
+      <tr>
+          <td class="btn" id="btn_playlist_prev" onclick="setAct('playlist-prev')"><span class="message" id="playlist-prev"></td>
+          <td class="btn" id="btn_playlist_next" onclick="setAct('playlist-next')"><span class="message" id="playlist-next"></td>
+          <td class="btn" id="btn_sub_remove" onclick="setAct('sub-remove')"><span class="message" id="sub-remove"></td>
       </tr>
       </table>
     </div>

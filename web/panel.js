@@ -11,7 +11,7 @@ function resetCode() {
 	num = '';
 }
 
-function setAct(key) {
+function setKey(key) {
 
     act = key;
 
@@ -53,6 +53,10 @@ function setAct(key) {
 
     act = '';
     num = '';
+}
+
+function setAct(act, num='') {
+    $("#result").load("view.py?a="+act+"&n="+num, onLoadCompleted);
 }
 
 function onLoadCompleted (responseTxt, statusTxt, xhr) {
