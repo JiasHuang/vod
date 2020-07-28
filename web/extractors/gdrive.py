@@ -14,20 +14,6 @@ def getImage(url):
         return 'https://drive.google.com/thumbnail?authuser=0&sz=w320&id='+m.group(2)
     return None
 
-def findGoogleNextPage(url):
-    objs = []
-    navcnt = re.search(r'<div id="navcnt">(.*?)</div>', load(url), re.DOTALL | re.MULTILINE)
-    if navcnt:
-        for m in re.finditer(r'<td.*?</td>', navcnt.group(1)):
-            label = re.search(r'(\w+)(</span>|)(</a>|)</td>', m.group())
-            label = label.group(1) if label else None
-            link = re.search(r'href="([^"]*)"', m.group())
-            link = urljoin(url, link.group(1)) if link else None
-            if label:
-                objs.append(navObj(label, link))
-
-    return objs
-
 def extract(url):
     objs = []
     txt = load(url)
@@ -58,7 +44,7 @@ def extract(url):
 
 def search_google(q, start=None):
     objs = []
-    url = 'http://www.google.com/search?num=50&hl=en&q=site%3Adrive.google.com%20'+q
+    url = 'http://www.google.com/search?num=250&hl=en&q=site%3Adrive.google.com%20'+q
     if start:
         url = url+'&start='+start
     txt = load(url)
@@ -76,7 +62,5 @@ def search_google(q, start=None):
                 break
         if link and title and not re.search(r'(pdf|doc)$', title, re.IGNORECASE):
             objs.append(entryObj(link, title, getImage(link)))
-
-    objs.extend(findGoogleNextPage(url))
 
     return objs
