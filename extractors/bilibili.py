@@ -11,8 +11,8 @@ VALID_URL = r'bilibili\.com'
 def getSource(url, fmt, ref):
     txt = xurl.curl(url)
     result = []
-    m = re.search(r'av(\d+)', url)
-    avid = m.group(1) if m else None
+    m = re.search(r'video/(\w+)', url)
+    bvid = m.group(1) if m else None
     m = re.search(r'\?p=(\d+)', url)
     p = m.group(1) if m else None
     if p:
@@ -20,8 +20,8 @@ def getSource(url, fmt, ref):
     else:
         m = re.search(r'cid=(\d+)' , txt)
     cid = m.group(1) if m else None
-    if avid and cid:
-        api_url = 'https://api.bilibili.com/x/player/playurl?avid=%s&cid=%s&otype=json' %(avid, cid)
+    if bvid and cid:
+        api_url = 'https://api.bilibili.com/x/player/playurl?bvid=%s&cid=%s&otype=json' %(bvid, cid)
         api_txt = xurl.curl(api_url)
         data = json.loads(api_txt)
         for d in data['data']['durl']:
