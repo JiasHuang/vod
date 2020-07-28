@@ -7,6 +7,20 @@ from .utils import *
 
 VALID_URL = r'iqiyi'
 
+def findGoogleNextPage(url):
+    objs = []
+    navcnt = re.search(r'<div id="navcnt">(.*?)</div>', load(url), re.DOTALL | re.MULTILINE)
+    if navcnt:
+        for m in re.finditer(r'<td.*?</td>', navcnt.group(1)):
+            label = re.search(r'(\w+)(</span>|)(</a>|)</td>', m.group())
+            label = label.group(1) if label else None
+            link = re.search(r'href="([^"]*)"', m.group())
+            link = urljoin(url, link.group(1)) if link else None
+            if label:
+                objs.append(navObj(label, link))
+
+    return objs
+
 def extract(url):
     objs = []
     if re.search(r'list.', url):
@@ -40,3 +54,19 @@ def extract(url):
 
     return objs
 
+def search_iqiyi(q, start=None):
+    objs = []
+    url = 'http://www.google.com/search?num=50&hl=en&q=site%3Aiqiyi.com%20'+q
+    if start:
+        url = url+'&start='+start
+    txt = load(url)
+    for m in re.finditer(r'<a href="([^"]*)".*?>(.*?)</a>', txt):
+        link, desc = m.group(1), m.group(2)
+        m2 = re.search(r'<h3.*?>(.*?)</h3>', desc)
+        title = m2.group(1) if m2 else None
+        if link and title:
+            objs.append(entryObj(link, title))
+
+    objs.extend(findGoogleNextPage(url))
+
+    return objs
