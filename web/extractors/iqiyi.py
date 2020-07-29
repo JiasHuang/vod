@@ -43,7 +43,7 @@ def extract(url):
 
 def search_iqiyi(q, start=None):
     objs = []
-    url = 'http://www.google.com/search?tbm=vid&num=250&hl=en&q=site%3Aiqiyi.com%20'+q
+    url = 'http://www.google.com/search?tbm=vid&num=100&hl=en&q=site%3Aiqiyi.com%20'+q
     if start:
         url = url+'&start='+start
     txt = load(url)
