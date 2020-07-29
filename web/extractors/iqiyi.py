@@ -42,15 +42,17 @@ def extract(url):
 
 def search_iqiyi(q, start=None):
     objs = []
-    url = 'http://www.google.com/search?num=250&hl=en&q=site%3Aiqiyi.com%20'+q
+    url = 'http://www.google.com/search?tbm=vid&num=250&hl=en&q=site%3Aiqiyi.com%20'+q
     if start:
         url = url+'&start='+start
     txt = load(url)
-    for m in re.finditer(r'<a href="([^"]*)".*?>(.*?)</a>', txt):
-        link, desc = m.group(1), m.group(2)
+    for m in re.finditer(r'<a href="(http:[^"]*\.iqiyi\.com/\w+\.html)".*?>(.*?)<img id="([^"]*)"', txt):
+        link, desc, img_id = m.group(1), m.group(2), m.group(3)
         m2 = re.search(r'<h3.*?>(.*?)</h3>', desc)
         title = m2.group(1) if m2 else None
+        m3 = re.search(r'"'+re.escape(img_id)+r'":"([^"]*)"', txt)
+        image = m3.group(1).decode('unicode_escape') if m3 else None
         if link and title:
-            objs.append(entryObj(link, title))
+            objs.append(entryObj(link, title, image))
 
     return objs
