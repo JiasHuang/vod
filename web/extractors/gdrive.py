@@ -42,25 +42,18 @@ def extract(url):
 
     return objs
 
-def search_google(q, start=None):
+def search_gdrive(q, start=None):
     objs = []
     url = 'http://www.google.com/search?num=250&hl=en&q=site%3Adrive.google.com%20'+q
     if start:
         url = url+'&start='+start
     txt = load(url)
-    for m in re.finditer(r'<a href="([^"]*)".*?>(.*?)</a>', txt):
-        link, title = m.group(1), m.group(2)
-        m2 = re.search(r'<h3.*?>(.*?)</h3>', title)
-        if m2:
-            title = m2.group(1)
+    for m in re.finditer(r'<a href="(https://drive.google.com/[^"]*)".*?>(.*?)</a>', txt):
+        link, desc = m.group(1), m.group(2)
+        m2 = re.search(r'<h3.*?>(.*?)</h3>', desc)
+        title = m2.group(1).rstrip('- Google Drive') if m2 else None
         link = re.sub('preview', 'view', link)
-        title = re.sub('- Google Drive', '', title).rstrip()
-        q1 = re.sub('\*', '+', q)
-        for x in re.split('\+', q1):
-            if not re.search(re.escape(x), title, re.IGNORECASE):
-                link = title = None
-                break
-        if link and title and not re.search(r'(pdf|doc)$', title, re.IGNORECASE):
+        if link and title:
             objs.append(entryObj(link, title, getImage(link)))
 
     return objs
