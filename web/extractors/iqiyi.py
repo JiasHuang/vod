@@ -56,7 +56,7 @@ def search_iqiyi(q, start=None):
         image = m3.group(1).decode('unicode_escape') if m3 else None
         idx = int(img_id.strip(string.ascii_letters)) - 1
         if not image and idx < len(img_codes):
-            image = img_codes[idx]
+            image = img_codes[idx].decode('unicode_escape')
         if link and title:
             objs.append(entryObj(link, title, image))
 
