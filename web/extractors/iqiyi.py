@@ -2,6 +2,7 @@
 # coding: utf-8
 
 import re
+import string
 
 from .utils import *
 
@@ -46,12 +47,16 @@ def search_iqiyi(q, start=None):
     if start:
         url = url+'&start='+start
     txt = load(url)
+    img_codes = re.findall(r'var s=\'([^\']*)\'', txt)
     for m in re.finditer(r'<a href="(http:[^"]*\.iqiyi\.com/\w+\.html)".*?>(.*?)<img id="([^"]*)"', txt):
         link, desc, img_id = m.group(1), m.group(2), m.group(3)
         m2 = re.search(r'<h3.*?>(.*?)</h3>', desc)
         title = m2.group(1) if m2 else None
         m3 = re.search(r'"'+re.escape(img_id)+r'":"([^"]*)"', txt)
         image = m3.group(1).decode('unicode_escape') if m3 else None
+        idx = int(img_id.strip(string.ascii_letters)) - 1
+        if not image and idx < len(img_codes):
+            image = img_codes[idx]
         if link and title:
             objs.append(entryObj(link, title, image))
 
