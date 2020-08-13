@@ -51,7 +51,7 @@ def extract_youtube_videos(url):
             try:
                 videoId = x['videoId'].encode('utf8')
                 link = 'https://www.youtube.com/watch?v='+videoId
-                title = x['title']['simpleText'].encode('utf8')
+                title = x['title']['runs'][0]['text'].encode('utf8')
                 image = x['thumbnail']['thumbnails'][0]['url'].encode('utf8')
                 desc = None
                 for timeStatus in findItem(x, ['thumbnailOverlayTimeStatusRenderer']):
