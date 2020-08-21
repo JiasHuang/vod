@@ -3,7 +3,7 @@
 
 player              = 'def'
 ytdlfmt             = None
-autosub             = None
+subtitle            = None
 pagelist            = None
 playbackMode        = None
 dl_threads          = None

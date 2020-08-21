@@ -54,14 +54,14 @@ def getCookie(req, key):
 
 def getOption(req):
     fmt      = getCookie(req, 'format')
-    autosub  = getCookie(req, 'autosub')
+    subtitle  = getCookie(req, 'subtitle')
     pagelist = getCookie(req, 'pagelist')
     dlconf   = getCookie(req, 'dlconf')
     opt = []
     if fmt:
         opt.append('-f \'%s\'' %(fmt))
-    if autosub:
-        opt.append('--autosub \'%s\'' %(autosub))
+    if subtitle:
+        opt.append('--subtitle \'%s\'' %(subtitle))
     if pagelist:
         opt.append('--pagelist \'%s\'' %(pagelist))
     if dlconf:

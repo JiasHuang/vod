@@ -36,8 +36,12 @@ def getSource(url, fmt, ref):
 
     return src, cookies, ref
 
-def getSub(url, autosub):
-    return youtubedl.extractSUB(url, autosub)
+def getSub(url, subtitle):
+    if not url or not subtitle or subtitle == 'no':
+        return None
+    if re.search(r'youtube.com/watch\?v=', url):
+        return youtubedl.extractSUB(url, subtitle)
+    return None
 
 def getIframeSrc(url):
     if url[0:4] != 'http':

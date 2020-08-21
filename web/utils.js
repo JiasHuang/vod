@@ -7,7 +7,7 @@ var logs = {
     'slider'        : ['Slider', '翻頁模式'],
     'entryMax'      : ['EntryMax', '條目數量'],
     'format'        : ['Format', '視訊格式'],
-    'autosub'       : ['AutoSub', '自動字幕'],
+    'subtitle'      : ['Subtitle', '字幕選項'],
     'playbackMode'  : ['PlaybackMode', '播放模式'],
     'autoNext'      : ['AutoNext', '循序播放'],
     'loopOne'       : ['LoopOne', '重複播放'],

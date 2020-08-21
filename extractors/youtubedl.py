@@ -145,10 +145,7 @@ def extractURL(url, fmt, key=None, ref=None, dontParseJson=False):
 
     return parseJson(local)
 
-def extractSUB(url, autosub=None):
-
-    if not url or not re.search(r'youtube.com/watch\?v=', url):
-        return None
+def extractSUB(url, subtitle=None):
 
     print('\n[ytdl][extracSUB]\n')
 
@@ -162,7 +159,7 @@ def extractSUB(url, autosub=None):
 
     try:
         opt = ''
-        if autosub == 'yes':
+        if subtitle == 'auto-generated':
             opt += '--write-auto-sub '
         cmd = '%s %s %s -o %s \'%s\'' %(ytdlcmd(), defvals.ytdlsub, opt, sub, url)
 

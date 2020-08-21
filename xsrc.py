@@ -28,5 +28,5 @@ def getSource(url, ref=None):
     return None, None, None
 
 def getSub(url):
-    return extractors.getSub(url, xarg.autosub)
+    return extractors.getSub(url, xarg.subtitle)
 

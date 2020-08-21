@@ -15,9 +15,9 @@ var settings = {
         'vals' : ['1080p', '720p', '480p', '360p', 'bestaudio'],
         'defs' : '720p',
     },
-    'autosub' : {
+    'subtitle' : {
         'type' : 'select',
-        'vals' : ['yes', 'no'],
+        'vals' : ['yes', 'auto-generated', 'no'],
         'defs' : 'no',
     },
     'youtubeID' : {
@@ -34,7 +34,7 @@ var settings = {
     },
 };
 
-var settings_cookies = ['format', 'autosub', 'dlconf'];
+var settings_cookies = ['format', 'subtitle', 'dlconf'];
 
 function initCookies() {
   var lists = settings_cookies;

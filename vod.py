@@ -33,7 +33,7 @@ def main():
     parser = OptionParser()
     parser.add_option("-p", "--player", dest="player")
     parser.add_option("-f", "--format", dest="format")
-    parser.add_option("--autosub", dest="autosub")
+    parser.add_option("--subtitle", dest="subtitle")
     parser.add_option("--pagelist", dest="pagelist")
     parser.add_option("--playbackMode", dest="playbackMode")
     parser.add_option("--dl-threads", dest="dl_threads")
@@ -53,7 +53,7 @@ def main():
         xarg.dl_threads = options.dl_threads
 
     xarg.ytdlfmt = options.format or defs['format']['defs']
-    xarg.autosub = options.autosub or defs['autosub']['defs']
+    xarg.subtitle = options.subtitle or defs['subtitle']['defs']
     xarg.dlconf = options.dlconf or defs['dlconf']['defs']
 
     if len(args) >= 1:
