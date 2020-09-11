@@ -13,11 +13,10 @@ def extract(url):
     basename = url.split('/')[-1]
     if len(basename) == 15:
         url_tv = 'https://www.pianku.tv/ajax/downurl/%s_tv/' %(basename[0:10])
-        url_downcode = 'https://www.pianku.tv/ajax/downcode.php'
-        local_cookie = xurl.genLocal(url_downcode, suffix='.cookie')
+        local_cookie = xurl.genLocal(url, suffix='.cookie')
         opts = []
         opts.append('-c %s' %(local_cookie))
-        xurl.curl(url_downcode, opts=opts)
+        xurl.curl(url, opts=opts)
         opts = []
         opts.append('-b %s' %(local_cookie))
         opts.append('-H \'x-requested-with: XMLHttpRequest\'')
