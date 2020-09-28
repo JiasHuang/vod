@@ -102,7 +102,7 @@ def extract_youtube_playlistVideo(url):
             try:
                 videoId = x['videoId'].encode('utf8')
                 link = 'https://www.youtube.com/watch?v='+videoId
-                title = x['title']['simpleText'].encode('utf8')
+                title = x['title']['runs'][0]['text'].encode('utf8')
                 image = 'http://img.youtube.com/vi/%s/0.jpg' %(videoId)
                 desc = None
                 for timeStatus in findItem(x, ['thumbnailOverlayTimeStatusRenderer']):
