@@ -20,12 +20,12 @@ def getSource(url, fmt, ref):
             print('\n[pangzitv][DBG][decoded]\n\n\t%s' %(decoded))
             # process unicode special character
             decoded = decoded.replace('%u','\\u').decode('unicode_escape')
-            for m in re.finditer(r'(\d+).*?(http[^#$\n]*)', decoded):
-                if (int(m.group(1)) == int(ep_num)):
-                    return m.group(2)
-            m = re.search(r'(http[^#$\n]*)', decoded)
-            if m:
-                return m.group(1)
+            urls = []
+            for m in re.finditer(r'http[^#$\n]*', decoded):
+                urls.append(m.group())
+            if len(urls) >= int(ep_num):
+                return urls[int(ep_num) - 1]
+            return urls[0]
         except:
             print('Exception')
     return None
