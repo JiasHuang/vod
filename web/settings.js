@@ -30,7 +30,7 @@ var settings = {
     },
     'dlconf' : {
         'type' : 'input',
-        'defs' : 'pangzitv=4, .le.com=4'
+        'defs' : 'donghongzuida=4, pangzitv=4, .le.com=4'
     },
 };
 
