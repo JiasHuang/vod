@@ -6,6 +6,7 @@ import re
 import subprocess
 import urlparse
 import time
+import hashlib
 
 import xurl
 import xsrc
@@ -22,9 +23,12 @@ def isM3U(url):
             return True
     return False
 
+def genLocal(url):
+    return hashlib.md5(url).hexdigest() + '.' + os.path.basename(url) + '.dl'
+
 def filter(url, flt):
 
-    local = os.path.basename(url) + '.dl'
+    local = genLocal(url)
 
     parsed = xurl.urlparse(url)
     if len(parsed.netloc) > 0:
@@ -114,7 +118,7 @@ def createJobs(url, dldir, jobs):
     if prog.endswith('.pyc'):
         prog = prog[:-1]
 
-    local = dldir + os.path.basename(url) + '.dl'
+    local = dldir + genLocal(url)
 
     procs = subprocess.check_output('ps aux', shell=True)
     pattern = '%s -i %s' %(os.path.basename(prog), url)
