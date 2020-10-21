@@ -17,7 +17,7 @@ def loadYouTube(url):
 
 def parseYoutubeInitialDataJSON(url):
     txt = loadYouTube(url)
-    m = re.search(r'window\["ytInitialData"\] = (.*?});', txt)
+    m = re.search(r'ytInitialData = (.*?});', txt)
     if m:
         try:
             return json.loads(m.group(1))
@@ -144,7 +144,7 @@ def extract(url):
 
 def search_youtube(q, sp=None):
     objs = []
-    url = 'https://www.youtube.com/results?q='+q
+    url = 'https://www.youtube.com/results?q='+ xurl.quote(q)
     if sp:
         url = url+'&sp='+sp
     data = parseYoutubeInitialDataJSON(url)
