@@ -55,7 +55,8 @@ def extract_youtube_videos(url):
                 image = x['thumbnail']['thumbnails'][0]['url'].encode('utf8')
                 desc = None
                 for timeStatus in findItem(x, ['thumbnailOverlayTimeStatusRenderer']):
-                    desc = timeStatus['text']['simpleText'].encode('utf8')
+                    if 'simpleText' in timeStatus['text']:
+                        desc = timeStatus['text']['simpleText'].encode('utf8')
                 objs.append(entryObj(link, title, image, desc))
             except:
                 log('Exception:\n'+str(x))
@@ -106,7 +107,8 @@ def extract_youtube_playlistVideo(url):
                 image = 'http://img.youtube.com/vi/%s/0.jpg' %(videoId)
                 desc = None
                 for timeStatus in findItem(x, ['thumbnailOverlayTimeStatusRenderer']):
-                    desc = timeStatus['text']['simpleText'].encode('utf8')
+                    if 'simpleText' in timeStatus['text']:
+                        desc = timeStatus['text']['simpleText'].encode('utf8')
                 objs.append(entryObj(link, title, image, desc))
             except:
                 log('Exception:\n'+str(x))
