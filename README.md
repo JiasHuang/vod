@@ -13,7 +13,7 @@
 
 - Install apache2, libapache2-mod-python, nodejs, xterm
 ```
-sudo apt-get install apache2 libapache2-mod-python nodejs xterm
+sudo apt-get install apache2 libapache2-mod-python nodejs xterm curl git
 ```
 
 - Enable apache2 mod-python

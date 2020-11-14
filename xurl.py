@@ -91,7 +91,7 @@ def parse(url):
 
 def getContentType(url):
     txt = curlHdr(url)
-    m = re.search(r'Content-Type: (.*?)(;|\s)', txt)
+    m = re.search(r'Content-Type: (.*?)(;|\s)', txt, re.IGNORECASE)
     if m:
         return m.group(1)
     return None
