@@ -64,9 +64,21 @@ def extract_youtube_videos(url):
     return objs
 
 def extract_youtube_channels(url):
-    data = parseYoutubeInitialDataJSON(url)
     objs = []
-    if data:
+    datas = []
+    datas.append(parseYoutubeInitialDataJSON(url))
+    txt = xurl.curl(url)
+    m1 = re.search(r'"INNERTUBE_CONTEXT_CLIENT_VERSION":"([^"]*)"', txt)
+    m2 = re.search(r'"INNERTUBE_CONTEXT_CLIENT_NAME":(\w+)', txt)
+    for m in re.finditer(r'"continuation":"([^"]*)"', txt):
+        cont_url = 'https://www.youtube.com/browse_ajax?continuation=' + m.group(1)
+        opts = []
+        opts.append('-H \'x-youtube-client-version: %s\'' %(m1.group(1)))
+        opts.append('-H \'x-youtube-client-name: %s\'' %(m2.group(1)))
+        cont_txt = xurl.curl(cont_url, opts=opts, ref=url)
+        cont_data = json.loads(cont_txt)
+        datas.append(cont_data)
+    for data in datas:
         for x in findItem(data, ['gridChannelRenderer']):
             try:
                 channelId = x['channelId'].encode('utf8')
