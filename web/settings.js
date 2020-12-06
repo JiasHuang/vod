@@ -55,7 +55,7 @@ function save() {
         localStorage.setItem(id, $('#'+id).val());
     }
     saveCookies();
-    window.location.href = 'view.py';
+    window.location.href = 'index.html';
 }
 
 function resetSettings() {
@@ -67,7 +67,7 @@ function resetSettings() {
 }
 
 function cancel() {
-    window.location.href = 'view.py';
+    window.location.href = 'index.html';
 }
 
 function getValue(id) {
@@ -100,7 +100,7 @@ function onActinSelect()
         } else if (cmd == 'ResetSettings') {
             resetSettings();
         } else if (cmd == 'Update') {
-            window.location.href = 'view.py?c=update';
+            window.location.href = 'index.html?c=update';
         }
     }
     $(this).val('');

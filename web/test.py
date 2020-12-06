@@ -12,7 +12,7 @@ def autotest():
     list_pass = []
     list_fail = []
     bookmarkJSONURL = 'https://gist.githubusercontent.com/JiasHuang/30f6cc0f78ee246c1e28bd537764d6c4/raw/bookmark.json'
-    data = json.loads(xurl.curl(bookmarkJSONURL))
+    data = json.loads(xurl.load(bookmarkJSONURL))
     for d in data['channels']:
         channel = d['channel'].encode('utf8')
         for x in d['links']:

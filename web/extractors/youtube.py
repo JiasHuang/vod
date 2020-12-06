@@ -10,9 +10,9 @@ from utils import *
 VALID_URL = r'youtube'
 
 def loadYouTube(url):
-    txt = xurl.curl(url)
+    txt = xurl.load(url)
     if not re.search(r'ytInitialData', txt):
-        txt = xurl.curl(url, cache=False)
+        txt = xurl.load(url, cache=False)
     return txt
 
 def parseYoutubeInitialDataJSON(url):
@@ -27,9 +27,8 @@ def parseYoutubeInitialDataJSON(url):
 
 def findYouTubeNextPage(url, q):
     objs = []
-    headers = [('cookie', 'PREF=f1=50000000&f6=1408&f5=30&hl=en')]
     local = xurl.genLocal(url, suffix='.old')
-    txt = xurl.load(url, local, headers)
+    txt = xurl.load(url, local, opts=['--cookie \"PREF=f1=50000000;f6=1408;f5=30;hl=en\"'])
     pages = re.search(r'search-pager(.*?)</div>', txt, re.DOTALL|re.MULTILINE)
     if pages:
         for m in re.finditer(r'<(a|button) .*?</(a|button)>', pages.group(1)):
@@ -67,7 +66,7 @@ def extract_youtube_channels(url):
     objs = []
     datas = []
     datas.append(parseYoutubeInitialDataJSON(url))
-    txt = xurl.curl(url)
+    txt = xurl.load(url)
     m1 = re.search(r'"INNERTUBE_CONTEXT_CLIENT_VERSION":"([^"]*)"', txt)
     m2 = re.search(r'"INNERTUBE_CONTEXT_CLIENT_NAME":(\w+)', txt)
     for m in re.finditer(r'"continuation":"([^"]*)"', txt):
@@ -75,7 +74,7 @@ def extract_youtube_channels(url):
         opts = []
         opts.append('-H \'x-youtube-client-version: %s\'' %(m1.group(1)))
         opts.append('-H \'x-youtube-client-name: %s\'' %(m2.group(1)))
-        cont_txt = xurl.curl(cont_url, opts=opts, ref=url)
+        cont_txt = xurl.load(cont_url, opts=opts, ref=url)
         cont_data = json.loads(cont_txt)
         datas.append(cont_data)
     for data in datas:

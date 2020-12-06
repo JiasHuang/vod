@@ -16,12 +16,12 @@ def extract(url):
         local_cookie = xurl.genLocal(url, suffix='.cookie')
         opts = []
         opts.append('-c %s' %(local_cookie))
-        xurl.curl(url, opts=opts)
+        xurl.load(url, opts=opts)
         opts = []
         opts.append('-b %s' %(local_cookie))
         opts.append('-H \'x-requested-with: XMLHttpRequest\'')
         opts.append('-H \'referer: %s\'' %(url))
-        txt = xurl.curl(url_tv, opts=opts)
+        txt = xurl.load(url_tv, opts=opts)
         for m in re.finditer(r'<li><a href="([^"]*)">(.*?)</a></li>', txt):
             link, title = urljoin(url, m.group(1)), m.group(2)
             objs.append(entryObj(link, title))

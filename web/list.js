@@ -1,6 +1,7 @@
 
 var xDown = null;
 var yDown = null;
+var pagelist = null;
 
 function handleTouchStart(evt) {
     xDown = evt.touches[0].clientX;
@@ -58,8 +59,9 @@ function setWidthHeight() {
 }
 
 function onPlayVideo() {
-    if ($('#pagelist').length)
-        saveCookie('pagelist', $('#pagelist').attr('pagelist'));
+    if (pagelist) {
+        saveCookie('pagelist', pagelist);
+    }
 }
 
 function onPageReady() {
@@ -76,9 +78,24 @@ function onPageReady() {
 
     $( "a[target='playVideo']" ).click(onPlayVideo);
     $('#loadingMessage').hide();
-    showServerMessage();
+}
+
+function onTimeout() {
+  console.log('timeout');
+}
+
+function parseJSON(obj) {
+  $('#result').html(getResultHTMLText(obj));
+  pagelist = obj.meta;
+  onPageReady();
 }
 
 function onDocumentReady() {
-    onPageReady();
+  $.ajax({
+    url: 'load.py' + window.location.search,
+    dataType: 'json',
+    error: onTimeout,
+    success: parseJSON,
+    timeout: 20000
+  });
 }

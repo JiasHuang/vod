@@ -3,6 +3,8 @@
 
 <head>
 
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
 <link rel="stylesheet" href="panel.css?v=775f5b783dbad4ecffec4f6d3250382a">
 
 <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
@@ -13,9 +15,9 @@
 
 <script type="text/javascript">
     window.onload = function() {
-        showMenuLink();
-        showServerMessage();
+        showMenuBtn();
         initPlaybackMode();
+        updateResult();
     }
 </script>
 
@@ -58,13 +60,13 @@
 </div>
 
 <div class="menu">
-    <form action="view.py" method="post" id="xform">
+    <form action="view.py" method="post" id="xform" accept-charset="utf-8">
         <input type="text" name="i" value="" id="xinput" autocomplete="on" autofocus="on" />
     </form>
     <table><tr>
-        <td><a href=bookmark.html><span class="menulink" id="bookmark"></span></a></td>
-        <td><a href=history.html><span class="menulink" id="history"></span></a></td>
-        <td><a href=settings.html><span class="menulink" id="settings"></span></a></td>
+        <td><a href=bookmark.html><span class="menubtn" id="bookmark"></span></a></td>
+        <td><a href=history.html><span class="menubtn" id="history"></span></a></td>
+        <td><a href=settings.html><span class="menubtn" id="settings"></span></a></td>
         <td><a href=settings.html><img src="settings-icon-32.png" /></a></td>
     </tr></table>
 
@@ -76,14 +78,14 @@
       <br><br><img src="mic-icon.png" onload="loadImage()" onclick="startDictation()" id="ximage" />
       <br><br><table>
       <tr>
-          <td class="btn" id="btn_autoNext" onclick="setPlaybackMode('AutoNext')"><span class="message" id="autoNext"></span></td>
-          <td class="btn" id="btn_loopAll" onclick="setPlaybackMode('LoopAll')"><span class="message" id="loopAll"></span></td>
-          <td class="btn" id="btn_loopOne" onclick="setPlaybackMode('LoopOne')"><span class="message" id="loopOne"></span></td>
+          <td class="btn" id="btn_autoNext" onclick="setPlaybackMode('AutoNext')"><span class="menubtn" id="autoNext"></span></td>
+          <td class="btn" id="btn_loopAll" onclick="setPlaybackMode('LoopAll')"><span class="menubtn" id="loopAll"></span></td>
+          <td class="btn" id="btn_loopOne" onclick="setPlaybackMode('LoopOne')"><span class="menubtn" id="loopOne"></span></td>
       </tr>
       <tr>
-          <td class="btn" id="btn_playlist_prev" onclick="setAct('playlist-prev')"><span class="message" id="playlist-prev"></td>
-          <td class="btn" id="btn_playlist_next" onclick="setAct('playlist-next')"><span class="message" id="playlist-next"></td>
-          <td class="btn" id="btn_sub_remove" onclick="setAct('sub-remove')"><span class="message" id="sub-remove"></td>
+          <td class="btn" id="btn_playlist_prev" onclick="setAct('playlist-prev')"><span class="menubtn" id="playlist-prev"></td>
+          <td class="btn" id="btn_playlist_next" onclick="setAct('playlist-next')"><span class="menubtn" id="playlist-next"></td>
+          <td class="btn" id="btn_sub_remove" onclick="setAct('sub-remove')"><span class="menubtn" id="sub-remove"></td>
       </tr>
       </table>
     </div>
@@ -93,7 +95,6 @@
 </center>
 
 <div id="result" class="result">
-<!--result-->
 </div>
 
 </body>

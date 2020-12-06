@@ -33,6 +33,15 @@ var logs = {
     'dlconf'        : ['dlconf', 'dlconf'],
 };
 
+String.format = function() {
+  var s = arguments[0];
+  for (var i = 0; i < arguments.length - 1; i++) {
+    var reg = new RegExp("\\{" + i + "\\}", "gm");
+    s = s.replace(reg, arguments[i + 1]);
+  }
+  return s;
+}
+
 function getExpire() {
     var expire_days = 3000;
     var d = new Date();
@@ -106,7 +115,7 @@ function closeMenu() {
 
 function onLoadMenuBoxCompleted (responseTxt, statusTxt, xhr) {
     if (statusTxt == "success")
-        showMenuLink();
+        showMenuBtn();
     if(statusTxt == "error")
         alert("Error: " + xhr.status + ": " + xhr.statusText);
 }
@@ -133,16 +142,9 @@ function getLangLog(key)
     return logs[key][idx];
 }
 
-function showServerMessage()
+function showMenuBtn()
 {
-    $('.message').each(function () {
-        $(this).html(getLangLog($(this).attr('id')));
-    });
-}
-
-function showMenuLink()
-{
-    $('.menulink').each(function () {
+    $('.menubtn').each(function () {
         $(this).html(getLangLog($(this).attr('id')));
     });
 }
@@ -161,3 +163,98 @@ function GetURLParameter(sParam)
     }
     return null;
 }
+
+function basename(path) {
+  return path.split('/').reverse()[0];
+}
+
+function result_dir(obj) {
+  var text = '';
+
+  text += String.format('<h1>Index of {0}</h1>', obj.dir);
+  text += '<div style="line-height:200%;font-size:32px">';
+
+  for (var i=0; i<obj.entry.length; i++) {
+    let e = obj.entry[i];
+    if (e.is_file) {
+      text += String.format('<li><img src="/icons/movie.gif"><a href="index.html?f={0}">{1}</a>', e.path, basename(e.path));
+    }
+    else {
+      text += String.format('<li><img src="/icons/folder.gif"><a href="list.html?d={0}">{1}</a>', e.path, basename(e.path));
+    }
+  }
+
+  text += '</div>';
+
+  return text;
+}
+
+function result_page(obj) {
+  var text = '';
+  var onerr = 'this.onerror=null; this.src="Movies-icon.png"';
+
+  if (!obj.entry.length) {
+    return String.format('<h1>{0}</h1>', getLangLog('NotFound'));
+  }
+
+  for (var i=0; i<obj.entry.length; i++) {
+    let e = obj.entry[i];
+    let link_attr = null;
+    text += '<div class="imageWrapper">';
+    text += '<div class="imageContainer">';
+    if (e.video == true) {
+      link_attr = String.format('href="index.html?v={0}" target="playVideo"', e.link, e.image);
+    }
+    else {
+      link_attr = String.format('href="list.html?p={0}" onclick="onPageClick.call(this);" title="{1}"', e.link, e.title);
+    }
+    text += String.format('<a {0}><img src="{1}" onerror=\'{2}\' /></a>', link_attr, e.image, onerr);
+    if (e.desc) {
+      text += String.format('<p>{0}</p>', e.desc);
+    }
+    text += '</div>';
+    text += String.format('<h2><a {0}>{1}</a></h2>', link_attr, e.title);
+    text += '</div>';
+  }
+
+  return text;
+}
+
+function result_play(obj) {
+  var text = '';
+  text += String.format('<h2><a href="{0}" target="_blank">{0}</a></h2>', obj.video);
+  return text;
+}
+
+function result_act(obj) {
+  var text = '';
+  text += String.format('<h2>{0} {1}</h2>', getLangLog(obj.act), obj.num);
+  return text
+}
+
+function result_cmd(obj) {
+  var text = '';
+  text += String.format('<h2>{0}</h2>', getLangLog(obj.status));
+  return text
+}
+
+function getResultHTMLText(obj) {
+  console.log(obj);
+  if (obj.type == 'page') {
+    return result_page(obj);
+  }
+  if (obj.type == 'dir') {
+    return result_dir(obj);
+  }
+  if (obj.type == 'play') {
+    return result_play(obj);
+  }
+  if (obj.type == 'act') {
+    return result_act(obj);
+  }
+  if (obj.type == 'cmd') {
+    return result_cmd(obj);
+  }
+}
+
+

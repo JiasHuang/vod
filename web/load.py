@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import re
+import json
 
 import page
 import xurl
@@ -21,15 +22,21 @@ def index(req):
 
     p = form.get('p', None) # page
     q = form.get('q', None) # query
+    d = form.get('d', None) # dir
     s = form.get('s', None) # search
     x = form.get('x', None) # extra
 
-    if q:
-        page.search(req, q, s, x)
-
-    elif p:
+    if p:
+        xurl.init(logfile='vod-page.log')
         p = getUnparsedURL(req) or p
-        page.page_core(req, p)
+        req.write(page.getPageJSON(p))
+
+    elif q:
+        xurl.init(logfile='vod-page-search.log')
+        req.write(page.getSearchJSON(q, s, x))
+
+    elif d:
+        req.write(page.getDIRJSON(d))
 
     return
 

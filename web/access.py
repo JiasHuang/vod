@@ -24,7 +24,7 @@ def index(req):
     if j:
         req.content_type = 'application/json'
         j = getUnparsedURL(req) or j
-        req.write(xurl.curl(j))
+        req.write(xurl.load(j))
 
     sys.stdout.close()
 

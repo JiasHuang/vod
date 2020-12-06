@@ -4,12 +4,29 @@
 import os
 import re
 import subprocess
+import json
 
 import page
 import conf
 import xurl
 
 from mod_python import util, Cookie
+
+class play_obj:
+    def __init__(self, video):
+        self.type = 'play'
+        self.video = video
+
+class act_obj:
+    def __init__(self, act='', num=''):
+        self.type = 'act'
+        self.act = act
+        self.num = num
+
+class cmd_obj:
+    def __init__(self, status):
+        self.type = 'cmd'
+        self.status = status
 
 def search(pattern, txt, flags=0):
     if not txt:
@@ -78,19 +95,13 @@ def handleCmd(cmd):
         return 'error'
     return 'success'
 
-def msgID(ID):
-    return '<span class="message" id="%s"></span>' %(ID)
-
-def msgLink(link):
-    return '<a target=_blank href=%s>%s</a>' %(link, link)
-
-def getPlaybackMode():
-    return '<meta id="playbackMode" playbackMode="%s">' %(xurl.readLocal(conf.playbackMode))
-
 def index(req):
 
     req.content_type = 'text/html; charset=utf-8'
     form = req.form or util.FieldStorage(req)
+
+    pb_cookie = Cookie.Cookie('playbackMode', xurl.readLocal(conf.playbackMode))
+    Cookie.add_cookie(req, pb_cookie)
 
     p = search(r'view\.py\?p=(.*)$', req.unparsed_uri, re.DOTALL)
     v = search(r'view\.py\?v=(.*)$', req.unparsed_uri, re.DOTALL)
@@ -103,7 +114,6 @@ def index(req):
     d = form.get('d', None) # directory
     f = form.get('f', None) # file
     c = form.get('c', None) # command
-    x = form.get('x', None) # extra
 
     if i:
         i = i.strip()
@@ -118,40 +128,36 @@ def index(req):
         else:
             q = re.sub('\s+', ' ', i)
 
-    if p:
-        page.page(req, p)
-
-    elif v:
+    if v:
+        obj = play_obj(v)
         playURL(v, getOption(req))
-        result = '%s<h1>%s %s</h1>' %(getPlaybackMode(), msgID('playing'), msgLink(v))
-        page.render(req, 'panel', result)
+        req.write(json.dumps(obj.__dict__))
 
     elif q:
         url = 'search.html?q='+q
-        if s:
-            url += '&s='+s
-        if x:
-            url += '&x='+x
         util.redirect(req, url)
 
     elif d:
-        page.renderDIR(req, d)
+        url = 'list.html?d='+d
+        util.redirect(req, url)
 
     elif f:
+        obj = play_obj(f)
         playURL(f)
-        result = '%s<h1>%s %s</h1>' %(getPlaybackMode(), msgID('playing'), f)
-        page.render(req, 'panel', result)
+        req.write(json.dumps(obj.__dict__))
 
     elif a:
+        obj = act_obj(a, n)
         sendACT(a, n)
-        req.write('<h1>%s %s</h1>' %(msgID(a), n or ''))
+        req.write(json.dumps(obj.__dict__))
 
     elif c:
-        page.render(req, 'status', '<h1>%s</h1>' %(msgID(handleCmd(c))))
+        status = handleCmd(c)
+        obj = cmd_obj(status)
+        req.write(json.dumps(obj.__dict__))
 
     else:
-        result = getPlaybackMode()
-        page.render(req, 'panel', result)
+        req.write('{}')
 
     return
 

@@ -28,7 +28,7 @@ function genTemplateTable(channel, links) {
             var idx = i + j * 4;
             if (idx < links.length) {
                 if (links[idx].link.startsWith('http')) {
-                    text += '<td><a href="view.py?p='+links[idx].link+'">'+links[idx].title+'</a></td>';
+                    text += '<td><a href="list.html?p='+links[idx].link+'">'+links[idx].title+'</a></td>';
                 } else {
                     text += '<td><a href="'+links[idx].link+'">'+links[idx].title+'</a></td>';
                 }

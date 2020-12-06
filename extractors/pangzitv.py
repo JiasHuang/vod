@@ -13,7 +13,7 @@ def getSource(url, fmt, ref):
         try:
             m = re.search(r'num-(\d+)', url)
             ep_num = m.group(1)
-            txt = xurl.curl(url)
+            txt = xurl.load(url)
             m = re.search(r'base64decode\(\'([^\']*)', txt)
             code = m.group(1)
             decoded = xurl.unquote(base64.b64decode(code))

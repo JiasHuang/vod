@@ -32,7 +32,6 @@ def extract(url):
                     if not isinstance(mimeType, str):
                         continue
                     if mimeType.startswith('video'):
-                        addVideo(req, getLink('googledrive', vid), title)
                         objs.append(entryObj(link, title))
                     if mimeType.endswith('folder'):
                         link = 'https://drive.google.com/drive/folders/'+vid

@@ -10,7 +10,7 @@ import xurl
 VALID_URL = r'iqiyi\.com'
 
 def loadM3U8(url):
-    txt = xurl.curl(url)
+    txt = xurl.load(url)
     txt = txt.replace('\/', '/')
     txt = txt.replace('\\n', '\n')
     m = re.search(r'"m3u8":"([^"]*)"', txt)
@@ -27,7 +27,7 @@ def loadM3U8(url):
                 results.append(part)
             else:
                 data_url = 'https://data.video.iqiyi.com/videos' + part
-                for v in re.finditer(r'"l":"([^"]*)"', xurl.curl(data_url)):
+                for v in re.finditer(r'"l":"([^"]*)"', xurl.load(data_url)):
                     results.append(v.group(1))
     if len(results):
         local = xurl.genLocal(url, prefix='vod_list_', suffix='.m3u8')

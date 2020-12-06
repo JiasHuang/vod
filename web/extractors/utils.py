@@ -59,7 +59,7 @@ class imageObj(object):
         return videoObj(self.link, self.title, self.image)
 
 def load(url):
-    return xurl.curl(url)
+    return xurl.load(url)
 
 def findItem_reentry(obj, keys):
     global itemResult

@@ -49,21 +49,20 @@ function setKey(key) {
         num = "";
     }
 
-    $("#result").load("view.py?a="+act+"&n="+num, onLoadCompleted);
+    setAct(act, num);
 
     act = '';
     num = '';
 }
 
 function setAct(act, num='') {
-    $("#result").load("view.py?a="+act+"&n="+num, onLoadCompleted);
-}
-
-function onLoadCompleted (responseTxt, statusTxt, xhr) {
-    if (statusTxt == "success")
-        showServerMessage();
-    if (statusTxt == "error")
-        alert("Error: " + xhr.status + ": " + xhr.statusText);
+    $.ajax({
+      url: 'view.py?a='+act+'&n='+num,
+      dataType: 'json',
+      error: onTimeout,
+      success: parseJSON,
+      timeout: 20000
+    });
 }
 
 function showStuff (id, btn = null) {
@@ -77,12 +76,12 @@ function setPlaybackMode (mode) {
         playbackMode = 'Normal';
     else
         playbackMode = mode;
-    $("#result").load("view.py?a=playbackMode&n="+playbackMode, onLoadCompleted);
+    setAct('playbackMode', playbackMode)
     highlightPlaybackMode(playbackMode);
 }
 
 function initPlaybackMode () {
-    playbackMode = document.getElementById('playbackMode').getAttribute('playbackMode');
+    playbackMode = getCookie('playbackMode')
     highlightPlaybackMode(playbackMode);
 }
 
@@ -98,3 +97,22 @@ function highlightPlaybackMode (mode) {
     if (mode == 'loopone')
         document.getElementById('btn_loopOne').classList.add("btn_hl");
 }
+
+function parseJSON(obj) {
+  $('#result').html(getResultHTMLText(obj));
+}
+
+function onTimeout() {
+  console.log('timeout');
+}
+
+function updateResult() {
+  $.ajax({
+    url: 'view.py' + window.location.search,
+    dataType: 'json',
+    error: onTimeout,
+    success: parseJSON,
+    timeout: 20000
+  });
+}
+

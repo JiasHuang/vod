@@ -9,7 +9,7 @@ import xurl
 VALID_URL = r'bilibili\.com'
 
 def getSource(url, fmt, ref):
-    txt = xurl.curl(url)
+    txt = xurl.load(url)
     result = []
     m = re.search(r'video/(\w+)', url)
     bvid = m.group(1) if m else None
@@ -22,7 +22,7 @@ def getSource(url, fmt, ref):
     cid = m.group(1) if m else None
     if bvid and cid:
         api_url = 'https://api.bilibili.com/x/player/playurl?bvid=%s&cid=%s&otype=json' %(bvid, cid)
-        api_txt = xurl.curl(api_url)
+        api_txt = xurl.load(api_url)
         data = json.loads(api_txt)
         for d in data['data']['durl']:
             result.append(d['url'])

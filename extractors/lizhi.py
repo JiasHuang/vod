@@ -8,9 +8,9 @@ import xurl
 
 from optparse import OptionParser
 
-def dl(url, local, options=None, read=True):
+def dl(url, local, ref=None, read=True):
     if not os.path.exists(local):
-        xurl.wget(url, local, options)
+        xurl.load(url, local, ref=ref)
     if read:
         return xurl.readLocal(local)
     return None
@@ -41,7 +41,7 @@ def main():
             m = re.search(r'"url":"([^"]*)"', media_txt)
             audio_url = m.group(1)
             audio_local = data_id+'.mp3'
-            dl(audio_url, audio_local, '--referer=\'http://www.lizhi.fm/box\'', read=False)
+            dl(audio_url, audio_local, ref='http://www.lizhi.fm/box', read=False)
 
         except:
             print('Exception: ' + i)

@@ -8,7 +8,7 @@ import subprocess
 import xurl
 
 def unpackURL(url):
-    txt = xurl.curl(url)
+    txt = xurl.load(url)
     return unpack(txt)
 
 def unpackFILE(local):
