@@ -25,8 +25,14 @@ def index(req):
     d = form.get('d', None) # dir
     s = form.get('s', None) # search
     x = form.get('x', None) # extra
+    j = form.get('j', None) # json
 
-    if p:
+    if j:
+        xurl.init(logfile='vod-load-json.log')
+        j = getUnparsedURL(req) or j
+        req.write(xurl.load(j))
+
+    elif p:
         xurl.init(logfile='vod-page.log')
         p = getUnparsedURL(req) or p
         req.write(page.getPageJSON(p))

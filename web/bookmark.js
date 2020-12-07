@@ -88,7 +88,7 @@ function onDocumentReady() {
     }
 
     $.ajax({
-        url: 'access.py?j='+jsonURL,
+        url: 'load.py?j='+jsonURL,
         dataType: 'json',
         error: onTimeout,
         success: parseJSON,
