@@ -7,6 +7,7 @@ import re
 import hashlib
 import time
 import subprocess
+import codecs
 
 try:
     # python 3
@@ -40,7 +41,7 @@ class xurlObj(object):
 def init(logfile=None):
     if logfile:
         path = os.path.join(defvals.workdir, logfile)
-        sys.stdout = open(path, 'w+')
+        sys.stdout = codecs.open(path, 'w+', encoding='utf-8')
 
 def readLocal(local, buffering=-1):
     if os.path.exists(local):
