@@ -133,6 +133,10 @@ def index(req):
         playURL(v, getOption(req))
         req.write(json.dumps(obj.__dict__))
 
+    elif p:
+        url = 'list.html?p='+p
+        util.redirect(req, url)
+
     elif q:
         url = 'search.html?q='+q
         util.redirect(req, url)
