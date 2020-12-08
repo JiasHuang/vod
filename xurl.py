@@ -106,13 +106,12 @@ def curl(url, local, opts, ref):
     opts.append('-H \'User-Agent: %s\'' %(defvals.ua))
     opts.append('-H \'Accept-Encoding: gzip, deflate\'')
     opts.append('--compressed')
-    cmd = 'curl -kLs -o %s %s \'%s\'' %(local, ' '.join(opts), url)
+    cmd = 'curl -kLsf -o %s %s \'%s\'' %(local, ' '.join(opts), url)
     try:
         subprocess.check_output(cmd, shell=True)
-        return readLocal(local)
     except:
         print('Exception:\n' + cmd)
-        return None
+    return readLocal(local)
 
 def load(url, local=None, opts=None, ref=None, cache=True, cacheOnly=False, expiration=None, cmd='curl'):
     local = local or genLocal(url)
