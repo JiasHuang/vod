@@ -191,7 +191,6 @@ function result_dir(obj) {
 
 function result_page(obj) {
   var text = '';
-  var onerr = 'this.onerror=null; this.src="Movies-icon.png"';
 
   if (!obj.entry.length) {
     return String.format('<h1>{0}</h1>', getLangLog('NotFound'));
@@ -200,15 +199,18 @@ function result_page(obj) {
   for (var i=0; i<obj.entry.length; i++) {
     let e = obj.entry[i];
     let link_attr = null;
+    let img_attr = null;
     text += '<div class="imageWrapper">';
     text += '<div class="imageContainer">';
     if (e.video == true) {
-      link_attr = String.format('href="index.html?v={0}" target="playVideo"', e.link, e.image);
+      link_attr = String.format('href="index.html?v={0}" target="playVideo"', e.link);
+      img_attr = String.format('src="{0}" onerror=\'this.onerror=null; this.src="Movies-icon.png"\'', e.image);
     }
     else {
       link_attr = String.format('href="list.html?p={0}" onclick="onPageClick.call(this);" title="{1}"', e.link, e.title);
+      img_attr = String.format('src="{0}" onerror=\'this.onerror=null; this.src="playlist-icon.png"\'', e.image);
     }
-    text += String.format('<a {0}><img src="{1}" onerror=\'{2}\' /></a>', link_attr, e.image, onerr);
+    text += String.format('<a {0}><img {1} /></a>', link_attr, img_attr);
     if (e.desc) {
       text += String.format('<p>{0}</p>', e.desc);
     }

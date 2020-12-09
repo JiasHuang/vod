@@ -50,7 +50,7 @@ def main():
         autotest()
         return
 
-    m = re.search(r'(view\.py|load\.py|search\.html)\?(.*?)$', sys.argv[1])
+    m = re.search(r'(view\.py|load\.py|search\.html|list\.html)\?(.*?)$', sys.argv[1])
     if m:
         q = re.search(r'q=([^&]*)', m.group(2))
         q = q.group(1) if q else None

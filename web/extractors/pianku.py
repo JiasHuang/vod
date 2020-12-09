@@ -26,7 +26,7 @@ def extract(url):
             link, title = urljoin(url, m.group(1)), m.group(2)
             objs.append(entryObj(link, title))
     else:
-        for m in re.finditer(r'<a href="(.*?)" title="(.*?)" target="_blank"><img src="(.*?)"', load(url)):
+        for m in re.finditer(r'<a href="(.*?)" title="(.*?)" target="_blank"><img src=".*?"\s+data-funlazy="(.*?)"', load(url)):
             link, title, img = urljoin(url, m.group(1)), m.group(2), urljoin(url, m.group(3))
             objs.append(pageObj(link, title, img))
 
