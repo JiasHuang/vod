@@ -32,7 +32,7 @@ def filter(url, flt):
 
     parsed = xurl.urlparse(url)
     if len(parsed.netloc) > 0:
-        txt = xurl.curl(url, local)
+        txt = xurl.load(url, local)
     else:
         txt = xurl.readLocal(url)
 

@@ -15,7 +15,7 @@ def search(patten, txt):
     return None
 
 def loadLocal(url):
-    return xurl.curl('http://127.0.0.1/vod/'+url)
+    return xurl.load('http://127.0.0.1/vod/'+url)
 
 def update():
     localdir = '/tmp/vodlatest'
