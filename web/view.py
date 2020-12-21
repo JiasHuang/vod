@@ -103,47 +103,17 @@ def index(req):
     pb_cookie = Cookie.Cookie('playbackMode', xurl.readLocal(conf.playbackMode))
     Cookie.add_cookie(req, pb_cookie)
 
-    p = search(r'view\.py\?p=(.*)$', req.unparsed_uri, re.DOTALL)
     v = search(r'view\.py\?v=(.*)$', req.unparsed_uri, re.DOTALL)
 
-    i = form.get('i', None) # input
     a = form.get('a', None) # action
     n = form.get('n', None) # number
-    q = form.get('q', None) # query
-    s = form.get('s', None) # search
-    d = form.get('d', None) # directory
     f = form.get('f', None) # file
     c = form.get('c', None) # command
-
-    if i:
-        i = i.strip()
-        if i.startswith('#'):
-            c = i[1:]
-        elif i.startswith('http'):
-            v = i
-        elif i.startswith('/') and os.path.isdir(i):
-            d = i
-        elif i.startswith('/') and os.path.exists(i):
-            f = i
-        else:
-            q = re.sub('\s+', ' ', i)
 
     if v:
         obj = play_obj(v)
         playURL(v, getOption(req))
         req.write(json.dumps(obj.__dict__))
-
-    elif p:
-        url = 'list.html?p='+p
-        util.redirect(req, url)
-
-    elif q:
-        url = 'search.html?q='+q
-        util.redirect(req, url)
-
-    elif d:
-        url = 'list.html?d='+d
-        util.redirect(req, url)
 
     elif f:
         obj = play_obj(f)

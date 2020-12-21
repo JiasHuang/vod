@@ -78,7 +78,7 @@ function onPageClick() {
     data.link = link
     data.title = title;
 
-    var pos = window.location.href.search(/view.py\?p=/);
+    var pos = window.location.href.search(/list.html\?p=/);
     if (pos > 0) {
         var plink = decodeURIComponent(window.location.href.substring(pos));
         for (var i = 0; i < pages.length; i++) {
