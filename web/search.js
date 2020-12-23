@@ -33,7 +33,7 @@ function query(s, q) {
 function onSelectChange() {
     var q = $('#input_q').val();
     var engine = $(this).val();
-    query(engine, q);
+    window.location.href = 'search.html?q=' + q + '&s=' + engine;
 }
 
 function onPlayVideo() {
