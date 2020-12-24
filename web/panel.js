@@ -107,13 +107,15 @@ function onTimeout() {
 }
 
 function updateResult() {
-  $.ajax({
-    url: 'view.py' + window.location.search,
-    dataType: 'json',
-    error: onTimeout,
-    success: parseJSON,
-    timeout: 2000
-  });
+  if (window.location.search) {
+    $.ajax({
+      url: 'view.py' + window.location.search,
+      dataType: 'json',
+      error: onTimeout,
+      success: parseJSON,
+      timeout: 2000
+    });
+  }
 }
 
 function onDocumentReady() {
