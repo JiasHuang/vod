@@ -20,6 +20,8 @@ def main():
     files = glob.glob("*.js") + glob.glob("*.css")
 
     for html in glob.glob("*.html"):
+        if os.path.islink(html):
+            continue
         for f in files:
             ver = gethash(f)
             os.system('sed -i -r \'s/%s([^"]*)/%s\?v=%s/g\' %s' %(f, f, ver, html))
