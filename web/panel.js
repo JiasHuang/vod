@@ -1,7 +1,7 @@
 
-var act = ''
-var num = ''
-var playbackMode = 'Normal'
+var act = '';
+var num = '';
+var playbackMode = 'Normal';
 
 function addCode(key) {
 	num = num + key;
@@ -76,12 +76,12 @@ function setPlaybackMode (mode) {
         playbackMode = 'Normal';
     else
         playbackMode = mode;
-    setAct('playbackMode', playbackMode)
+    setAct('playbackMode', playbackMode);
     highlightPlaybackMode(playbackMode);
 }
 
 function initPlaybackMode () {
-    playbackMode = getCookie('playbackMode')
+    playbackMode = getCookie('playbackMode');
     highlightPlaybackMode(playbackMode);
 }
 
@@ -104,6 +104,7 @@ function parseJSON(obj) {
 
 function onTimeout() {
   console.log('timeout');
+  alert('timeout');
 }
 
 function updateResult() {
@@ -123,5 +124,4 @@ function onDocumentReady() {
   initPlaybackMode();
   updateResult();
 }
-
 
