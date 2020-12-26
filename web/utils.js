@@ -204,11 +204,17 @@ function result_page(obj) {
     text += '<div class="imageContainer">';
     if (e.video == true) {
       link_attr = String.format('href="index.html?v={0}" target="playVideo"', e.link);
-      img_attr = String.format('src="{0}" onerror=\'this.onerror=null; this.src="Movies-icon.png"\'', e.image);
+      if (e.image)
+        img_attr = String.format('src="{0}" onerror=\'this.onerror=null; this.src="Movies-icon.png"\'', e.image);
+      else
+        img_attr = 'src="Movies-icon.png"';
     }
     else {
       link_attr = String.format('href="list.html?p={0}" onclick="onPageClick.call(this);" title="{1}"', e.link, e.title);
-      img_attr = String.format('src="{0}" onerror=\'this.onerror=null; this.src="playlist-icon.png"\'', e.image);
+      if (e.image)
+        img_attr = String.format('src="{0}" onerror=\'this.onerror=null; this.src="playlist-icon.png"\'', e.image);
+      else
+        img_attr = 'src="playlist-icon.png"';
     }
     text += String.format('<a {0}><img {1} /></a>', link_attr, img_attr);
     if (e.desc) {
