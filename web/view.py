@@ -131,7 +131,7 @@ def index(req):
         req.write(json.dumps(obj.__dict__))
 
     else:
-        util.redirect(req, 'index.html')
+        req.write('{}')
 
     return
 

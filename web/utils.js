@@ -53,11 +53,11 @@ function saveCookie(name, value) {
     document.cookie = name+'='+value+';'+getExpire();
 }
 
-function getCookie(name) {
+function getCookie(name, defval=null) {
     var arr = document.cookie.match(new RegExp("(^| )"+name+"=([^;]*)(;|$)"));
     if(arr != null)
         return unescape(arr[2]);
-    return null;
+    return defval;
 }
 
 function onPageClick() {

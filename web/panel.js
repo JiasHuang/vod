@@ -1,7 +1,7 @@
 
 var act = '';
 var num = '';
-var playbackMode = 'Normal';
+var playbackMode = null;
 
 function addCode(key) {
 	num = num + key;
@@ -72,7 +72,7 @@ function showStuff (id, btn = null) {
 }
 
 function setPlaybackMode (mode) {
-    if (playbackMode.toLowerCase() == mode.toLowerCase())
+    if (playbackMode && playbackMode.toLowerCase() == mode.toLowerCase())
         playbackMode = 'Normal';
     else
         playbackMode = mode;
@@ -81,12 +81,13 @@ function setPlaybackMode (mode) {
 }
 
 function initPlaybackMode () {
-    playbackMode = getCookie('playbackMode');
-    highlightPlaybackMode(playbackMode);
+  playbackMode = getCookie('playbackMode', 'Normal');
+  highlightPlaybackMode(playbackMode);
 }
 
 function highlightPlaybackMode (mode) {
     mode = mode.toLowerCase();
+    console.log('hl ' + mode);
     document.getElementById('btn_autoNext').classList.remove("btn_hl");
     document.getElementById('btn_loopAll').classList.remove("btn_hl");
     document.getElementById('btn_loopOne').classList.remove("btn_hl");
@@ -98,8 +99,12 @@ function highlightPlaybackMode (mode) {
         document.getElementById('btn_loopOne').classList.add("btn_hl");
 }
 
+/* Received JSONs and Cookies from server and then parsed them. */
 function parseJSON(obj) {
   $('#result').html(getResultHTMLText(obj));
+  if (!playbackMode) {
+    initPlaybackMode();
+  }
 }
 
 function onTimeout() {
@@ -108,20 +113,17 @@ function onTimeout() {
 }
 
 function updateResult() {
-  if (window.location.search) {
-    $.ajax({
-      url: 'view.py' + window.location.search,
-      dataType: 'json',
-      error: onTimeout,
-      success: parseJSON,
-      timeout: 2000
-    });
-  }
+  $.ajax({
+    url: 'view.py' + window.location.search,
+    dataType: 'json',
+    error: onTimeout,
+    success: parseJSON,
+    timeout: 2000
+  });
 }
 
 function onDocumentReady() {
   showMenuBtn();
-  initPlaybackMode();
   updateResult();
 }
 
