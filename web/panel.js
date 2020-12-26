@@ -87,7 +87,6 @@ function initPlaybackMode () {
 
 function highlightPlaybackMode (mode) {
     mode = mode.toLowerCase();
-    console.log('hl ' + mode);
     document.getElementById('btn_autoNext').classList.remove("btn_hl");
     document.getElementById('btn_loopAll').classList.remove("btn_hl");
     document.getElementById('btn_loopOne').classList.remove("btn_hl");
@@ -108,7 +107,6 @@ function parseJSON(obj) {
 }
 
 function onTimeout() {
-  console.log('timeout');
   alert('timeout');
 }
 

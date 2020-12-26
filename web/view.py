@@ -99,9 +99,7 @@ def index(req):
 
     req.content_type = 'text/html; charset=utf-8'
     form = req.form or util.FieldStorage(req)
-
-    pb_cookie = Cookie.Cookie('playbackMode', xurl.readLocal(conf.playbackMode))
-    Cookie.add_cookie(req, pb_cookie)
+    txt = '{}'
 
     v = search(r'view\.py\?v=(.*)$', req.unparsed_uri, re.DOTALL)
 
@@ -113,25 +111,26 @@ def index(req):
     if v:
         obj = play_obj(v)
         playURL(v, getOption(req))
-        req.write(json.dumps(obj.__dict__))
+        txt = json.dumps(obj.__dict__)
 
     elif f:
         obj = play_obj(f)
         playURL(f)
-        req.write(json.dumps(obj.__dict__))
+        txt = json.dumps(obj.__dict__)
 
     elif a:
         obj = act_obj(a, n)
         sendACT(a, n)
-        req.write(json.dumps(obj.__dict__))
+        txt = json.dumps(obj.__dict__)
 
     elif c:
         status = handleCmd(c)
         obj = cmd_obj(status)
-        req.write(json.dumps(obj.__dict__))
+        txt = json.dumps(obj.__dict__)
 
-    else:
-        req.write('{}')
+    pb_cookie = Cookie.Cookie('playbackMode', xurl.readLocal(conf.playbackMode))
+    Cookie.add_cookie(req, pb_cookie)
+    req.write(txt)
 
     return
 
