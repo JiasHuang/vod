@@ -70,9 +70,9 @@ function onPageReady() {
     entryMax = parseInt(localStorage.getItem('entryMax') || '5');
     if (slider != 'no' && $('.imageWrapper').length > entryMax) {
         setWidthHeight();
-        document.addEventListener('touchstart', handleTouchStart, false);
-        document.addEventListener('touchmove', handleTouchMove, false);
-        document.addEventListener('keydown', handleKeyDown, false);
+        document.addEventListener('touchstart', handleTouchStart, {passive: false});
+        document.addEventListener('touchmove', handleTouchMove, {passive: false});
+        document.addEventListener('keydown', handleKeyDown, {passive: false});
         $('#result').initSlide({divGroup:entryMax, slideIndexBox:'slideIndexBox'});
     }
 

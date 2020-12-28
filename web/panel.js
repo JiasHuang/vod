@@ -104,6 +104,7 @@ function parseJSON(obj) {
   if (!playbackMode) {
     initPlaybackMode();
   }
+  window.history.replaceState({}, document.title, "index.html");
 }
 
 function onTimeout() {
