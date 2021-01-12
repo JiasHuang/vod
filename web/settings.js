@@ -43,6 +43,13 @@ function initCookies() {
   }
 }
 
+function delCookies() {
+  var lists = settings_cookies;
+  for (let i=0; i<lists.length; i++) {
+    delCookie(lists[i]);
+  }
+}
+
 function saveCookies() {
     var lists = settings_cookies;
     for (var i=0; i<lists.length; i++) {
@@ -62,7 +69,7 @@ function resetSettings() {
     for (var id in settings) {
         localStorage.removeItem(id);
     }
-    saveCookies();
+    delCookies();
     location.reload();
 }
 

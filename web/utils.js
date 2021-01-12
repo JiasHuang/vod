@@ -53,6 +53,10 @@ function saveCookie(name, value) {
     document.cookie = name+'='+value+';'+getExpire();
 }
 
+function delCookie(name) {
+    document.cookie = name+'= ; expires = Thu, 01 Jan 1970 00:00:00 GMT';
+}
+
 function getCookie(name, defval=null) {
     var arr = document.cookie.match(new RegExp("(^| )"+name+"=([^;]*)(;|$)"));
     if(arr != null)
