@@ -89,7 +89,8 @@ def parse(url):
     return prefix, basename
 
 def getContentType(url):
-    txt = load(url, opts=['--head'], cmd='curl')
+    local = genLocal(url, suffix='.hdr')
+    txt = load(url, local, opts=['--head'], cmd='curl')
     m = re.search(r'Content-Type: (.*?)(;|\s)', txt, re.IGNORECASE)
     if m:
         return m.group(1)

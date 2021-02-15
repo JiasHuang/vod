@@ -23,6 +23,20 @@ def isM3U(url):
             return True
     return False
 
+def getM3U8Variants(url):
+    best_var = url
+    best_bw = -1
+    for m in re.finditer(r'#EXT-X-STREAM-INF:(.*?)\n(.*?\.m3u8)', xurl.load(url)):
+        bw = 0
+        var = m.group(2)
+        m_bw = re.search(r'BANDWIDTH=(\d+)', m.group(1))
+        if m_bw:
+            bw = int(m_bw.group(1))
+        if bw > best_bw:
+            best_var = xurl.urljoin(url, var)
+            best_bw = bw
+    return best_var
+
 def genLocal(url):
     return hashlib.md5(url).hexdigest() + '.' + os.path.basename(url) + '.dl'
 
@@ -117,6 +131,9 @@ def createJobs(url, dldir, jobs):
     prog = os.path.realpath(__file__)
     if prog.endswith('.pyc'):
         prog = prog[:-1]
+
+    if isM3U(url):
+        url = getM3U8Variants(url)
 
     local = dldir + genLocal(url)
 
