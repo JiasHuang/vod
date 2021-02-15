@@ -24,3 +24,13 @@ def extract(url):
                 title = x.group(2)
                 objs.append(videoObj(link, title))
     return objs
+
+def search_gimy(q, start=None):
+    objs = []
+    url = 'https://gimy.co/search/-------------.html?wd=%s' %(q)
+    for m in re.finditer(r'href="([^"]*)" title="([^"]*)" data-original="([^"]*)"', load(url)):
+        link = urljoin(url, m.group(1))
+        title = m.group(2)
+        image = m.group(3)
+        objs.append(pageObj(link, title, image))
+    return objs
