@@ -52,7 +52,11 @@ def play(url, ref, cookies=None):
     if cookies:
         xargs = ' '.join([xargs, '--avdict headers:\"Cookie: %s\"' %(cookies)])
 
-    cmd = '%s %s \'%s\' 2>&1 | tee %s' %(xdef.omxp, xargs, url, xdef.log)
+    if re.search(r'/hls_playlist/', url):
+        cmd = 'livestreamer --player omxplayer --fifo \'hls://%s\' best 2>&1 | tee %s' %(url, xdef.log)
+    else:
+        cmd = '%s %s \'%s\' 2>&1 | tee %s' %(xdef.omxp, xargs, url, xdef.log)
+
     print('\n[omx][cmd]\n\n\t'+cmd+'\n')
     subprocess.Popen(cmd, shell=True).communicate()
 
