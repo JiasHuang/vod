@@ -38,7 +38,7 @@ def getM3U8Variants(url):
     return best_var
 
 def genLocal(url):
-    return xurl.genLocal(url, prefix='vod_dl_', suffix='.' + os.path.basename(url))
+    return 'vod_dl_' + hashlib.md5(url).hexdigest() + '.' + os.path.basename(url)
 
 def filter(url, flt):
 
