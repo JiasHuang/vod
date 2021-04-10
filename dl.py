@@ -16,7 +16,7 @@ from optparse import OptionParser
 def isM3U(url):
     parsed = xurl.urlparse(url)
     if len(parsed.netloc) > 0:
-        if xurl.getContentType(url) in ['application/vnd.apple.mpegurl', 'application/x-mpegurl']:
+        if xurl.getContentType(url).lower() in ['application/vnd.apple.mpegurl', 'application/x-mpegurl']:
             return True
     elif os.path.exists(url):
         if re.search(r'#EXTM3U', xurl.readLocal(url)):
@@ -26,7 +26,7 @@ def isM3U(url):
 def getM3U8Variants(url):
     best_var = url
     best_bw = -1
-    for m in re.finditer(r'#EXT-X-STREAM-INF:(.*?)\n(.*?\.m3u8)', xurl.load(url)):
+    for m in re.finditer(r'#EXT-X-STREAM-INF:(.*?)\n(.*?)\s', xurl.load(url)):
         bw = 0
         var = m.group(2)
         m_bw = re.search(r'BANDWIDTH=(\d+)', m.group(1))
@@ -59,7 +59,7 @@ def filter(url, flt):
             link = xurl.urljoin(url, m.group())
         if link not in results:
             basename = os.path.basename(xurl.urlparse(link).path)
-            newtxt = newtxt.replace(link, basename)
+            newtxt = newtxt.replace(m.group(1), basename)
             results.append(link)
     xurl.saveLocal(local, newtxt)
     return results
