@@ -234,7 +234,7 @@ function result_page(obj) {
 
 function result_play(obj) {
   var text = '';
-  text += String.format('<h2><a href="{0}" target="_blank">{0}</a></h2>', obj.video);
+  text += String.format('<h2>{0} <a href="{1}" target="_blank">{1}</a></h2>', getLangLog('playing'), obj.video);
   return text;
 }
 
