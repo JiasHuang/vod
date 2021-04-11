@@ -5,7 +5,7 @@ import re
 
 from .utils import *
 
-VALID_URL = r'gimy\.co'
+VALID_URL = r'gimy'
 
 def extract(url):
     objs = []
@@ -27,7 +27,7 @@ def extract(url):
 
 def search_gimy(q, start=None):
     objs = []
-    url = 'https://gimy.co/search/-------------.html?wd=%s' %(q)
+    url = 'https://gimy.app/search/-------------.html?wd=%s' %(q)
     for m in re.finditer(r'href="([^"]*)" title="([^"]*)" data-original="([^"]*)"', load(url)):
         link = urljoin(url, m.group(1))
         title = m.group(2)
