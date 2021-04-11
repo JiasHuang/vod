@@ -50,6 +50,10 @@ def filter(url, flt):
     else:
         txt = xurl.readLocal(url)
 
+    m = re.search(r'#EXT-X-KEY:METHOD=AES-128,URI="(.*?)"', txt)
+    if m and not m.group(1).startswith('http'):
+        txt = txt.replace(m.group(1), xurl.urljoin(url, m.group(1)))
+
     newtxt = txt
     results = []
     for m in re.finditer(flt, txt):

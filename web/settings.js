@@ -30,7 +30,7 @@ var settings = {
     },
     'dlconf' : {
         'type' : 'input',
-        'defs' : 'zuida=4, pangzitv=4, .le.com=4, tiktokvideodown=4, iqiyi=4'
+        'defs' : 'zuida=4, pangzitv=4, .le.com=4, tiktokvideodown=4, iqiyi=4, gimy=4'
     },
 };
 
