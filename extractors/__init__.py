@@ -46,4 +46,5 @@ def getSub(url, subtitle):
 def getIframeSrc(url):
     if url[0:4] != 'http':
         return None
-    return search(r'<iframe.*?src="([^"]*)"', xurl.load(url))
+    m = re.search(r'<iframe.*?src="([^"]*)"', xurl.load(url))
+    return m.group(1) if m else None
