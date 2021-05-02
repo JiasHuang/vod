@@ -25,3 +25,14 @@ def extract(url):
                 objs.append(entryObj(p_url, m.group(2), 'Mimetypes-inode-directory-icon.png', video=False))
 
     return objs
+
+def search_pangzitv(q, start=None):
+    objs = []
+    url = 'https://www.pangzitv.com/index.php?m=vod-search&wd=' + q
+    for m in re.finditer(r'<a href="([^"]*)" .*?> <img .*? src="([^"]*)" alt="([^"]*)">', load(url)):
+        link = urljoin(url, m.group(1))
+        image = urljoin(url, m.group(2))
+        title = m.group(3)
+        objs.append(entryObj(link, title, image, video=False))
+    return objs
+
