@@ -12,11 +12,11 @@ def getSource(url, fmt, ref):
     m = re.search(r'"assetId":"(.*?)"', txt)
     if m:
         assetId = m.group(1)
-        remote = 'https://www.litv.tv/vod/ajax/getMainUrlNoAuth'
+        remote = 'https://www.litv.tv/vod/ajax/getUrl'
         local = xurl.genLocal(url, suffix='.json')
         opts = []
         opts.append('-H \'Content-Type: application/json\'')
-        opts.append('-d \'{"assetId":"%s"}\'' %(assetId))
+        opts.append('-d \'{"assetId":"%s","type":"noauth"}\'' %(assetId))
         xurl.load(remote, local, opts)
         m = re.search(r'"fullpath":"(.*?)"', xurl.readLocal(local))
         if m:
